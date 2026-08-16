@@ -13,6 +13,7 @@ import { NpmRegistry } from "../src/npm-registry.ts";
 import type { CliContext, CliResult } from "../src/utils.ts";
 
 const originalPath = process.env.PATH;
+const originalXdgCacheHome = process.env.XDG_CACHE_HOME;
 let directory: string;
 let context: CliContext;
 let record: string;
@@ -34,6 +35,11 @@ beforeEach(() => {
 
 afterEach(() => {
   process.env.PATH = originalPath;
+  if (originalXdgCacheHome === undefined) {
+    delete process.env.XDG_CACHE_HOME;
+  } else {
+    process.env.XDG_CACHE_HOME = originalXdgCacheHome;
+  }
   delete process.env.OPERATOR_TEST_RECORD;
   fs.rmSync(directory, { recursive: true, force: true });
 });
@@ -62,6 +68,29 @@ test.runIf(process.platform !== "win32")(
     expect(fs.readFileSync(record, "utf8")).toBe(
       "plugin @aerovato/operator-opencode@latest --global --force\n0",
     );
+    expect(fs.existsSync(cache)).toBe(false);
+  },
+);
+
+test.runIf(process.platform !== "win32")(
+  "clears the OpenCode plugin cache from XDG_CACHE_HOME",
+  async () => {
+    const xdgCacheHome = join(directory, "custom-cache");
+    const cache = join(
+      xdgCacheHome,
+      "opencode",
+      "packages",
+      "@aerovato",
+      "operator-opencode@latest",
+    );
+    process.env.XDG_CACHE_HOME = xdgCacheHome;
+    fs.mkdirSync(cache, { recursive: true });
+    fs.writeFileSync(join(cache, "stale"), "stale");
+    executable("opencode", 'printf "installed"');
+
+    const result = await execute(["install", "opencode"], "4.5.6");
+
+    expect(result).toEqual({ exitCode: 0, output: "installed" });
     expect(fs.existsSync(cache)).toBe(false);
   },
 );

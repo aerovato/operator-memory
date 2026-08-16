@@ -10,10 +10,7 @@ export const installOpenCode = Effect.fn("installOpenCode")(function* (context: 
   const path = yield* Path.Path;
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
 
-  const cacheRoot =
-    process.platform === "win32"
-      ? (process.env.LOCALAPPDATA ?? path.join(context.home, "AppData", "Local"))
-      : (process.env.XDG_CACHE_HOME ?? path.join(context.home, ".cache"));
+  const cacheRoot = process.env.XDG_CACHE_HOME || path.join(context.home, ".cache");
   const isCacheRemoved = yield* fileSystem
     .remove(path.join(cacheRoot, "opencode", "packages", "@aerovato", "operator-opencode@latest"), {
       recursive: true,
