@@ -5,10 +5,11 @@ set -eu
 version=${1:-}
 
 if [ -z "$version" ]; then
-  printf '%s\n' 'Usage: bun run release:opencode -- <version>' >&2
+  printf '%s\n' 'Usage: bun run publish:opencode -- <version>' >&2
   exit 1
 fi
 
+version=${version#v}
 case "$version" in
   *[!0-9.]* | '' | *.*.*.* | .* | *.)
     printf '%s\n' 'Version must be in X.Y.Z format.' >&2

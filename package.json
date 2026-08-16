@@ -25,8 +25,8 @@
     "test": "vitest run",
     "check": "./scripts/check.sh",
     "prepare": "git rev-parse --git-dir >/dev/null 2>&1 && git config core.hooksPath .githooks || true",
-    "release:helper": "sh scripts/release-helper.sh",
-    "release:opencode": "sh scripts/release-opencode.sh"
+    "publish:helper": "sh scripts/publish-helper.sh",
+    "publish:opencode": "sh scripts/publish-opencode.sh"
   },
   "repository": {
     "type": "git",
