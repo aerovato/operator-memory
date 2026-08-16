@@ -1,0 +1,23 @@
+# OpenCode and Claude Code source code
+src-*/
+
+node_modules/
+
+# Build and package output
+dist/
+coverage/
+*.lcov
+*.tgz
+*.tsbuildinfo
+
+# Local configuration and caches
+.env
+.env.*.local
+.cache/
+/.operator-shared/references/
+/.opencode/opencode.json
+/.opencode/tui.json
+
+# Editors and operating systems
+.idea/
+.DS_Store

@@ -1,0 +1,47 @@
+{
+  "name": "operator-memory",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Operator Memory: Durable context for agent-driven development.",
+  "license": "BSD-3-Clause",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "overrides": {
+    "@effect/platform-node-shared": "4.0.0-beta.98"
+  },
+  "scripts": {
+    "build:helper": "bun run --cwd packages/helper build",
+    "build:opencode": "bun run --cwd packages/opencode build",
+    "preview:opencode": "bun ./scripts/preview-opencode.ts",
+    "install:helper": "bun run build:helper && bun link --cwd packages/helper",
+    "install:opencode": "bun run build:opencode && bun ./scripts/install-opencode.ts",
+    "install:all": "bun install && bun run install:helper && bun run install:opencode",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check": "./scripts/check.sh",
+    "prepare": "git rev-parse --git-dir >/dev/null 2>&1 && git config core.hooksPath .githooks || true",
+    "release:helper": "sh scripts/release-helper.sh",
+    "release:opencode": "sh scripts/release-opencode.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aerovato/operator.git"
+  },
+  "author": "Aerovato Research",
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.5",
+    "@opencode-ai/plugin": "^1.18.4",
+    "@types/node": "^26.1.1",
+    "memfs": "^4.64.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "@types/bun": "^1.3.14"
+  }
+}

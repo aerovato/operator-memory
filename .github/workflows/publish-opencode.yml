@@ -1,0 +1,67 @@
+name: Publish OpenCode Release
+
+on:
+  push:
+    tags:
+      - "opencode@v*"
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  publish:
+    if: github.event.repository.fork == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Update npm
+        run: npm install --global npm@latest
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate release tag
+        run: |
+          version=$(node -e 'process.stdout.write(require("./packages/opencode/package.json").version)')
+          test "$GITHUB_REF_NAME" = "opencode@v$version"
+
+      - name: Check OpenCode plugin
+        run: bun run check packages/opencode
+
+      - name: Build OpenCode plugin
+        run: bun run build:opencode
+
+      - name: Check OpenCode plugin package
+        working-directory: packages/opencode
+        run: npm pack --dry-run
+
+      - name: Check npm publication
+        id: npm
+        working-directory: packages/opencode
+        run: |
+          version=$(node -p 'require("./package.json").version')
+          published=$(npm view "@aerovato/operator-opencode@$version" version 2>/dev/null || true)
+          test "$published" = "$version" && echo "published=true" >> "$GITHUB_OUTPUT" || echo "published=false" >> "$GITHUB_OUTPUT"
+
+      - name: Publish OpenCode plugin
+        if: steps.npm.outputs.published != 'true'
+        working-directory: packages/opencode
+        run: npm publish
+
+      - name: Create GitHub release
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

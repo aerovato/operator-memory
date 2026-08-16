@@ -1,0 +1,26 @@
+#!/bin/sh
+
+set -eu
+
+if ! bun run format:check; then
+  bun run format
+  echo "Formatting issues detected. Please stage the formatted files."
+  exit 1
+fi
+
+if ! bun run lint; then
+  echo "Linting failed."
+  exit 1
+fi
+
+if ! bun run typecheck; then
+  echo "Type check failed."
+  exit 1
+fi
+
+if ! bun run test; then
+  echo "Tests failed."
+  exit 1
+fi
+
+echo "All checks passed."

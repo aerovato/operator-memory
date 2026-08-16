@@ -1,0 +1,73 @@
+{
+  "name": "@aerovato/operator-opencode",
+  "version": "1.0.0",
+  "description": "Operator Memory: durable context for agent-driven development.",
+  "license": "BSD-3-Clause",
+  "author": "Aerovato Research",
+  "homepage": "https://github.com/aerovato/operator#readme",
+  "bugs": {
+    "url": "https://github.com/aerovato/operator/issues"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./server": "./dist/index.js",
+    "./tui": "./dist/tui.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "memory",
+    "plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aerovato/operator.git",
+    "directory": "packages/opencode"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "bun ./scripts/build.ts",
+    "prepack": "bun run build"
+  },
+  "dependencies": {
+    "@opencode-ai/sdk": "^1.18.4"
+  },
+  "peerDependencies": {
+    "@opencode-ai/plugin": "^1.18.4",
+    "@opentui/core": ">=0.4.5",
+    "@opentui/keymap": ">=0.4.5",
+    "@opentui/solid": ">=0.4.5",
+    "solid-js": ">=1.9.0"
+  },
+  "peerDependenciesMeta": {
+    "@opentui/core": {
+      "optional": true
+    },
+    "@opentui/keymap": {
+      "optional": true
+    },
+    "@opentui/solid": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@aerovato/operator-core": "workspace:*",
+    "@opentui/core": "0.4.5",
+    "@opentui/keymap": "0.4.5",
+    "@opentui/solid": "0.4.5",
+    "solid-js": "1.9.12"
+  }
+}

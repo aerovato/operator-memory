@@ -1,0 +1,70 @@
+name: Publish Helper Release
+
+on:
+  push:
+    tags:
+      - "helper@v*"
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  publish:
+    if: github.event.repository.fork == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Update npm
+        run: npm install --global npm@latest
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate release tag
+        run: |
+          version=$(node -e 'process.stdout.write(require("./packages/helper/package.json").version)')
+          test "$GITHUB_REF_NAME" = "helper@v$version"
+
+      - name: Check helper
+        run: bun run check packages/helper
+
+      - name: Build helper
+        run: bun run build:helper
+
+      - name: Smoke test helper
+        run: node packages/helper/dist/index.js help
+
+      - name: Check helper package
+        working-directory: packages/helper
+        run: npm pack --dry-run
+
+      - name: Check npm publication
+        id: npm
+        working-directory: packages/helper
+        run: |
+          version=$(node -p 'require("./package.json").version')
+          published=$(npm view "@aerovato/operator-helper@$version" version 2>/dev/null || true)
+          test "$published" = "$version" && echo "published=true" >> "$GITHUB_OUTPUT" || echo "published=false" >> "$GITHUB_OUTPUT"
+
+      - name: Publish helper
+        if: steps.npm.outputs.published != 'true'
+        working-directory: packages/helper
+        run: npm publish
+
+      - name: Create GitHub release
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

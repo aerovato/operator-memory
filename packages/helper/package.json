@@ -1,0 +1,48 @@
+{
+  "name": "@aerovato/operator-helper",
+  "version": "1.0.0",
+  "description": "Installation and setup CLI for Operator Memory",
+  "license": "BSD-3-Clause",
+  "author": "Aerovato Research",
+  "homepage": "https://github.com/aerovato/operator#readme",
+  "bugs": {
+    "url": "https://github.com/aerovato/operator/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aerovato/operator.git",
+    "directory": "packages/helper"
+  },
+  "dependencies": {
+    "@effect/platform-node": "4.0.0-beta.98",
+    "cli-table3": "^0.6.5",
+    "effect": "4.0.0-beta.98",
+    "yaml": "^2.9.0"
+  },
+  "bin": {
+    "operator-helper": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "opencode",
+    "memory",
+    "cli",
+    "coding-agent"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "bun ./scripts/build.ts",
+    "prepack": "bun run build"
+  },
+  "devDependencies": {
+    "@aerovato/operator-core": "workspace:*"
+  },
+  "type": "module"
+}
