@@ -1,6 +1,6 @@
 {
   "name": "@aerovato/operator-opencode",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Operator Memory: durable context for agent-driven development.",
   "license": "BSD-3-Clause",
   "author": "Aerovato Research",
