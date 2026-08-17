@@ -2,30 +2,15 @@
 
 set -eu
 
-version=${1:-}
+requested_version=${1:-}
 
-if [ -z "$version" ]; then
-  printf '%s\n' 'Usage: bun run publish:opencode -- <version>' >&2
+if [ -z "$requested_version" ]; then
+  printf '%s\n' 'Usage: bun run publish:opencode -- <major|minor|patch|version>' >&2
   exit 1
 fi
 
-version=${version#v}
-case "$version" in
-  *[!0-9.]* | '' | *.*.*.* | .* | *.)
-    printf '%s\n' 'Version must be in X.Y.Z format.' >&2
-    exit 1
-    ;;
-esac
-
-old_ifs=$IFS
-IFS=.
-set -- $version
-IFS=$old_ifs
-
-if [ "$#" -ne 3 ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
-  printf '%s\n' 'Version must be in X.Y.Z format.' >&2
-  exit 1
-fi
+current_version=$(node -p 'require("./packages/opencode/package.json").version')
+version=$(sh scripts/resolve-publish-version.sh "$current_version" "$requested_version")
 
 tag="opencode@v$version"
 package="@aerovato/operator-opencode"
