@@ -1,6 +1,6 @@
 {
   "name": "@aerovato/operator-helper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Installation and setup CLI for Operator Memory",
   "license": "BSD-3-Clause",
   "author": "Aerovato Research",
