@@ -33,9 +33,9 @@ Run each Operator command in a new conversation so the agent can focus on setup,
 
 ## Documentation
 
-- [Overview and setup](https://github.com/aerovato/operator#readme)
-- [Workflow](https://github.com/aerovato/operator/blob/main/docs/workflow.md)
-- [Architecture](https://github.com/aerovato/operator/blob/main/docs/architecture.md)
-- [Troubleshooting](https://github.com/aerovato/operator/blob/main/docs/troubleshooting.md)
+- [Overview and setup](https://github.com/aerovato/operator-memory#readme)
+- [Workflow](https://github.com/aerovato/operator-memory/blob/main/docs/workflow.md)
+- [Architecture](https://github.com/aerovato/operator-memory/blob/main/docs/architecture.md)
+- [Troubleshooting](https://github.com/aerovato/operator-memory/blob/main/docs/troubleshooting.md)
 
 Licensed under the BSD 3-Clause License.
