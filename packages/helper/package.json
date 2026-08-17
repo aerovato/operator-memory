@@ -4,9 +4,9 @@
   "description": "Installation and setup CLI for Operator Memory",
   "license": "BSD-3-Clause",
   "author": "Aerovato Research",
-  "homepage": "https://github.com/aerovato/operator#readme",
+  "homepage": "https://github.com/aerovato/operator-memory#readme",
   "bugs": {
-    "url": "https://github.com/aerovato/operator/issues"
+    "url": "https://github.com/aerovato/operator-memory/issues"
   },
   "repository": {
     "type": "git",
