@@ -24,7 +24,7 @@ read_if: Working anywhere in the committed Operator Memory project
 ### `packages/` - Workspace packages
 
 - [`core/`](core.md) - Private harness-agnostic runtime for memory loading, shared models, and preamble generation.
-- [`helper/`](helper.md) - Published harness installation, upgrade, setup, status, guide, Git, and Project Index lint CLI.
+- [`helper/`](helper.md) - Published harness installation, automatic update, setup, status, guide, Git, and Project Index lint CLI.
 - [`opencode/`](opencode.md) - Published OpenCode server and TUI plugin adapter for immutable session preamble injection and memory status UI.
 
 ### `references/` - Git-ignored third-party source references

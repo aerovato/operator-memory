@@ -1,77 +1,55 @@
-import { Effect, Option, PlatformError, Result, Stream } from "effect";
+import { Effect, Option, Stream } from "effect";
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process";
 
-import { NpmRegistry } from "../npm-registry.ts";
-import { type CliContext, getErrorMessage } from "../utils.ts";
+import { NpmRegistry } from "./npm-registry.ts";
+import type { CliContext } from "./utils.ts";
 
 const HELPER_PACKAGE = "@aerovato/operator-helper";
+const UPDATE_TIMEOUT = "60 seconds";
 
 type InstallationChannel = "bun" | "npm" | "unknown";
 
-export const updateNotice = Effect.fn("updateNotice")(function* (currentVersion: string) {
+export type UpdateResult =
+  | { readonly status: "current" }
+  | { readonly status: "updated" }
+  | { readonly status: "unknown"; readonly latest: string }
+  | { readonly status: "failed" };
+
+export const autoUpdate = Effect.fn("autoUpdate")(function* (
+  currentVersion: string,
+  context: CliContext,
+) {
   const registry = yield* NpmRegistry.Service;
   const latest = yield* registry.latestVersion(HELPER_PACKAGE).pipe(Effect.option);
   if (Option.isNone(latest) || !isNewerVersion(currentVersion, latest.value)) {
-    return null;
+    return { status: "current" } satisfies UpdateResult;
   }
-  return `Operator Helper ${latest.value} is available. Run operator-helper upgrade.`;
-});
 
-export const upgrade = Effect.fn("upgrade")(function* (context: CliContext) {
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
   const channel = yield* detectInstallationChannel(spawner, context.cwd);
   if (channel === "unknown") {
-    return {
-      exitCode: 1,
-      output: `✗ ${[
-        "Could not determine how Operator Helper was installed.",
-        "Upgrade manually using your original installation method.",
-        "",
-        "bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest",
-        "NPM_CONFIG_MIN_RELEASE_AGE=0 npm install --global @aerovato/operator-helper@latest",
-      ].join("\n")}`,
-    };
+    return { status: "unknown", latest: latest.value } satisfies UpdateResult;
   }
 
   const command =
     channel === "bun"
       ? ChildProcess.make(
           "bun",
-          ["add", "--global", "--minimum-release-age", "0", `${HELPER_PACKAGE}@latest`],
+          ["add", "--global", "--minimum-release-age", "0", `${HELPER_PACKAGE}@${latest.value}`],
           { cwd: context.cwd },
         )
-      : ChildProcess.make("npm", ["install", "--global", `${HELPER_PACKAGE}@latest`], {
+      : ChildProcess.make("npm", ["install", "--global", `${HELPER_PACKAGE}@${latest.value}`], {
           cwd: context.cwd,
           env: { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
           extendEnv: true,
         });
-  const execution = yield* run(spawner, command).pipe(Effect.result);
-  if (Result.isFailure(execution)) {
-    const message =
-      execution.failure instanceof PlatformError.PlatformError
-        ? (execution.failure.reason.description ?? execution.failure.message)
-        : getErrorMessage(execution.failure);
-    return {
-      exitCode: 1,
-      output: `✗ ${[
-        `Could not upgrade with ${channel}: ${message}`,
-        "",
-        "Upgrade manually using your original installation method.",
-        "",
-        "bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest",
-        "NPM_CONFIG_MIN_RELEASE_AGE=0 npm install --global @aerovato/operator-helper@latest",
-      ].join("\n")}`,
-    };
-  }
-  const output = [execution.success.stdout.trim(), execution.success.stderr.trim()]
-    .filter(Boolean)
-    .join("\n");
-  return execution.success.exitCode === 0
-    ? { exitCode: 0, output }
-    : {
-        exitCode: execution.success.exitCode,
-        output: output || "Operator Helper upgrade failed",
-      };
+  const execution = yield* run(spawner, command).pipe(
+    Effect.timeout(UPDATE_TIMEOUT),
+    Effect.option,
+  );
+  return Option.isSome(execution) && execution.value.exitCode === 0
+    ? ({ status: "updated" } satisfies UpdateResult)
+    : ({ status: "failed" } satisfies UpdateResult);
 });
 
 function detectInstallationChannel(

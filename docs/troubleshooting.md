@@ -14,13 +14,9 @@ operator-helper install opencode
 
 Restart OpenCode after installation or repair. Until the harness reloads the plugin, setup commands and preamble injection will not behave as expected.
 
-### Upgrade
+### Helper Updates
 
-Helper reports when a newer version is available:
-
-```sh
-operator-helper upgrade
-```
+Operator Helper automtically checks for and installs updates when commands run. If it cannot determine whether Bun or npm owns the global installation, it asks for a manual update using the original installation method. Registry and installation failures do not block the requested command.
 
 Stable OpenCode installations also check for plugin updates and apply successful updates after OpenCode restarts. If automatic plugin recovery fails, reinstall the adapter with `operator-helper install opencode` and restart OpenCode.
 

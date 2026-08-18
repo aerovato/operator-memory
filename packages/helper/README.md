@@ -32,12 +32,13 @@ Users interact with Operator through the OpenCode commands `/operator:user-init`
 
 Run each Operator command in a new conversation so the agent can focus on that operation with a clean working context. Initialization preserves existing content. Project setup configures `.operator/` in the global Git ignore but does not automatically untrack files already committed.
 
-The direct user-facing Helper operations are adapter installation and Helper upgrading:
+The direct user-facing Helper operation is adapter installation:
 
 ```sh
 operator-helper install opencode
-operator-helper upgrade
 ```
+
+Operator Helper automatically checks for and installs updates when commands run. If it cannot determine whether Bun or npm owns the global installation, it asks for a manual update using the original installation method.
 
 ## Documentation
 
