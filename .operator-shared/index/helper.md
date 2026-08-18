@@ -18,7 +18,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 
 ## Architecture
 
-- `@aerovato/operator-helper` is the published Node-compatible installer and coordinator for harness adapters, deterministic Operator setup, memory checks, status, guides, Git integration, upgrades, and Project Index linting.
+- `@aerovato/operator-helper` is the published Node-compatible installer and coordinator for harness adapters, deterministic Operator setup, memory checks, status, guides, Git integration, automatic updates, and Project Index linting.
 - Services use a namespace containing `Interface`, `Service`, and `layer`; service identifiers follow `@aerovato/operator-helper/<service-name>`.
 
 ## `packages/helper/` Index
@@ -54,7 +54,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 ### `packages/helper/test/`
 
 - `cli.test.ts` — Temporary-filesystem command routing, memory check, guide, status, initialization, and lint integration coverage
-- `install-upgrade.test.ts` — OpenCode installation, Bun/npm upgrade, release-age override, channel fallback, and update-notice coverage
+- `install-update.test.ts` — OpenCode installation plus Bun/npm automatic update, release-age override, channel fallback, and failure coverage
 - `npm-registry.test.ts` — Latest-version response decoding and typed registry failure coverage
 - `filesystem.test.ts` — Live temporary-filesystem path and symlink inspection, text I/O, non-overwriting writes, and recursive listing coverage
 - `git.test.ts` — Configured and fallback global ignore plus tracked Private file coverage
@@ -68,7 +68,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 
 - `common.ts` — Shared typed filesystem failure rendering at the CLI boundary
 - `install.ts` — Clean stable `@latest` cache installation and recovery through the OpenCode CLI
-- `upgrade.ts` — Per-invocation update notice, installation-channel detection, and helper upgrade execution
+- `update.ts` — Per-invocation version check, installation-channel detection, silent exact-version update, and timeout behavior
 
 ##### `commands/memory/`
 

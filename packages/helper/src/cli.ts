@@ -12,10 +12,8 @@ import { projectStatus } from "./commands/project/status.ts";
 import { userGuide } from "./commands/user/guide.ts";
 import { userInit } from "./commands/user/init.ts";
 import { userStatus } from "./commands/user/status.ts";
-import { upgrade } from "./commands/upgrade.ts";
 import { fileFailure } from "./commands/common.ts";
 import type { GitRunner } from "./git.ts";
-import type { NpmRegistry } from "./npm-registry.ts";
 import { renderTable } from "./output.ts";
 import type { CliContext, CliResult } from "./utils.ts";
 
@@ -27,7 +25,6 @@ ${renderTable([
   ["help", "Show help for operator-helper"],
   ["version", "Show the installed version"],
   ["operator-helper install opencode", "Install or update the OpenCode plugin"],
-  ["operator-helper upgrade", "Upgrade Operator Helper"],
 ])}
 
 AGENT COMMANDS
@@ -54,11 +51,7 @@ export function runCli(
 ): Effect.Effect<
   CliResult,
   never,
-  | ChildProcessSpawner.ChildProcessSpawner
-  | FileSystem.FileSystem
-  | GitRunner.Service
-  | NpmRegistry.Service
-  | Path.Path
+  ChildProcessSpawner.ChildProcessSpawner | FileSystem.FileSystem | GitRunner.Service | Path.Path
 > {
   return Effect.gen(function* () {
     if (arguments_.length === 1 && arguments_[0] === "help") {
@@ -66,9 +59,6 @@ export function runCli(
     }
     if (arguments_.length === 1 && arguments_[0] === "version") {
       return { exitCode: 0, output: context.version };
-    }
-    if (arguments_.length === 1 && arguments_[0] === "upgrade") {
-      return yield* upgrade(context);
     }
     if (arguments_.length !== 2) {
       return { exitCode: 2, output: HELP };
