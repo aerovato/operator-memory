@@ -134,7 +134,7 @@ Subindex rules:
 ### Partition Catalog
 
 - Maintain one \`catalog.md\` per partition.
-- Catalog only that partition’s brain root. Never list \`index/\` (auto-handled). Never list repository source files.
+- Catalog only that partition’s brain root. Never list project index files (\`index\`); index files are automatically handled. Never list repository source files.
 - Every entry should have a \`Description\` and \`Read If\`.
 - **DO** update the catalog after creating or significantly changing brain files or layout.
 - Same coverage rules as the Project Index. Document densely (paths, roles, grouping, "Ditto" where obvious).
