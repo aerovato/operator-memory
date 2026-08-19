@@ -11,6 +11,8 @@ Operator Memory turns agent work into lasting project knowledge. You assign norm
 
 User setup is typically a one-time step. Project setup and indexing apply per project. After a long break or a large pull that leaves the indexes badly out of date, running `/operator:index` again is reasonable.
 
+Demo workflow: To see this workflow in practice, browse the [demo conversation](https://opncd.ai/share/2F8fjjEp) of a small [web app](https://github.com/aerovato/operator-demo-terra-js) built with Operator.
+
 ## Commands
 
 Run each Operator command in a new conversation so the agent can focus on setup, indexing, or repair with a clean working context.
