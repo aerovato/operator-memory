@@ -116,6 +116,7 @@ Sometimes, agents hesitate to create new documents, consolidate documents, or sp
 - [Workflow](docs/workflow.md) - how to direct continuous documentation and maintain a useful Brain. Includes the command reference.
 - [Architecture](docs/architecture.md) - how partitions, catalogs, indexes, and deterministic context loading work.
 - [Troubleshooting](docs/troubleshooting.md) - installation, validation, repair, and update recovery.
+- [Demo](https://github.com/aerovato/operator-demo-terra-js) - a Minecraft-like web app built agent-driven with Operator. The [recorded conversation](https://opncd.ai/share/2F8fjjEp) shows the brain being used and maintained throughout.
 
 ## License
 
