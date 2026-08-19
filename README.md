@@ -2,7 +2,15 @@
 
 #### Operator Memory: Durable context for agent-driven development.
 
-Operator Memory turns agent work into lasting project knowledge through continuous documentation.
+<p align="center">
+  <img src="docs/assets/operator-tree.svg" alt="Sample harness repository beside Operator Memory" width="600">
+</p>
+
+Operator Memory turns agent work into lasting project knowledge. It gives the agent a durable workspace of ordinary Markdown, kept in three places: shared files that travel with the team, private project files that stay on your machine, and user rules that follow you across projects.
+
+Each new session starts from those files. As the agent works, it writes and updates them — specs, decisions, standards, research, and lessons — instead of leaving that understanding trapped in a chat. You can open any file, correct it, share it, or remove it.
+
+Continuous documentation is the practice. Durable memory is what it produces.
 
 ## Why Operator Memory
 
@@ -13,31 +21,27 @@ Agents excel in a single session. Multi-session work breaks down for two reasons
 
 ### Memory plugins solve the wrong problem
 
-Standard memory plugins try to fix this by capturing fragments from transcripts, tool calls, or background observers and replaying selected snippets—or they try to drag a single session along forever through context compression without ever recording durable organizational facts. Both treat forgetting as the core problem. They fall short:
+Standard memory plugins treat forgetting as a problem. They try to fix by capturing fragments from transcripts and replaying these fragments — or they try to compress a single session along forever and never write down durable organizational facts. Both approaches fall short.
 
-- "Memory" is in the form of disparate snippets of text: incomplete, lacking context, often irrelevant.
-- Recording and retrieval is inconsistent and opaque. Users cannot see what changed, why it changed, or correct a canonical source.
-- RAG does not provide organizational knowledge. RAG-based memory stores thousands of snippet chunks and returns a lossy, irrelevant top-k slice on retrieval.
-- Context compression is not durable organizational knowledge. Rewriting a conversation preserves a session window; it does not leave specs, standards, and decisions as maintained project truth.
-- You end up paying premium prices for complex garbage — dreamers, curators, analysts, maintenance workers — token furnaces that burn through your quota without fixing the architecture.
+- **Snippets are not knowledge.** Memory plugins record snippets as memory — incomplete, lacking context, and stale almost instantly.
+- **Retrieval is a lottery.** RAG-based plugins accumulate thousands of chunks and returns a lossy top-k slice.
+- **Compression is not documentation.** Summarizing the session keeps the chat window alive but persists zero project truth.
+- **Memory fails silently.** The store is a black box: you cannot see what was remembered, what was forgotten, or why — failures surface later as bad answers.
+- **You pay to maintain garbage.** Every background dreamer, curator, and analyst is a token furnace that burns quota without ever producing a document you can read or trust.
 
 ### Operator fixes it at the source
 
-Operator Memory fixes the problem at the source: agents write lasting project knowledge as ordinary Markdown they maintain during normal work. Continuous documentation is the practice; durable memory is what that practice produces. Those files are yours to inspect and direct: read, create, consolidate, split, correct, or remove. No embeddings, vector database, or automatic semantic retrieval.
+Operator Memory fixes the problem at the source: agents write lasting project knowledge as ordinary Markdown they maintain during normal work. Those files are yours to inspect and direct: read, create, consolidate, split, correct, or remove. No embeddings, vector database, or hidden retrieval taxes.
+
+New sessions start from that knowledge instead of rediscovering the project. When truth changes, the agent updates the canonical file instead of adding a competing record.
 
 Knowledge is separated by ownership:
 
-- `.operator/` — private project knowledge (Helper adds this path to the global Git ignore)
+- `.operator/` — private project knowledge
 - `.operator-shared/` — project knowledge intentionally published with the repository
 - `~/.operator/user/` — private instructions used across projects
 
-Each new session orients through explicit structure, not similarity search:
-
-1. A deterministic preamble loads standing instructions, catalog bodies, and the main project index.
-2. The catalogs map Brain documents; Project indexes map the codebase. Agents open deeper files only when their routing guidance matches the task.
-3. As project truth changes, agents create/update the canonical Markdown source instead of accumulating competing snippets.
-
-For the full partition, catalog, index, and loading model, see [Architecture](docs/architecture.md).
+For partitions and how sessions load them, see [Architecture](docs/architecture.md).
 
 ## Install Operator Helper
 
@@ -65,75 +69,55 @@ Restart OpenCode after installing or repairing the plugin.
 
 ## Setup Operator
 
-Operator setup happens through an interactive conversation with your agent.
+Setup is a conversation with your agent. Run each command in a new conversation.
 
-### User Setup
+1. First time only: `/operator:user-init` — set your user-global instructions.
+2. In each new project: `/operator:project-init` — scaffold Operator and migrate existing documents.
+3. In existing repositories: `/operator:index` — map the repo so later sessions can navigate it.
+4. Start a new conversation and do normal work.
 
-If this is your first time using Operator, open a new conversation and run `/operator:user-init` to configure your user-global instructions.
-
-### Project Setup
-
-For existing projects:
-
-1. Start a new conversation and run `/operator:project-init`. The agent will scaffold Operator infrastructure with you.
-2. Start a new conversation and run `/operator:index`. The agent will begin to map the repository into a Project Index and focused subindexes so future agents can navigate the codebase efficiently.
-3. Start a new conversation and begin normal development.
-4. As you're starting cold, tell the agent which features, modules, or systems need their first specs. Creating those documents is a judgment call; once they exist, later sessions will maintain them.
-
-For new projects:
-
-1. Start a new conversation and run `/operator:project-init`. The agent will scaffold Operator infrastructure with you.
-2. Start a new conversation and begin normal development.
+When starting cold on an existing project, it's recommended to ask the agent to create their first specs for specific features, modules, or systems that you will work on. Once those documents exist, later sessions will automatically maintain them.
 
 ## Everyday Workflow
 
-Operator gives the agent a durable workspace. The agent records lasting knowledge during ordinary work and updates existing Brain documents when project truth changes. You stay the architect of the larger shape of that workspace.
+Operator gives the agent a durable workspace. Agents consult and maintain existing documents as they work.
 
-1. Give the agent normal development work. The agent uses the preamble for core orientation, consults the Project Index to navigate code, and reads applicable Brain documents through the catalogs.
-2. As it works, the agent identifies knowledge worth preserving—specifications, decisions, plans, standards, research, architectural rationale, and hard-won lessons—and writes it down while the reasoning is still fresh.
-3. When project truth changes, the agent updates the canonical source instead of adding a competing memory.
-4. The agent maintains surrounding structure: catalogs when Brain content changes, and Project Indexes when the codebase map grows or changes.
-5. Future sessions load that orientation and continue from the knowledge previous agents left behind.
+1. Give the agent normal development work.
+2. Agents refer to existing project knowledge: index for navigating code, specs for module contracts, guides for 3rd party integration details.
+3. When project truth changes: agents proactively update files while reasoning is still fresh. Specs, decisions, standards, research, lessons.
+4. The next session continues from those files.
 
-Agents prefer to maintain what already exists. They are less likely to create a new document, consolidate two documents, split a document that has grown too large, or trim one that has gone stale. Those are judgment calls about the project's long-term needs, and you know those better than the agent.
-
-Steer large structural decisions. No need to micromanage ordinary updates.
+Sometimes, agents hesitate to create new documents, consolidate documents, or split documents; in that case, steer the agent towards making larger architectural decisions:
 
 - “Write a spec for this feature before implementing it.”
-- “Draft a plan for this change and record it in the Brain.”
 - “Record this research so we do not repeat the investigation.”
 - “These two documents overlap. Consolidate them.”
 - “This document is too large. Split it.”
-- “This document is stale. Trim it down to what still matters.”
 - “Promote this spec to Shared so the team receives it.”
 
-This direction matters most after adding Operator to an existing project. The initial Brain may contain only instructions, catalogs, and indexes; ask the agent to write first specs for specific modules, packages, or systems. Once those documents exist, later sessions maintain them as part of normal work.
+## Roadmap
 
-Brain Markdown is the source of truth. Catalogs map Brain documents; Project Indexes map code.
+**Operator Memory is under active development.** More features are on the way, including support for other harnesses.
 
-## Commands
+#### Brain Improvements
 
-Run each Operator command in a new conversation so the agent can focus on setup, indexing, or repair with a clean working context.
+- **Observation Engine** — Learn durable user observations over time, kept separate from explicit User Instructions.
+- **Reliable Brain Updates** — Keep specs and other Brain documents current during long conversations, instead of relying only on the agent to remember.
 
-### `/operator:user-init`
+#### Context Management
 
-Initializes or revises private user-global instructions in the current conversation.
+- **Cache-Aware Context Management** — Automatically refresh preamble and apply tool call pruning when cache expires.
+- **Lossless Context Compression** — Losslessly extend context via lossless context compression.
 
-### `/operator:project-init`
+#### Additional Harnesses
 
-Initializes or revises project setup without overwriting existing content. It configures Private and guides optional Shared activation.
-
-### `/operator:index`
-
-Builds or refreshes the Project Index so future agents can navigate repository structure and applicable subsystem context. Run it after initial setup, substantial repository restructuring, or stale index discovery.
-
-### `/operator:repair`
-
-Diagnoses and repairs missing, malformed, or unloadable Operator context in the current conversation.
+- **Pi** — Next adapter
+- **Claude Code** — Pending research
+- **Codex** — Pending research
 
 ## Learn More
 
-- [Workflow](docs/workflow.md) - how to direct continuous documentation and maintain a useful Brain.
+- [Workflow](docs/workflow.md) - how to direct continuous documentation and maintain a useful Brain. Includes the command reference.
 - [Architecture](docs/architecture.md) - how partitions, catalogs, indexes, and deterministic context loading work.
 - [Troubleshooting](docs/troubleshooting.md) - installation, validation, repair, and update recovery.
 

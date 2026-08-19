@@ -11,6 +11,15 @@ Operator Memory turns agent work into lasting project knowledge. You assign norm
 
 User setup is typically a one-time step. Project setup and indexing apply per project. After a long break or a large pull that leaves the indexes badly out of date, running `/operator:index` again is reasonable.
 
+## Commands
+
+Run each Operator command in a new conversation so the agent can focus on setup, indexing, or repair with a clean working context.
+
+- `/operator:user-init` — Initializes or revises private user-global instructions in the current conversation.
+- `/operator:project-init` — Initializes or revises project setup without overwriting existing content. It configures Private and guides optional Shared activation.
+- `/operator:index` — Builds or refreshes the Project Index so future agents can navigate repository structure and applicable subsystem context. Run it after initial setup, substantial repository restructuring, or stale index discovery.
+- `/operator:repair` — Diagnoses and repairs missing, malformed, or unloadable Operator context in the current conversation. See [Troubleshooting](troubleshooting.md).
+
 ## Work Normally
 
 There is no separate memory-administration product. Give the agent the development work you actually care about. Operator orients each session with standing instructions, catalogs, and the main Project Index. The agent consults deeper Brain material, records lasting knowledge, and updates existing documents when the truth those documents own has changed.
