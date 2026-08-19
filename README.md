@@ -1,9 +1,9 @@
 # Operator Memory
 
-#### Operator Memory: Durable context for agent-driven development.
+### Durable context for agent-driven development.
 
 <p align="center">
-  <img src="docs/assets/operator-tree.svg" alt="Sample harness repository beside Operator Memory" width="600">
+  <img src="docs/assets/operator-tree.svg" alt="Sample harness repository beside Operator Memory" width="720">
 </p>
 
 Operator Memory turns agent work into lasting project knowledge. It gives the agent a durable workspace of ordinary Markdown, kept in three places: shared files that travel with the team, private project files that stay on your machine, and user rules that follow you across projects.
@@ -43,11 +43,9 @@ Knowledge is separated by ownership:
 
 For partitions and how sessions load them, see [Architecture](docs/architecture.md).
 
-## Install Operator Helper
+## Install Operator
 
-Operator Helper requires Node.js 20 or newer. It manages setup, status, validation, and harness adapter installation.
-
-Install the Helper with npm:
+Operator is managed via the Operator Helper. Install the Helper with npm:
 
 ```sh
 npm install --global @aerovato/operator-helper
@@ -59,13 +57,11 @@ Or Bun:
 bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest
 ```
 
-OpenCode is the currently available harness adapter. Install the plugin:
+Then install the Operator plugin for OpenCode. Other harnesses will be supported soon.
 
 ```sh
 operator-helper install opencode
 ```
-
-Restart OpenCode after installing or repairing the plugin.
 
 ## Setup Operator
 
