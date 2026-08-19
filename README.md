@@ -100,11 +100,9 @@ Agents prefer to maintain what already exists. They are less likely to create a 
 Steer large structural decisions. No need to micromanage ordinary updates.
 
 - “Write a spec for this feature before implementing it.”
-- “Draft a plan for this change and record it in the Brain.”
 - “Record this research so we do not repeat the investigation.”
 - “These two documents overlap. Consolidate them.”
 - “This document is too large. Split it.”
-- “This document is stale. Trim it down to what still matters.”
 - “Promote this spec to Shared so the team receives it.”
 
 This direction matters most after adding Operator to an existing project. The initial Brain may contain only instructions, catalogs, and indexes; ask the agent to write first specs for specific modules, packages, or systems. Once those documents exist, later sessions maintain them as part of normal work.
@@ -115,21 +113,41 @@ Brain Markdown is the source of truth. Catalogs map Brain documents; Project Ind
 
 Run each Operator command in a new conversation so the agent can focus on setup, indexing, or repair with a clean working context.
 
-### `/operator:user-init`
+#### `/operator:user-init`
 
 Initializes or revises private user-global instructions in the current conversation.
 
-### `/operator:project-init`
+#### `/operator:project-init`
 
 Initializes or revises project setup without overwriting existing content. It configures Private and guides optional Shared activation.
 
-### `/operator:index`
+#### `/operator:index`
 
 Builds or refreshes the Project Index so future agents can navigate repository structure and applicable subsystem context. Run it after initial setup, substantial repository restructuring, or stale index discovery.
 
-### `/operator:repair`
+#### `/operator:repair`
 
 Diagnoses and repairs missing, malformed, or unloadable Operator context in the current conversation.
+
+## Roadmap
+
+**Operator Memory is under active development.** More features are on the way, including support for other harnesses.
+
+#### Brain Improvements
+
+- **Observation Engine** — Learn durable user observations over time, kept separate from explicit User Instructions.
+- **Reliable Brain Updates** — Keep specs and other Brain documents current during long conversations, instead of relying only on the agent to remember.
+
+#### Context Management
+
+- **Cache-Aware Context Management** — Automatically refresh preamble and apply tool call pruning when cache expires.
+- **Lossless Context Compression** — Losslessly extend context via lossless context compression.
+
+#### Additional Harnesses
+
+- **Pi** — Next adapter
+- **Claude Code** — Pending research
+- **Codex** — Pending research
 
 ## Learn More
 
