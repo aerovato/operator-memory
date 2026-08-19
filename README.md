@@ -2,11 +2,15 @@
 
 #### Operator Memory: Durable context for agent-driven development.
 
-Operator Memory turns agent work into lasting project knowledge through continuous documentation.
-
 <p align="center">
   <img src="docs/assets/operator-tree.svg" alt="Sample harness repository beside Operator Memory" width="600">
 </p>
+
+Operator Memory turns agent work into lasting project knowledge. It gives the agent a durable workspace of ordinary Markdown, kept in three places: shared files that travel with the team, private project files that stay on your machine, and user rules that follow you across projects.
+
+Each new session starts from those files. As the agent works, it writes and updates them — specs, decisions, standards, research, and lessons — instead of leaving that understanding trapped in a chat. You can open any file, correct it, share it, or remove it.
+
+Continuous documentation is the practice. Durable memory is what it produces.
 
 ## Why Operator Memory
 
@@ -27,7 +31,7 @@ Standard memory plugins try to fix this by capturing fragments from transcripts,
 
 ### Operator fixes it at the source
 
-Operator Memory fixes the problem at the source: agents write lasting project knowledge as ordinary Markdown they maintain during normal work. Continuous documentation is the practice; durable memory is what that practice produces. Those files are yours to inspect and direct: read, create, consolidate, split, correct, or remove. No embeddings, vector database, or automatic semantic retrieval.
+Operator Memory fixes the problem at the source: agents write lasting project knowledge as ordinary Markdown they maintain during normal work. Those files are yours to inspect and direct: read, create, consolidate, split, correct, or remove. No embeddings, vector database, or hidden retrieval taxes.
 
 Knowledge is separated by ownership:
 
@@ -35,7 +39,7 @@ Knowledge is separated by ownership:
 - `.operator-shared/` — project knowledge intentionally published with the repository
 - `~/.operator/user/` — private instructions used across projects
 
-Each new session orients through explicit structure, not similarity search:
+Each new session orients through explicit structure:
 
 1. A deterministic preamble loads standing instructions, catalog bodies, and the main project index.
 2. The catalogs map Brain documents; Project indexes map the codebase. Agents open deeper files only when their routing guidance matches the task.
