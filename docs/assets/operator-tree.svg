@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="12 0 720 516" role="img" aria-labelledby="title desc">
+  <title id="title">Sample harness repository beside Operator Memory</title>
+  <desc id="desc">Source code on the left. Shared and Private Operator documents on the right.</desc>
+  <style>
+    svg { color-scheme: light dark; }
+    text {
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+      font-size: 13px;
+    }
+    .primary { fill: #1f2328; }
+    .secondary { fill: #59636e; }
+    .tertiary { fill: #818b98; }
+    .tree {
+      fill: none;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+      shape-rendering: crispEdges;
+    }
+    .tree-secondary { stroke: #59636e; }
+    .tree-tertiary { stroke: #818b98; }
+    @media (prefers-color-scheme: dark) {
+      .primary { fill: #f6f8fa; }
+      .secondary { fill: #a0a7b0; }
+      .tertiary { fill: #76808c; }
+      .tree-secondary { stroke: #a0a7b0; }
+      .tree-tertiary { stroke: #76808c; }
+    }
+  </style>
+  <defs>
+    <path id="vertical" d="M0-10V10" />
+    <path id="branch" d="M0-10V10M0 0H23" />
+    <path id="last-branch" d="M0-10V0H23" />
+  </defs>
+
+  <g class="tree tree-tertiary" aria-hidden="true">
+    <use href="#branch" x="24.5" y="44" />
+    <use href="#vertical" x="24.5" y="64" /><use href="#branch" x="55.5" y="64" />
+    <use href="#vertical" x="24.5" y="84" /><use href="#vertical" x="55.5" y="84" /><use href="#branch" x="86.5" y="84" />
+    <use href="#vertical" x="24.5" y="104" /><use href="#vertical" x="55.5" y="104" /><use href="#branch" x="86.5" y="104" />
+    <use href="#vertical" x="24.5" y="124" /><use href="#vertical" x="55.5" y="124" /><use href="#last-branch" x="86.5" y="124" />
+    <use href="#vertical" x="24.5" y="144" /><use href="#branch" x="55.5" y="144" />
+    <use href="#vertical" x="24.5" y="164" /><use href="#vertical" x="55.5" y="164" /><use href="#branch" x="86.5" y="164" />
+    <use href="#vertical" x="24.5" y="184" /><use href="#vertical" x="55.5" y="184" /><use href="#branch" x="86.5" y="184" />
+    <use href="#vertical" x="24.5" y="204" /><use href="#vertical" x="55.5" y="204" /><use href="#last-branch" x="86.5" y="204" />
+    <use href="#vertical" x="24.5" y="224" /><use href="#branch" x="55.5" y="224" />
+    <use href="#vertical" x="24.5" y="244" /><use href="#vertical" x="55.5" y="244" /><use href="#branch" x="86.5" y="244" />
+    <use href="#vertical" x="24.5" y="264" /><use href="#vertical" x="55.5" y="264" /><use href="#branch" x="86.5" y="264" />
+    <use href="#vertical" x="24.5" y="284" /><use href="#vertical" x="55.5" y="284" /><use href="#last-branch" x="86.5" y="284" />
+    <use href="#vertical" x="24.5" y="304" /><use href="#branch" x="55.5" y="304" />
+    <use href="#vertical" x="24.5" y="324" /><use href="#vertical" x="55.5" y="324" /><use href="#branch" x="86.5" y="324" />
+    <use href="#vertical" x="24.5" y="344" /><use href="#vertical" x="55.5" y="344" /><use href="#last-branch" x="86.5" y="344" />
+    <use href="#vertical" x="24.5" y="364" /><use href="#branch" x="55.5" y="364" />
+    <use href="#vertical" x="24.5" y="384" /><use href="#vertical" x="55.5" y="384" /><use href="#branch" x="86.5" y="384" />
+    <use href="#vertical" x="24.5" y="404" /><use href="#vertical" x="55.5" y="404" /><use href="#last-branch" x="86.5" y="404" />
+    <use href="#vertical" x="24.5" y="424" /><use href="#last-branch" x="55.5" y="424" />
+    <use href="#vertical" x="24.5" y="444" /><use href="#last-branch" x="86.5" y="444" />
+    <use href="#branch" x="24.5" y="464" />
+    <use href="#last-branch" x="24.5" y="484" />
+  </g>
+
+  <g class="tree tree-secondary" aria-hidden="true">
+    <use href="#branch" x="274.5" y="44" />
+    <use href="#branch" x="274.5" y="64" />
+    <use href="#branch" x="274.5" y="84" />
+    <use href="#vertical" x="274.5" y="104" /><use href="#branch" x="305.5" y="104" />
+    <use href="#vertical" x="274.5" y="124" /><use href="#last-branch" x="305.5" y="124" />
+    <use href="#last-branch" x="274.5" y="144" />
+    <use href="#branch" x="305.5" y="164" />
+    <use href="#branch" x="305.5" y="184" />
+    <use href="#branch" x="305.5" y="204" />
+    <use href="#last-branch" x="305.5" y="224" />
+
+    <use href="#branch" x="274.5" y="284" />
+    <use href="#branch" x="274.5" y="304" />
+    <use href="#branch" x="274.5" y="324" />
+    <use href="#vertical" x="274.5" y="344" /><use href="#branch" x="305.5" y="344" />
+    <use href="#vertical" x="274.5" y="364" /><use href="#last-branch" x="305.5" y="364" />
+    <use href="#branch" x="274.5" y="384" />
+    <use href="#vertical" x="274.5" y="404" /><use href="#last-branch" x="305.5" y="404" />
+    <use href="#branch" x="274.5" y="424" />
+    <use href="#vertical" x="274.5" y="444" /><use href="#last-branch" x="305.5" y="444" />
+    <use href="#last-branch" x="274.5" y="464" />
+    <use href="#last-branch" x="305.5" y="484" />
+  </g>
+
+  <text y="28"><tspan class="tertiary" x="20">harness/</tspan><tspan class="secondary" x="270">.operator-shared/</tspan><tspan class="primary" x="490">Shared team knowledge</tspan></text>
+  <text y="48"><tspan class="tertiary" x="51">packages/</tspan><tspan class="secondary" x="301">operator.md</tspan><tspan class="primary" x="490">Team working rules</tspan></text>
+  <text y="68"><tspan class="tertiary" x="82">core/</tspan><tspan class="secondary" x="301">catalog.md</tspan><tspan class="primary" x="490">Map of this partition</tspan></text>
+  <text y="88"><tspan class="tertiary" x="113">session.ts</tspan><tspan class="secondary" x="301">index/</tspan><tspan class="primary" x="490">Codebase map</tspan></text>
+  <text y="108"><tspan class="tertiary" x="113">agent.ts</tspan><tspan class="secondary" x="332">index.md</tspan></text>
+  <text y="128"><tspan class="tertiary" x="113">permission.ts</tspan><tspan class="secondary" x="332">core.md</tspan></text>
+  <text y="148"><tspan class="tertiary" x="82">server/</tspan><tspan class="secondary" x="301">specs/</tspan><tspan class="primary" x="490">Contracts agents must follow</tspan></text>
+  <text y="168"><tspan class="tertiary" x="113">prompt.ts</tspan><tspan class="secondary" x="332">sessions.md</tspan></text>
+  <text y="188"><tspan class="tertiary" x="113">processor.ts</tspan><tspan class="secondary" x="332">plugins.md</tspan></text>
+  <text y="208"><tspan class="tertiary" x="113">compact.ts</tspan><tspan class="secondary" x="332">tools.md</tspan></text>
+  <text y="228"><tspan class="tertiary" x="82">tools/</tspan><tspan class="secondary" x="332">update.md</tspan></text>
+  <text y="248"><tspan class="tertiary" x="113">read.ts</tspan></text>
+  <text y="268"><tspan class="tertiary" x="113">edit.ts</tspan><tspan class="secondary" x="270">.operator/</tspan><tspan class="primary" x="490">Private project knowledge</tspan></text>
+  <text y="288"><tspan class="tertiary" x="113">shell.ts</tspan><tspan class="secondary" x="301">operator.md</tspan></text>
+  <text y="308"><tspan class="tertiary" x="82">plugin/</tspan><tspan class="secondary" x="301">catalog.md</tspan></text>
+  <text y="328"><tspan class="tertiary" x="113">hooks.ts</tspan><tspan class="secondary" x="301">product/</tspan><tspan class="primary" x="490">Unpublished positioning</tspan></text>
+  <text y="348"><tspan class="tertiary" x="113">loader.ts</tspan><tspan class="secondary" x="332">marketing.md</tspan></text>
+  <text y="368"><tspan class="tertiary" x="82">tui/</tspan><tspan class="secondary" x="332">competitors.md</tspan></text>
+  <text y="388"><tspan class="tertiary" x="113">app.ts</tspan><tspan class="secondary" x="301">specs/</tspan></text>
+  <text y="408"><tspan class="tertiary" x="113">render.ts</tspan><tspan class="secondary" x="332">rollout.md</tspan><tspan class="primary" x="490">Unpublished constraints</tspan></text>
+  <text y="428"><tspan class="tertiary" x="82">cli/</tspan><tspan class="secondary" x="301">plans/</tspan></text>
+  <text y="448"><tspan class="tertiary" x="113">main.ts</tspan><tspan class="secondary" x="332">tui-rewrite.md</tspan></text>
+  <text y="468"><tspan class="tertiary" x="51">package.json</tspan><tspan class="secondary" x="301">research/</tspan><tspan class="primary" x="490">Local investigations</tspan></text>
+  <text y="488"><tspan class="tertiary" x="51">README.md</tspan><tspan class="secondary" x="332">permissions.md</tspan></text>
+</svg>

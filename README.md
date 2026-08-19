@@ -4,6 +4,10 @@
 
 Operator Memory turns agent work into lasting project knowledge through continuous documentation.
 
+<p align="center">
+  <img src="docs/assets/operator-tree.svg" alt="Sample harness repository beside Operator Memory" width="600">
+</p>
+
 ## Why Operator Memory
 
 Agents excel in a single session. Multi-session work breaks down for two reasons:
