@@ -6,6 +6,7 @@ import { indexLint } from "./commands/index/lint.ts";
 import { indexStatus } from "./commands/index/status.ts";
 import { installOpenCode } from "./commands/install.ts";
 import { memoryCheck } from "./commands/memory/check.ts";
+import { preamble } from "./commands/preamble.ts";
 import { projectGuide } from "./commands/project/guide.ts";
 import { projectInit } from "./commands/project/init.ts";
 import { projectStatus } from "./commands/project/status.ts";
@@ -43,6 +44,7 @@ ${renderTable([
   ["operator-helper index guide", "Print the agent guide for building or refreshing indexes"],
   ["operator-helper index lint", "Check Project Index structure and frontmatter"],
   ["operator-helper memory check", "Check that all Operator memory can be loaded"],
+  ["operator-helper preamble", "Render the Operator preamble"],
 ])}`;
 
 export function runCli(
@@ -59,6 +61,9 @@ export function runCli(
     }
     if (arguments_.length === 1 && arguments_[0] === "version") {
       return { exitCode: 0, output: context.version };
+    }
+    if (arguments_.length === 1 && arguments_[0] === "preamble") {
+      return yield* preamble(context);
     }
     if (arguments_.length !== 2) {
       return { exitCode: 2, output: HELP };

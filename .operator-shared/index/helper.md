@@ -68,6 +68,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 
 - `common.ts` — Shared typed filesystem failure rendering at the CLI boundary
 - `install.ts` — Clean stable `@latest` cache installation and recovery through the OpenCode CLI
+- `preamble.ts` — Canonical core-backed preamble rendering for harness adapters
 - `update.ts` — Cached per-invocation version checks, installation-channel detection, silent exact-version update, and timeout behavior
 
 ##### `commands/memory/`
