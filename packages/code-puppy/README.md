@@ -8,10 +8,8 @@ For local development, install the pinned host and test dependencies:
 uv sync --project packages/code-puppy
 ```
 
-Configure the Python language server to use `packages/code-puppy/.venv`. Run checks from the repository root:
+Configure the Python language server to use `packages/code-puppy/.venv`. Run its scoped check from the repository root; unscoped `bun run check` includes the same Python checks alongside the TypeScript workspace:
 
 ```sh
-uv run --project packages/code-puppy ruff check packages/code-puppy
-uv run --project packages/code-puppy ruff format --check packages/code-puppy
-uv run --project packages/code-puppy pytest packages/code-puppy/tests
+bun run check packages/code-puppy
 ```

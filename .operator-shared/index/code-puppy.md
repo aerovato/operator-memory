@@ -16,7 +16,7 @@ read_if: Working in packages/code-puppy or changing Code Puppy preamble injectio
 
 ## `packages/code-puppy/` Index
 
-- `README.md` — Local adapter development, environment, and verification instructions
+- `README.md` — Local adapter development, environment, and scoped or workspace verification instructions
 - `pyproject.toml`, `uv.lock` — Non-publishable pinned Code Puppy development environment
 
 ### `operator/`

@@ -305,9 +305,7 @@ def test_command_help_lists_canonical_commands(plugin: Any) -> None:
     ]
 
 
-def test_automatic_update_launches_once(
-    plugin: Any, monkeypatch: pytest.MonkeyPatch
-):
+def test_automatic_update_launches_once(plugin: Any, monkeypatch: pytest.MonkeyPatch):
     launches: list[tuple[tuple[str, ...], dict[str, Any]]] = []
 
     def launch(arguments: tuple[str, ...], **kwargs: Any) -> object:

@@ -40,11 +40,11 @@ read_if: Working anywhere in the committed Operator Memory project
 - `docs/troubleshooting.md` - User-facing installation, status, lint, memory-check, repair, Git, Shared, update, and support guidance.
 - `docs/assets/operator-tree.svg` - README figure of a sample harness tree beside Shared and Private Operator documents.
 - `LICENSE` - BSD 3-Clause repository license.
-- `.github/workflows/ci.yml` - Frozen-install workspace quality checks and package validation.
+- `.github/workflows/ci.yml` - Frozen-install workspace quality checks, Code Puppy `uv` provisioning, and package validation.
 - `.github/workflows/publish-helper.yml`, `.github/workflows/publish-opencode.yml` - Independent tag-driven npm provenance publishing and GitHub releases.
 - `.githooks/pre-commit` - Repository hook that reports quality checks and fixes formatting failures.
 - `.githooks/commit-msg` - Commit-message hook requiring an area for `feat` commits.
-- `scripts/check.sh` - Full-workspace or package-scoped formatting, lint, typecheck, and test runner.
+- `scripts/check.sh` - Full-workspace or package-scoped validation runner, including Code Puppy Ruff and pytest checks.
 - `scripts/install-opencode.ts` - Globally registers the built local OpenCode package through a package-qualified absolute file spec.
 - `scripts/preview-opencode.ts` - Generates project-local OpenCode server and TUI configuration for the absolute local package path.
 - `scripts/publish-helper.sh`, `scripts/publish-opencode.sh` - Preflight-validated package check, build, version, lockfile, commit, tag, and atomic push release automation; accepts semantic bump names, `X.Y.Z`, or `vX.Y.Z`.
