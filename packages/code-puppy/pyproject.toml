@@ -1,0 +1,20 @@
+[project]
+name = "operator-code-puppy-development"
+version = "0.0.0"
+description = "Development environment for the Operator Memory Code Puppy adapter"
+requires-python = ">=3.11,<3.15"
+dependencies = ["code-puppy==0.0.746"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+    "pytest-asyncio>=0.23.1",
+    "ruff>=0.15,<0.16",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.uv]
+package = false

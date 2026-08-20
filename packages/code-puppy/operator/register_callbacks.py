@@ -1,0 +1,281 @@
+"""Operator Memory integration for Code Puppy."""
+
+from __future__ import annotations
+
+import asyncio
+import os
+import subprocess
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+from typing import Any
+
+from code_puppy.callbacks import CustomCommandResult, register_callback
+from code_puppy.config import get_current_session_name
+from code_puppy.messaging import emit_warning
+from code_puppy.tools.subagent_context import get_conversation_root_id
+from pydantic_ai import ModelRequest, RunContext, UserPromptPart
+from pydantic_ai.messages import ModelMessage, ModelResponse
+from pydantic_ai.models import (
+    KnownModelName,
+    Model,
+    ModelRequestParameters,
+    StreamedResponse,
+)
+from pydantic_ai.models.wrapper import WrapperModel
+from pydantic_ai.settings import ModelSettings
+
+_MARKER_KEY = "operator_memory"
+_MARKER_VALUE = "synthetic-preamble-v1"
+_RENDER_TIMEOUT_SECONDS = 30
+_COMMAND_TIMEOUT_SECONDS = 60
+_render_tasks: dict[str, asyncio.Task[str]] = {}
+_update_launched = False
+
+_COMMANDS = {
+    "operator:user-init": (
+        "Initialize Operator User Instructions",
+        ("user init", "user guide"),
+        "Follow the instructions in the guide output above.",
+    ),
+    "operator:project-init": (
+        "Initialize Operator Project",
+        ("project init", "project guide"),
+        "Follow the instructions in the guide output above.",
+    ),
+    "operator:index": (
+        "Build or refresh the Operator Project Index",
+        ("index status", "index guide"),
+        "Follow the instructions in the guide output above.",
+    ),
+    "operator:repair": (
+        "Repair Operator",
+        ("memory check",),
+        "If the output says `No issues detected.`, no action is needed and you may stop. "
+        "Otherwise, repair only the reported Operator memory issues; do not initialize "
+        "uninitialized partitions. Rerun `operator-helper memory check` until it succeeds, "
+        "then read the applicable Operator memory before continuing.",
+    ),
+}
+
+
+class OperatorModel(WrapperModel):
+    """Inject an immutable Operator preamble into final model requests."""
+
+    def __init__(self, wrapped: Model[Any] | KnownModelName, conversation_key: str):
+        super().__init__(wrapped)
+        self._conversation_key = conversation_key
+
+    async def request(
+        self,
+        messages: list[ModelMessage],
+        model_settings: ModelSettings | None,
+        model_request_parameters: ModelRequestParameters,
+    ) -> ModelResponse:
+        transformed = await _inject_preamble(messages, self._conversation_key)
+        return await self.wrapped.request(
+            transformed, model_settings, model_request_parameters
+        )
+
+    @asynccontextmanager
+    async def request_stream(
+        self,
+        messages: list[ModelMessage],
+        model_settings: ModelSettings | None,
+        model_request_parameters: ModelRequestParameters,
+        run_context: RunContext[Any] | None = None,
+    ) -> AsyncGenerator[StreamedResponse]:
+        transformed = await _inject_preamble(messages, self._conversation_key)
+        async with self.wrapped.request_stream(
+            transformed, model_settings, model_request_parameters, run_context
+        ) as response:
+            yield response
+
+
+async def _inject_preamble(
+    messages: list[ModelMessage], conversation_key: str
+) -> list[ModelMessage]:
+    preamble = await _get_preamble(conversation_key)
+    transformed = [message for message in messages if not _is_operator_request(message)]
+    transformed.insert(
+        0,
+        ModelRequest(
+            parts=[UserPromptPart(content=preamble)],
+            metadata={_MARKER_KEY: _MARKER_VALUE},
+        ),
+    )
+    return transformed
+
+
+def _is_operator_request(message: ModelMessage) -> bool:
+    return (
+        isinstance(message, ModelRequest)
+        and message.metadata is not None
+        and message.metadata.get(_MARKER_KEY) == _MARKER_VALUE
+    )
+
+
+async def _get_preamble(conversation_key: str) -> str:
+    task = _render_tasks.get(conversation_key)
+    if task is None:
+        task = asyncio.create_task(_render_preamble(conversation_key))
+        _render_tasks[conversation_key] = task
+    return await asyncio.shield(task)
+
+
+async def _render_preamble(conversation_key: str) -> str:
+    environment = os.environ.copy()
+    environment["OPERATOR_HELPER_SKIP_UPDATE"] = "1"
+    try:
+        process = await asyncio.create_subprocess_exec(
+            "operator-helper",
+            "preamble",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            env=environment,
+        )
+        stdout, stderr = await asyncio.wait_for(
+            process.communicate(), timeout=_RENDER_TIMEOUT_SECONDS
+        )
+        content = _remove_process_newline(stdout.decode(errors="replace"))
+        if process.returncode == 0 and content:
+            return content
+        detail = _remove_process_newline(stderr.decode(errors="replace"))
+        reason = detail or f"operator-helper exited with status {process.returncode}"
+    except TimeoutError:
+        if "process" in locals():
+            process.kill()
+            await process.wait()
+        reason = "operator-helper preamble timed out"
+    except OSError as error:
+        reason = str(error)
+
+    emit_warning(
+        "Operator Memory could not render for this conversation. "
+        "Run `operator-helper install code-puppy` to repair the integration."
+    )
+    return (
+        "<operator-diagnostic>\n"
+        "Operator Memory could not render its preamble. Continue without Operator Memory, "
+        "help the user repair `operator-helper`, then ask them to start a new conversation.\n"
+        f"Failure: {reason}\n"
+        "</operator-diagnostic>"
+    )
+
+
+def _remove_process_newline(value: str) -> str:
+    if value.endswith("\r\n"):
+        return value[:-2]
+    if value.endswith("\n"):
+        return value[:-1]
+    return value
+
+
+def _conversation_key() -> str:
+    return get_conversation_root_id() or get_current_session_name()
+
+
+@asynccontextmanager
+async def _agent_run_context(
+    _agent: Any, pydantic_agent: Any, _group_id: str, _mcp_servers: Any
+) -> AsyncGenerator[None]:
+    model = pydantic_agent.model
+    if model is None:
+        yield
+        return
+    with pydantic_agent.override(model=OperatorModel(model, _conversation_key())):
+        yield
+
+
+async def _session_end() -> None:
+    for task in _render_tasks.values():
+        if not task.done():
+            task.cancel()
+    _render_tasks.clear()
+
+
+def _custom_command(_command: str, name: str) -> CustomCommandResult | None:
+    definition = _COMMANDS.get(name)
+    if definition is None:
+        return None
+
+    version = _run_helper(("version",))
+    if version[0] != 0:
+        diagnostic = (
+            "Operator Helper is unavailable. Help the user repair the missing "
+            "operator-helper command (npm: @aerovato/operator-helper). Validate the "
+            f"repair by rerunning `operator-helper version`. Once it succeeds, ask the "
+            f"user to rerun `/{name}`."
+        )
+        content = "\n\n".join(
+            (
+                _command_output("operator-helper version 2>&1", version[1]),
+                _tag("operator-diagnostic", diagnostic),
+            )
+        )
+        return CustomCommandResult(content)
+
+    _, operations, instructions = definition
+    outputs = []
+    for operation in operations:
+        arguments = tuple(operation.split())
+        result = _run_helper(arguments)
+        outputs.append(_command_output(f"operator-helper {operation} 2>&1", result[1]))
+    outputs.append(_tag("operator-instructions", instructions))
+    return CustomCommandResult("\n\n".join(outputs))
+
+
+def _run_helper(arguments: tuple[str, ...]) -> tuple[int, str]:
+    try:
+        result = subprocess.run(
+            ("operator-helper", *arguments),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            timeout=_COMMAND_TIMEOUT_SECONDS,
+            check=False,
+        )
+        return result.returncode, _remove_process_newline(result.stdout)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return 1, str(error)
+
+
+def _command_output(command: str, output: str) -> str:
+    return (
+        "<operator-command>\n"
+        f"<command>{command}</command>\n"
+        "<output>\n"
+        f"{output}\n"
+        "</output>\n"
+        "</operator-command>"
+    )
+
+
+def _tag(name: str, content: str) -> str:
+    return f"<{name}>\n{content}\n</{name}>"
+
+
+def _custom_command_help() -> list[tuple[str, str]]:
+    return [(name, definition[0]) for name, definition in _COMMANDS.items()]
+
+
+def _launch_update() -> None:
+    global _update_launched
+    if _update_launched:
+        return
+    _update_launched = True
+    try:
+        subprocess.Popen(
+            ("operator-helper", "install", "code-puppy"),
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except OSError:
+        pass
+
+
+register_callback("agent_run_context", _agent_run_context)
+register_callback("session_end", _session_end)
+register_callback("custom_command", _custom_command)
+register_callback("custom_command_help", _custom_command_help)
+_launch_update()

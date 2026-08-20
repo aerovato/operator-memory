@@ -3,6 +3,13 @@ src-*/
 
 node_modules/
 
+# Python bytecode
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
 # Build and package output
 dist/
 coverage/
