@@ -96,6 +96,62 @@ test.runIf(process.platform !== "win32")(
   },
 );
 
+test("installs and reuses the current managed Code Puppy plugin", async () => {
+  const result = await execute(["install", "code-puppy"], "4.5.6");
+  const plugin = join(directory, ".code_puppy", "plugins", "operator");
+  const callbacks = join(plugin, "register_callbacks.py");
+  const source = fs.readFileSync(
+    join(import.meta.dirname, "..", "..", "code-puppy", "operator", "register_callbacks.py"),
+    "utf8",
+  );
+
+  expect(result).toEqual({ exitCode: 0, output: "✓ Code Puppy plugin installed" });
+  expect(fs.readFileSync(join(plugin, ".operator-managed"), "utf8")).toBe(
+    "Operator Memory managed Code Puppy plugin.\n",
+  );
+  expect(fs.readFileSync(callbacks, "utf8")).toBe(source);
+
+  const preservedTime = new Date(1_000_000);
+  fs.utimesSync(callbacks, preservedTime, preservedTime);
+  expect(await execute(["install", "code-puppy"], "4.5.6")).toEqual({
+    exitCode: 0,
+    output: "✓ Code Puppy plugin is current",
+  });
+  expect(fs.statSync(callbacks).mtimeMs).toBe(preservedTime.getTime());
+});
+
+test("atomically updates a managed Code Puppy plugin", async () => {
+  const plugin = join(directory, ".code_puppy", "plugins", "operator");
+  fs.mkdirSync(plugin, { recursive: true });
+  fs.writeFileSync(
+    join(plugin, ".operator-managed"),
+    "Operator Memory managed Code Puppy plugin.\n",
+  );
+  fs.writeFileSync(join(plugin, "register_callbacks.py"), "outdated");
+
+  expect(await execute(["install", "code-puppy"], "4.5.6")).toEqual({
+    exitCode: 0,
+    output: "✓ Code Puppy plugin updated",
+  });
+  expect(fs.readFileSync(join(plugin, "register_callbacks.py"), "utf8")).toContain(
+    "class OperatorModel(WrapperModel)",
+  );
+  expect(fs.readdirSync(plugin).sort()).toEqual([".operator-managed", "register_callbacks.py"]);
+});
+
+test("preserves an unmanaged Code Puppy plugin", async () => {
+  const plugin = join(directory, ".code_puppy", "plugins", "operator");
+  fs.mkdirSync(plugin, { recursive: true });
+  fs.writeFileSync(join(plugin, "register_callbacks.py"), "user owned");
+
+  const result = await execute(["install", "code-puppy"], "4.5.6");
+
+  expect(result.exitCode).toBe(1);
+  expect(result.output).toContain("Preserved unmanaged Code Puppy plugin");
+  expect(fs.readFileSync(join(plugin, "register_callbacks.py"), "utf8")).toBe("user owned");
+  expect(fs.existsSync(join(plugin, ".operator-managed"))).toBe(false);
+});
+
 test.runIf(process.platform !== "win32")(
   "automatically updates through Bun with the minimum release age disabled",
   async () => {

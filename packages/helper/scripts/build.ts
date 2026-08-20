@@ -1,4 +1,4 @@
-import { rm } from "node:fs/promises";
+import { copyFile, mkdir, rm } from "node:fs/promises";
 import { join, resolve } from "node:path";
 
 const packageDirectory = resolve(import.meta.dir, "..");
@@ -19,3 +19,10 @@ if (!build.success) {
   }
   process.exit(1);
 }
+
+const codePuppyOutput = join(outputDirectory, "code-puppy");
+await mkdir(codePuppyOutput);
+await copyFile(
+  resolve(packageDirectory, "..", "code-puppy", "operator", "register_callbacks.py"),
+  join(codePuppyOutput, "register_callbacks.py"),
+);
