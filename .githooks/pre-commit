@@ -2,6 +2,12 @@
 
 set -eu
 
+# Git captures hook output instead of writing it to a terminal, so color
+# escape codes render as literal escape characters. Disable color globally.
+NO_COLOR=1
+FORCE_COLOR=0
+export NO_COLOR FORCE_COLOR
+
 if ! bun run format:check; then
   bun run format
   echo "Formatting issues detected. Please stage the formatted files."
