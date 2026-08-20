@@ -293,8 +293,42 @@ def _launch_update() -> None:
         pass
 
 
+_STARTUP_INDICATOR = "Operator Ready"
+_STATUS_INDICATOR = "   Operator Ready"
+_active_runs = 0
+
+
+def _paint_status_indicator(text: str) -> None:
+    try:
+        from code_puppy.messaging.bottom_bar import get_bottom_bar
+
+        get_bottom_bar().set_status_suffix(text)
+    except Exception:
+        pass
+
+
+async def _show_status_indicator() -> None:
+    _paint_status_indicator(_STARTUP_INDICATOR)
+
+
+async def _agent_run_start(*_args: Any) -> None:
+    global _active_runs
+    _active_runs += 1
+    _paint_status_indicator(_STATUS_INDICATOR)
+
+
+async def _agent_run_end(*_args: Any) -> None:
+    global _active_runs
+    _active_runs = max(0, _active_runs - 1)
+    if _active_runs == 0:
+        _paint_status_indicator("")
+
+
 register_callback("agent_run_context", _agent_run_context)
 register_callback("session_end", _session_end)
 register_callback("custom_command", _custom_command)
 register_callback("custom_command_help", _custom_command_help)
+register_callback("startup", _show_status_indicator)
+register_callback("agent_run_start", _agent_run_start)
+register_callback("agent_run_end", _agent_run_end)
 _launch_update()

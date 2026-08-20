@@ -407,3 +407,92 @@ def test_automatic_update_launches_once(plugin: Any, monkeypatch: pytest.MonkeyP
         )
     else:
         assert launches[0][1]["start_new_session"] is True
+
+
+@pytest.fixture
+def status_bar(monkeypatch: pytest.MonkeyPatch) -> list[str]:
+    calls: list[str] = []
+
+    class Bar:
+        def set_status_suffix(self, text: str) -> None:
+            calls.append(text)
+
+    monkeypatch.setitem(
+        sys.modules,
+        "code_puppy.messaging.bottom_bar",
+        type(sys)("code_puppy.messaging.bottom_bar"),
+    )
+    monkeypatch.setattr(
+        sys.modules["code_puppy.messaging.bottom_bar"],
+        "get_bottom_bar",
+        lambda: Bar(),
+        raising=False,
+    )
+    return calls
+
+
+@pytest.fixture(autouse=True)
+def reset_run_count(plugin: Any) -> Generator[None, None, None]:
+    plugin._active_runs = 0
+    yield
+    plugin._active_runs = 0
+
+
+@pytest.mark.asyncio
+async def test_startup_paints_status_indicator_suffix(
+    plugin: Any, status_bar: list[str]
+):
+    await plugin._show_status_indicator()
+
+    assert status_bar == [plugin._STARTUP_INDICATOR]
+    assert plugin._STARTUP_INDICATOR == "Operator Ready"
+
+
+@pytest.mark.asyncio
+async def test_startup_indicator_tolerates_missing_bottom_bar(
+    plugin: Any, monkeypatch: pytest.MonkeyPatch
+):
+    def raise_import_error() -> Any:
+        raise ImportError("bottom_bar unavailable")
+
+    monkeypatch.setitem(
+        sys.modules,
+        "code_puppy.messaging.bottom_bar",
+        type(sys)("code_puppy.messaging.bottom_bar"),
+    )
+    monkeypatch.setattr(
+        sys.modules["code_puppy.messaging.bottom_bar"],
+        "get_bottom_bar",
+        raise_import_error,
+        raising=False,
+    )
+
+    await plugin._show_status_indicator()
+
+
+@pytest.mark.asyncio
+async def test_indicator_persists_across_nested_runs_and_clears_at_idle(
+    plugin: Any, status_bar: list[str]
+):
+    await plugin._agent_run_start("code_puppy", "model", "session-1")
+    await plugin._agent_run_start("subagent", "model", "session-2")
+    await plugin._agent_run_end("subagent", "model", "session-2")
+
+    assert status_bar == [plugin._STATUS_INDICATOR, plugin._STATUS_INDICATOR]
+
+    await plugin._agent_run_end(
+        "code_puppy", "model", "session-1", True, None, "done", None
+    )
+
+    assert status_bar[-1] == ""
+    assert plugin._active_runs == 0
+
+
+@pytest.mark.asyncio
+async def test_indicator_run_end_never_drops_below_zero(
+    plugin: Any, status_bar: list[str]
+):
+    await plugin._agent_run_end("code_puppy", "model")
+
+    assert plugin._active_runs == 0
+    assert status_bar == [""]
