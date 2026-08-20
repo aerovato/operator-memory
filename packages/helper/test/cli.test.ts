@@ -6,6 +6,9 @@ import { NodeFileSystem, NodePath } from "@effect/platform-node";
 import { Effect, Layer } from "effect";
 import { afterEach, beforeEach, expect, test } from "vitest";
 
+import { loadMemorySnapshot } from "@aerovato/operator-core/memory/load";
+import { renderPreamble } from "@aerovato/operator-core/preamble";
+
 import { runCli } from "../src/cli.ts";
 import { GitError } from "../src/git.ts";
 import { readTemplate, TemplatePath } from "../src/templates.ts";
@@ -49,6 +52,7 @@ test("routes help, version, and invalid commands", async () => {
   expect(help.output).toContain("operator-helper index status    Show Private and Shared main");
   expect(help.output).toContain("operator-helper index lint      Check Project Index structure");
   expect(help.output).toContain("operator-helper memory check    Check that all Operator memory");
+  expect(help.output).toContain("operator-helper preamble        Render the Operator preamble");
   expect(help.output).not.toContain("operator-helper upgrade");
   expect(help.output).not.toContain("templates index");
   expect((await executeCli(["version"], context)).output).toBe("1.2.3");
@@ -261,6 +265,28 @@ test("checks full memory loading and reports partition errors independently", as
   expect(failed.output).toContain(resolvePath("/project/.operator"));
   expect(failed.output).toContain(resolvePath("/project/.operator-shared"));
   expect(failed.output).not.toContain("No issues detected.");
+});
+
+test("renders the canonical preamble for normal and failed memory loads", async () => {
+  seed({
+    "/project/.operator/operator.md": "private instructions",
+    "/home/.operator/user/operator.md": "user instructions",
+  });
+  const loadedSnapshot = await loadMemorySnapshot(context.cwd, context.home, true);
+  expect(await executeCli(["preamble"], context)).toEqual({
+    exitCode: 0,
+    output: renderPreamble(loadedSnapshot).content,
+  });
+
+  fs.rmSync(resolvePath("/project/.operator"), { recursive: true });
+  fs.writeFileSync(resolvePath("/project/.operator"), "obstructed");
+  const failedSnapshot = await loadMemorySnapshot(context.cwd, context.home, true);
+  const diagnostic = await executeCli(["preamble"], context);
+  expect(diagnostic).toEqual({
+    exitCode: 0,
+    output: renderPreamble(failedSnapshot).content,
+  });
+  expect(diagnostic.output).toContain("<operator-diagnostic>");
 });
 
 test("lints frontmatter, shared private references, titles, and non-Markdown files", async () => {
