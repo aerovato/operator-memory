@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import os
 import subprocess
+import threading
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager, suppress
 from typing import Any
@@ -271,17 +272,22 @@ def _custom_command_help() -> list[tuple[str, str]]:
     return [(name, definition[0]) for name, definition in _COMMANDS.items()]
 
 
+_UPDATE_NOTE = "Operator Updated · Restart Code Puppy to apply"
+_update_note_pending = False
+
+
 def _launch_update() -> None:
     global _update_launched
     if _update_launched:
         return
     _update_launched = True
     try:
-        subprocess.Popen(
+        process = subprocess.Popen(
             ("operator-helper", "install", "code-puppy"),
             stdin=subprocess.DEVNULL,
-            stdout=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
+            text=True,
             creationflags=(
                 subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
                 if os.name == "nt"
@@ -290,6 +296,33 @@ def _launch_update() -> None:
             start_new_session=os.name != "nt",
         )
     except OSError:
+        return
+    threading.Thread(target=_monitor_update, args=(process,), daemon=True).start()
+
+
+def _monitor_update(process: subprocess.Popen[str]) -> None:
+    global _update_note_pending
+    try:
+        output = process.communicate()[0] or ""
+    except Exception:
+        return
+    if process.returncode == 0 and "plugin updated" in output:
+        _update_note_pending = True
+        _paint_status_indicator(_UPDATE_NOTE)
+        _emit_update_notice()
+
+
+def _emit_update_notice() -> None:
+    try:
+        from rich.text import Text
+
+        from code_puppy.messaging import emit_warning
+
+        notice = Text()
+        notice.append("Operator Updated · ", style="bold magenta")
+        notice.append("Restart Code Puppy to apply", style="magenta")
+        emit_warning(notice)
+    except Exception:
         pass
 
 
@@ -308,6 +341,10 @@ def _paint_status_indicator(text: str) -> None:
 
 
 async def _show_status_indicator() -> None:
+    global _update_note_pending
+    if _update_note_pending:
+        _update_note_pending = False
+        return
     _paint_status_indicator(_STARTUP_INDICATOR)
 
 

@@ -399,7 +399,7 @@ def test_automatic_update_launches_once(plugin: Any, monkeypatch: pytest.MonkeyP
 
     assert len(launches) == 1
     assert launches[0][0] == ("operator-helper", "install", "code-puppy")
-    assert launches[0][1]["stdout"] is subprocess.DEVNULL
+    assert launches[0][1]["stdout"] is subprocess.PIPE
     assert launches[0][1]["stderr"] is subprocess.DEVNULL
     if sys.platform == "win32":
         assert launches[0][1]["creationflags"] == (
@@ -496,3 +496,48 @@ async def test_indicator_run_end_never_drops_below_zero(
 
     assert plugin._active_runs == 0
     assert status_bar == [""]
+
+
+def test_update_monitor_paints_note_only_on_update(
+    plugin: Any, status_bar: list[str], monkeypatch: pytest.MonkeyPatch
+):
+    emitted: list[bool] = []
+    monkeypatch.setattr(plugin, "_emit_update_notice", lambda: emitted.append(True))
+
+    class Finished:
+        def __init__(self, output: str, returncode: int) -> None:
+            self.output = output
+            self.returncode = returncode
+
+        def communicate(self) -> tuple[str, None]:
+            return self.output, None
+
+    plugin._monitor_update(Finished("✓ Code Puppy plugin updated\n", 0))
+    plugin._monitor_update(Finished("✓ Code Puppy plugin is current\n", 0))
+    plugin._monitor_update(Finished("✗ Could not install\n", 1))
+
+    assert status_bar == [plugin._UPDATE_NOTE]
+    assert plugin._update_note_pending is True
+    assert emitted == [True]
+
+
+@pytest.mark.asyncio
+async def test_startup_preserves_painted_update_note(
+    plugin: Any, status_bar: list[str]
+):
+    plugin._update_note_pending = True
+
+    await plugin._show_status_indicator()
+
+    assert status_bar == []
+
+
+@pytest.mark.asyncio
+async def test_update_monitor_failure_is_silent(plugin: Any, status_bar: list[str]):
+    class Broken:
+        def communicate(self) -> tuple[str, None]:
+            raise OSError("stream lost")
+
+    plugin._monitor_update(Broken())
+
+    assert status_bar == []
