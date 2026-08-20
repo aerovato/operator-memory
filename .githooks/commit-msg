@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -eu
+
+subject=""
+IFS= read -r subject < "$1" || :
+
+case "$subject" in
+  feat:* | feat\!:*)
+    echo "Feature commits require an area: feat(<area>): <description>"
+    exit 1
+    ;;
+esac

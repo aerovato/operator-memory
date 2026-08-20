@@ -42,6 +42,7 @@ read_if: Working anywhere in the committed Operator Memory project
 - `.github/workflows/ci.yml` - Frozen-install workspace quality checks and package validation.
 - `.github/workflows/publish-helper.yml`, `.github/workflows/publish-opencode.yml` - Independent tag-driven npm provenance publishing and GitHub releases.
 - `.githooks/pre-commit` - Repository hook that reports quality checks and fixes formatting failures.
+- `.githooks/commit-msg` - Commit-message hook requiring an area for `feat` commits.
 - `scripts/check.sh` - Full-workspace or package-scoped formatting, lint, typecheck, and test runner.
 - `scripts/install-opencode.ts` - Globally registers the built local OpenCode package through a package-qualified absolute file spec.
 - `scripts/preview-opencode.ts` - Generates project-local OpenCode server and TUI configuration for the absolute local package path.
