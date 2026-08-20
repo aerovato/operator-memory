@@ -399,7 +399,7 @@ def test_automatic_update_launches_once(plugin: Any, monkeypatch: pytest.MonkeyP
 
     assert len(launches) == 1
     assert launches[0][0] == ("operator-helper", "install", "code-puppy")
-    assert launches[0][1]["stdout"] is subprocess.DEVNULL
+    assert launches[0][1]["stdout"] is subprocess.PIPE
     assert launches[0][1]["stderr"] is subprocess.DEVNULL
     if sys.platform == "win32":
         assert launches[0][1]["creationflags"] == (
@@ -407,3 +407,137 @@ def test_automatic_update_launches_once(plugin: Any, monkeypatch: pytest.MonkeyP
         )
     else:
         assert launches[0][1]["start_new_session"] is True
+
+
+@pytest.fixture
+def status_bar(monkeypatch: pytest.MonkeyPatch) -> list[str]:
+    calls: list[str] = []
+
+    class Bar:
+        def set_status_suffix(self, text: str) -> None:
+            calls.append(text)
+
+    monkeypatch.setitem(
+        sys.modules,
+        "code_puppy.messaging.bottom_bar",
+        type(sys)("code_puppy.messaging.bottom_bar"),
+    )
+    monkeypatch.setattr(
+        sys.modules["code_puppy.messaging.bottom_bar"],
+        "get_bottom_bar",
+        lambda: Bar(),
+        raising=False,
+    )
+    return calls
+
+
+@pytest.fixture(autouse=True)
+def reset_run_count(plugin: Any) -> Generator[None, None, None]:
+    plugin._active_runs = 0
+    yield
+    plugin._active_runs = 0
+
+
+@pytest.mark.asyncio
+async def test_startup_paints_status_indicator_suffix(
+    plugin: Any, status_bar: list[str]
+):
+    await plugin._show_status_indicator()
+
+    assert status_bar == [plugin._STARTUP_INDICATOR]
+    assert plugin._STARTUP_INDICATOR == "Operator Ready"
+
+
+@pytest.mark.asyncio
+async def test_startup_indicator_tolerates_missing_bottom_bar(
+    plugin: Any, monkeypatch: pytest.MonkeyPatch
+):
+    def raise_import_error() -> Any:
+        raise ImportError("bottom_bar unavailable")
+
+    monkeypatch.setitem(
+        sys.modules,
+        "code_puppy.messaging.bottom_bar",
+        type(sys)("code_puppy.messaging.bottom_bar"),
+    )
+    monkeypatch.setattr(
+        sys.modules["code_puppy.messaging.bottom_bar"],
+        "get_bottom_bar",
+        raise_import_error,
+        raising=False,
+    )
+
+    await plugin._show_status_indicator()
+
+
+@pytest.mark.asyncio
+async def test_indicator_persists_across_nested_runs_and_clears_at_idle(
+    plugin: Any, status_bar: list[str]
+):
+    await plugin._agent_run_start("code_puppy", "model", "session-1")
+    await plugin._agent_run_start("subagent", "model", "session-2")
+    await plugin._agent_run_end("subagent", "model", "session-2")
+
+    assert status_bar == [plugin._STATUS_INDICATOR, plugin._STATUS_INDICATOR]
+
+    await plugin._agent_run_end(
+        "code_puppy", "model", "session-1", True, None, "done", None
+    )
+
+    assert status_bar[-1] == ""
+    assert plugin._active_runs == 0
+
+
+@pytest.mark.asyncio
+async def test_indicator_run_end_never_drops_below_zero(
+    plugin: Any, status_bar: list[str]
+):
+    await plugin._agent_run_end("code_puppy", "model")
+
+    assert plugin._active_runs == 0
+    assert status_bar == [""]
+
+
+def test_update_monitor_paints_note_only_on_update(
+    plugin: Any, status_bar: list[str], monkeypatch: pytest.MonkeyPatch
+):
+    emitted: list[bool] = []
+    monkeypatch.setattr(plugin, "_emit_update_notice", lambda: emitted.append(True))
+
+    class Finished:
+        def __init__(self, output: str, returncode: int) -> None:
+            self.output = output
+            self.returncode = returncode
+
+        def communicate(self) -> tuple[str, None]:
+            return self.output, None
+
+    plugin._monitor_update(Finished("✓ Code Puppy plugin updated\n", 0))
+    plugin._monitor_update(Finished("✓ Code Puppy plugin is current\n", 0))
+    plugin._monitor_update(Finished("✗ Could not install\n", 1))
+
+    assert status_bar == [plugin._UPDATE_NOTE]
+    assert plugin._update_note_pending is True
+    assert emitted == [True]
+
+
+@pytest.mark.asyncio
+async def test_startup_preserves_painted_update_note(
+    plugin: Any, status_bar: list[str]
+):
+    plugin._update_note_pending = True
+
+    await plugin._show_status_indicator()
+
+    assert status_bar == []
+
+
+@pytest.mark.asyncio
+async def test_update_monitor_failure_is_silent(plugin: Any, status_bar: list[str]):
+    class Broken:
+        def communicate(self) -> tuple[str, None]:
+            raise OSError("stream lost")
+
+    plugin._monitor_update(Broken())
+
+    assert status_bar == []
