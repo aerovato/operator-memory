@@ -1,3 +1,4 @@
+import { spawn } from "node:child_process";
 import { homedir } from "node:os";
 
 import type { Hooks, Plugin } from "@opencode-ai/plugin";
@@ -11,11 +12,14 @@ import { startAutoUpdate } from "./update.ts";
 type PreambleHook = NonNullable<Hooks["experimental.chat.messages.transform"]>;
 type TransformMessage = Parameters<PreambleHook>[1]["messages"][number];
 
+let helperUpdateStarted = false;
+
 const OperatorPlugin: Plugin = async input => {
   const client = createV2Client(input.client);
   const homeDirectory = homedir();
   const preambleCache = new Map<string, ReturnType<typeof loadPreamble>>();
   const recoveryNotices = new Set<string>();
+  startHelperUpdate();
   void startAutoUpdate(client).catch(() => undefined);
 
   return {
@@ -89,3 +93,23 @@ async function showErrorToast(
 }
 
 export default OperatorPlugin;
+
+function startHelperUpdate(): void {
+  if (helperUpdateStarted) return;
+  helperUpdateStarted = true;
+
+  const environment = { ...process.env };
+  delete environment.OPERATOR_HELPER_SKIP_UPDATE;
+  try {
+    const child = spawn("operator-helper", ["version"], {
+      detached: true,
+      env: environment,
+      stdio: "ignore",
+      windowsHide: true,
+    });
+    child.on("error", () => undefined);
+    child.unref();
+  } catch {
+    // The installed plugin remains usable when Helper is unavailable.
+  }
+}

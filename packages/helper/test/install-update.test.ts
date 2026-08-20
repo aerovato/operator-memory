@@ -24,6 +24,7 @@ beforeEach(() => {
   fs.mkdirSync(bin);
   record = join(directory, "record");
   process.env.PATH = `${bin}:${originalPath ?? ""}`;
+  process.env.XDG_CACHE_HOME = join(directory, ".cache");
   process.env.OPERATOR_TEST_RECORD = record;
   context = {
     cwd: directory,
@@ -147,6 +148,33 @@ test("does not inspect installation channels without a newer version", async () 
   const result = await update("1.2.3");
 
   expect(result).toEqual({ status: "current" });
+});
+
+test("reuses a recent update check", async () => {
+  let checks = 0;
+  const child = NodeChildProcessSpawner.layer.pipe(
+    Layer.provide(NodeFileSystem.layer),
+    Layer.provide(NodePath.layer),
+  );
+  const registryLayer = Layer.succeed(
+    NpmRegistry.Service,
+    NpmRegistry.Service.of({
+      latestVersion: () => {
+        checks += 1;
+        return Effect.succeed("1.2.3");
+      },
+    }),
+  );
+  const run = () =>
+    Effect.runPromise(
+      autoUpdate(context.version, context).pipe(
+        Effect.provide(Layer.mergeAll(child, registryLayer)),
+      ),
+    );
+
+  await expect(run()).resolves.toEqual({ status: "current" });
+  await expect(run()).resolves.toEqual({ status: "current" });
+  expect(checks).toBe(1);
 });
 
 test.runIf(process.platform !== "win32")(

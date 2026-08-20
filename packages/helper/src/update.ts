@@ -1,4 +1,7 @@
-import { Effect, Option, Stream } from "effect";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+
+import { Effect, Option, Schema, Stream } from "effect";
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process";
 
 import { NpmRegistry } from "./npm-registry.ts";
@@ -6,6 +9,20 @@ import type { CliContext } from "./utils.ts";
 
 const HELPER_PACKAGE = "@aerovato/operator-helper";
 const UPDATE_TIMEOUT = "60 seconds";
+const SUCCESS_COOLDOWN = 60 * 60 * 1_000;
+const FAILURE_COOLDOWN = 5 * 60 * 1_000;
+
+const UpdateCheck = Schema.Union([
+  Schema.Struct({ checkedAt: Schema.Number, status: Schema.Literal("current") }),
+  Schema.Struct({ checkedAt: Schema.Number, status: Schema.Literal("failed") }),
+  Schema.Struct({
+    checkedAt: Schema.Number,
+    status: Schema.Literal("unknown"),
+    latest: Schema.String,
+  }),
+]);
+type UpdateCheck = typeof UpdateCheck.Type;
+const decodeUpdateCheck = Schema.decodeUnknownSync(Schema.fromJsonString(UpdateCheck));
 
 type InstallationChannel = "bun" | "npm" | "unknown";
 
@@ -15,19 +32,48 @@ export type UpdateResult =
   | { readonly status: "unknown"; readonly latest: string }
   | { readonly status: "failed" };
 
+function updateCheckPath(context: CliContext): string {
+  const cache = process.env.XDG_CACHE_HOME || join(context.home, ".cache");
+  return join(cache, "operator", "helper-update.json");
+}
+
 export const autoUpdate = Effect.fn("autoUpdate")(function* (
   currentVersion: string,
   context: CliContext,
 ) {
+  const cached = yield* Effect.promise(() => readUpdateCheck(context));
+  if (cached !== null && isFresh(cached)) {
+    if (cached.status === "unknown") {
+      return { status: "unknown", latest: cached.latest } satisfies UpdateResult;
+    }
+    return { status: cached.status } satisfies UpdateResult;
+  }
+
   const registry = yield* NpmRegistry.Service;
   const latest = yield* registry.latestVersion(HELPER_PACKAGE).pipe(Effect.option);
-  if (Option.isNone(latest) || !isNewerVersion(currentVersion, latest.value)) {
+  if (Option.isNone(latest)) {
+    yield* Effect.promise(() =>
+      writeUpdateCheck(context, { checkedAt: Date.now(), status: "failed" }),
+    );
+    return { status: "failed" } satisfies UpdateResult;
+  }
+  if (!isNewerVersion(currentVersion, latest.value)) {
+    yield* Effect.promise(() =>
+      writeUpdateCheck(context, { checkedAt: Date.now(), status: "current" }),
+    );
     return { status: "current" } satisfies UpdateResult;
   }
 
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
   const channel = yield* detectInstallationChannel(spawner, context.cwd);
   if (channel === "unknown") {
+    yield* Effect.promise(() =>
+      writeUpdateCheck(context, {
+        checkedAt: Date.now(),
+        status: "unknown",
+        latest: latest.value,
+      }),
+    );
     return { status: "unknown", latest: latest.value } satisfies UpdateResult;
   }
 
@@ -47,10 +93,41 @@ export const autoUpdate = Effect.fn("autoUpdate")(function* (
     Effect.timeout(UPDATE_TIMEOUT),
     Effect.option,
   );
-  return Option.isSome(execution) && execution.value.exitCode === 0
-    ? ({ status: "updated" } satisfies UpdateResult)
-    : ({ status: "failed" } satisfies UpdateResult);
+  if (Option.isSome(execution) && execution.value.exitCode === 0) {
+    yield* Effect.promise(() =>
+      writeUpdateCheck(context, { checkedAt: Date.now(), status: "current" }),
+    );
+    return { status: "updated" } satisfies UpdateResult;
+  }
+  yield* Effect.promise(() =>
+    writeUpdateCheck(context, { checkedAt: Date.now(), status: "failed" }),
+  );
+  return { status: "failed" } satisfies UpdateResult;
 });
+
+function isFresh(check: UpdateCheck): boolean {
+  const age = Date.now() - check.checkedAt;
+  const cooldown = check.status === "current" ? SUCCESS_COOLDOWN : FAILURE_COOLDOWN;
+  return age >= 0 && age < cooldown;
+}
+
+async function readUpdateCheck(context: CliContext): Promise<UpdateCheck | null> {
+  try {
+    return decodeUpdateCheck(await readFile(updateCheckPath(context), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+async function writeUpdateCheck(context: CliContext, check: UpdateCheck): Promise<void> {
+  const path = updateCheckPath(context);
+  try {
+    await mkdir(dirname(path), { recursive: true, mode: 0o700 });
+    await writeFile(path, JSON.stringify(check), { mode: 0o600 });
+  } catch {
+    // Update checks remain uncached when the cache is not writable.
+  }
+}
 
 function detectInstallationChannel(
   spawner: ChildProcessSpawner.ChildProcessSpawner["Service"],

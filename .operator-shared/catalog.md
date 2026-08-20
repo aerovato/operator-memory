@@ -22,9 +22,6 @@ Repository-wide Operator product knowledge published with the project.
 - `catalog.md`
   - Description: This catalog.
   - Read If: Auto-injected.
-- `overview.md`
-  - Description: Operator Memory product summary, MVP target, and package boundaries.
-  - Read If: Explaining the product, MVP scope, or package boundaries.
 
 ### `guides/`
 

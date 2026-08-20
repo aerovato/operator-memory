@@ -27,7 +27,8 @@ read_if: Working in packages/opencode or changing OpenCode preamble injection
 
 ### `packages/opencode/src/`
 
-- `index.ts` — OpenCode plugin entrypoint, hook wiring, fatal error handling, and deduplicated recovery notices
+- `index.ts` — OpenCode plugin entrypoint, detached Helper update trigger, hook wiring, fatal error handling, and deduplicated recovery notices
+- `index.test.ts` — Plugin startup coverage for detached, deduplicated Helper update checks
 - `tui.tsx` — Installation-aware home readiness indicator, sidebar partition status, per-project caching, and completed-turn refresh
 - `tui.test.ts` — TUI slot registration and completed-turn refresh coverage
 - `client.ts` — V1 plugin-client to V2 SDK client bridge
