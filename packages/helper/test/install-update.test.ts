@@ -1,15 +1,16 @@
 import * as fs from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 import { NodeChildProcessSpawner, NodeFileSystem, NodePath } from "@effect/platform-node";
+import { ChildProcessSpawner } from "effect/unstable/process";
 import { Effect, Layer } from "effect";
 import { afterEach, beforeEach, expect, test } from "vitest";
 
 import { runCli } from "../src/cli.ts";
 import { GitRunner } from "../src/git.ts";
 import { NpmRegistry } from "../src/npm-registry.ts";
-import { autoUpdate } from "../src/update.ts";
+import { autoUpdate, detectInstallationChannel } from "../src/update.ts";
 import type { CliContext, CliResult } from "../src/utils.ts";
 
 const originalPath = process.env.PATH;
@@ -175,9 +176,12 @@ test.runIf(process.platform !== "win32")(
   async () => {
     executable(
       "bun",
-      'if [ "$1 $2 $3" = "pm ls --global" ]; then printf "@aerovato/operator-helper@1.2.3"; exit 0; fi\nprintf "%s" "$*" > "$OPERATOR_TEST_RECORD"',
+      'if [ "$1 $2 $3" = "pm ls --global" ]; then printf "@aerovato/operator-helper@1.2.3"; exit 0; fi\nif [ "$1 $2 $3" = "pm bin --global" ]; then printf "/nonexistent/bun/bin"; exit 0; fi\nprintf "%s" "$*" > "$OPERATOR_TEST_RECORD"',
     );
-    executable("npm", "exit 1");
+    executable(
+      "npm",
+      'if [ "$1 $2" = "prefix --global" ]; then printf "/nonexistent/npm/prefix"; exit 0; fi\nexit 1',
+    );
 
     const result = await update("4.5.6");
 
@@ -194,7 +198,7 @@ test.runIf(process.platform !== "win32")(
     executable("bun", "exit 1");
     executable(
       "npm",
-      'if [ "$1" = "list" ]; then printf "@aerovato/operator-helper@1.2.3"; exit 0; fi\nprintf "%s\\n%s" "$*" "$NPM_CONFIG_MIN_RELEASE_AGE" > "$OPERATOR_TEST_RECORD"',
+      'if [ "$1" = "list" ]; then printf "@aerovato/operator-helper@1.2.3"; exit 0; fi\nif [ "$1 $2" = "prefix --global" ]; then printf "/nonexistent/npm/prefix"; exit 0; fi\nprintf "%s\\n%s" "$*" "$NPM_CONFIG_MIN_RELEASE_AGE" > "$OPERATOR_TEST_RECORD"',
     );
 
     const result = await update("4.5.6");
@@ -266,6 +270,40 @@ test.runIf(process.platform !== "win32")(
   },
 );
 
+test.runIf(process.platform !== "win32")(
+  "resolves the channel from the running executable when both trees contain the package",
+  async () => {
+    // The prefix must match the fully resolved executable path because detection
+    // realpaths the executable; macOS temp directories resolve through /private.
+    const npmPrefix = join(fs.realpathSync(directory), "nvm", "versions", "node", "v22.23.2");
+    const executablePath = join(
+      directory,
+      "nvm",
+      "versions",
+      "node",
+      "v22.23.2",
+      "bin",
+      "operator-helper",
+    );
+    fs.mkdirSync(dirname(executablePath), { recursive: true });
+    fs.writeFileSync(executablePath, "", { mode: 0o755 });
+    executable(
+      "bun",
+      'if [ "$1 $2 $3" = "pm ls --global" ]; then printf "@aerovato/operator-helper@1.2.3"; exit 0; fi\nif [ "$1 $2 $3" = "pm bin --global" ]; then printf "/nonexistent/bun/bin"; exit 0; fi\nexit 0',
+    );
+    executable(
+      "npm",
+      'if [ "$1" = "list" ]; then printf "@aerovato/operator-helper@1.2.3"; exit 0; fi\nif [ "$1 $2" = "prefix --global" ]; then printf "%s" "'
+        + npmPrefix
+        + '"; exit 0; fi\nexit 0',
+    );
+
+    const result = await channel(executablePath);
+
+    expect(result).toBe("npm");
+  },
+);
+
 function executable(name: string, body: string): void {
   const path = join(directory, "bin", name);
   fs.writeFileSync(path, `#!/bin/sh\n${body}\n`, { mode: 0o755 });
@@ -293,6 +331,19 @@ function update(latest: string) {
     autoUpdate(context.version, context).pipe(
       Effect.provide(Layer.mergeAll(child, registry(latest))),
     ),
+  );
+}
+
+function channel(executablePath: string) {
+  const child = NodeChildProcessSpawner.layer.pipe(
+    Layer.provide(NodeFileSystem.layer),
+    Layer.provide(NodePath.layer),
+  );
+  return Effect.runPromise(
+    Effect.gen(function* () {
+      const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
+      return yield* detectInstallationChannel(spawner, context.cwd, executablePath);
+    }).pipe(Effect.provide(child)),
   );
 }
 
