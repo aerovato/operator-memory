@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { realpathSync } from "node:fs";
+import { dirname, join, sep } from "node:path";
 
 import { Effect, Option, Schema, Stream } from "effect";
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process";
@@ -65,7 +66,11 @@ export const autoUpdate = Effect.fn("autoUpdate")(function* (
   }
 
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
-  const channel = yield* detectInstallationChannel(spawner, context.cwd);
+  const channel = yield* detectInstallationChannel(
+    spawner,
+    context.cwd,
+    process.argv[1] ?? process.execPath,
+  );
   if (channel === "unknown") {
     yield* Effect.promise(() =>
       writeUpdateCheck(context, {
@@ -129,11 +134,25 @@ async function writeUpdateCheck(context: CliContext, check: UpdateCheck): Promis
   }
 }
 
-function detectInstallationChannel(
+export function detectInstallationChannel(
   spawner: ChildProcessSpawner.ChildProcessSpawner["Service"],
   cwd: string,
+  executablePath: string,
 ): Effect.Effect<InstallationChannel> {
   return Effect.gen(function* () {
+    // Resolving the running executable's installation is deterministic even when
+    // both Bun and npm global trees contain the package.
+    const executable = realpathSync(executablePath);
+    const [bunBin, npmPrefix] = yield* Effect.all(
+      [
+        globalDirectory(spawner, "bun", ["pm", "bin", "--global"], cwd),
+        globalDirectory(spawner, "npm", ["prefix", "--global"], cwd),
+      ] as const,
+      { concurrency: "unbounded" },
+    );
+    if (bunBin !== null && executable.startsWith(`${bunBin}${sep}`)) return "bun";
+    if (npmPrefix !== null && executable.startsWith(`${npmPrefix}${sep}`)) return "npm";
+
     const [bun, npm] = yield* Effect.all(
       [
         hasGlobalPackage(spawner, "bun", ["pm", "ls", "--global"], cwd),
@@ -149,6 +168,20 @@ function detectInstallationChannel(
     if (bun === npm) return "unknown";
     return bun ? "bun" : "npm";
   });
+}
+
+function globalDirectory(
+  spawner: ChildProcessSpawner.ChildProcessSpawner["Service"],
+  executable: string,
+  args: ReadonlyArray<string>,
+  cwd: string,
+): Effect.Effect<string | null> {
+  return run(spawner, ChildProcess.make(executable, args, { cwd })).pipe(
+    Effect.map(result =>
+      result.exitCode === 0 && result.stdout.trim() !== "" ? result.stdout.trim() : null,
+    ),
+    Effect.orElseSucceed(() => null),
+  );
 }
 
 function hasGlobalPackage(
