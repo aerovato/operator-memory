@@ -10,15 +10,16 @@ Operator Helper requires Node.js 20 or newer.
 
 ```sh
 operator-helper install opencode
+operator-helper install code-puppy
 ```
 
-Restart OpenCode after installation or repair. Until the harness reloads the plugin, setup commands and preamble injection will not behave as expected.
+Restart the harness after installation or repair. Until the harness reloads the adapter, setup commands and preamble injection will not behave as expected.
 
 ### Helper Updates
 
 Operator Helper automtically checks for and installs updates when commands run. If it cannot determine whether Bun or npm owns the global installation, it asks for a manual update using the original installation method. Registry and installation failures do not block the requested command.
 
-Stable OpenCode installations also check for plugin updates and apply successful updates after OpenCode restarts. If automatic plugin recovery fails, reinstall the adapter with `operator-helper install opencode` and restart OpenCode.
+Installed adapters also check for updates and apply successful updates after the harness restarts. If automatic recovery fails, rerun the matching install command and restart the harness.
 
 ## Partition And Memory Repair
 

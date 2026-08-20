@@ -1,7 +1,7 @@
 import { Effect, FileSystem, Path, PlatformError, Result, Stream } from "effect";
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process";
 
-import { type CliContext, getErrorMessage } from "../utils.ts";
+import { type CliContext, getErrorMessage } from "../../utils.ts";
 
 const OPENCODE_PLUGIN = "@aerovato/operator-opencode@latest";
 

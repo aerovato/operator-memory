@@ -2,13 +2,15 @@
 
 ## Overview
 
-You are working directly on the Operator Memory project. Operator turns agent work into lasting project knowledge. The MVP targets OpenCode and injects durable project and user context from markdown files agents own and maintain.
+You are working directly on the Operator Memory project. Operator turns agent work into lasting project knowledge. The MVP supports OpenCode and Code Puppy and injects durable project and user context from markdown files agents own and maintain.
 
 The Bun/TypeScript monorepo has three packages:
 
 - `@aerovato/operator-core` — private, harness-agnostic runtime loading and preamble generation
 - `@aerovato/operator-helper` — published setup, filesystem, Git, status, guide, and lint CLI
 - `@aerovato/operator-opencode` — published OpenCode plugin and harness adapter
+
+The repository also contains the helper-bundled Python adapter source under `packages/code-puppy`.
 
 Runtime code uses portable Node APIs. Bun owns workspace management, dependency installation, building, and tests.
 

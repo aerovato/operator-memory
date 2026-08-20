@@ -18,17 +18,21 @@ Or with Bun:
 bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest
 ```
 
-Install the OpenCode adapter:
+Install an adapter:
 
 ```sh
+# OpenCode
 operator-helper install opencode
+
+# Code Puppy
+operator-helper install code-puppy
 ```
 
-Restart OpenCode, then run `/operator:user-init` in a new conversation to begin setup.
+Restart the harness, then run `/operator:user-init` in a new conversation to begin setup.
 
 ## Usage
 
-Users interact with Operator through the OpenCode commands `/operator:user-init`, `/operator:project-init`, `/operator:index`, and `/operator:repair`. These commands guide the working agent, which uses Operator Helper for setup, status, validation, and repair mechanics.
+Users interact with Operator through the harness commands `/operator:user-init`, `/operator:project-init`, `/operator:index`, and `/operator:repair`. These commands guide the working agent, which uses Operator Helper for setup, status, validation, and repair mechanics.
 
 Run each Operator command in a new conversation so the agent can focus on that operation with a clean working context. Initialization preserves existing content. Project setup configures `.operator/` in the global Git ignore but does not automatically untrack files already committed.
 
@@ -36,6 +40,7 @@ The direct user-facing Helper operation is adapter installation:
 
 ```sh
 operator-helper install opencode
+operator-helper install code-puppy
 ```
 
 Operator Helper automatically checks for and installs updates when commands run. If it cannot determine whether Bun or npm owns the global installation, it asks for a manual update using the original installation method.

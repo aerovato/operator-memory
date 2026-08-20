@@ -57,10 +57,14 @@ Or Bun:
 bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest
 ```
 
-Then install the Operator plugin for OpenCode. Other harnesses will be supported soon.
+Then install the Operator adapter for your harness:
 
 ```sh
+# OpenCode
 operator-helper install opencode
+
+# Code Puppy
+operator-helper install code-puppy
 ```
 
 ## Setup Operator

@@ -4,7 +4,8 @@ import type { ChildProcessSpawner } from "effect/unstable/process";
 import { indexGuide } from "./commands/index/guide.ts";
 import { indexLint } from "./commands/index/lint.ts";
 import { indexStatus } from "./commands/index/status.ts";
-import { installOpenCode } from "./commands/install.ts";
+import { installCodePuppy } from "./commands/install/code-puppy.ts";
+import { installOpenCode } from "./commands/install/opencode.ts";
 import { memoryCheck } from "./commands/memory/check.ts";
 import { preamble } from "./commands/preamble.ts";
 import { projectGuide } from "./commands/project/guide.ts";
@@ -26,6 +27,7 @@ ${renderTable([
   ["help", "Show help for operator-helper"],
   ["version", "Show the installed version"],
   ["operator-helper install opencode", "Install or update the OpenCode plugin"],
+  ["operator-helper install code-puppy", "Install or update the Code Puppy plugin"],
 ])}
 
 AGENT COMMANDS
@@ -93,6 +95,8 @@ export function runCli(
         return yield* memoryCheck(context);
       case "install opencode":
         return yield* installOpenCode(context);
+      case "install code-puppy":
+        return yield* installCodePuppy(context);
       default:
         return {
           exitCode: 2,
