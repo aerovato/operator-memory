@@ -6,7 +6,7 @@ import asyncio
 import os
 import subprocess
 from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from typing import Any
 
 from code_puppy.callbacks import CustomCommandResult, register_callback
@@ -125,6 +125,7 @@ async def _get_preamble(conversation_key: str) -> str:
 async def _render_preamble(conversation_key: str) -> str:
     environment = os.environ.copy()
     environment["OPERATOR_HELPER_SKIP_UPDATE"] = "1"
+    process: asyncio.subprocess.Process | None = None
     try:
         process = await asyncio.create_subprocess_exec(
             "operator-helper",
@@ -141,12 +142,17 @@ async def _render_preamble(conversation_key: str) -> str:
             return content
         detail = _remove_process_newline(stderr.decode(errors="replace"))
         reason = detail or f"operator-helper exited with status {process.returncode}"
+    except asyncio.CancelledError:
+        if process is not None:
+            await _stop_process(process)
+        raise
     except TimeoutError:
-        if "process" in locals():
-            process.kill()
-            await process.wait()
+        if process is not None:
+            await _stop_process(process)
         reason = "operator-helper preamble timed out"
     except OSError as error:
+        if process is not None:
+            await _stop_process(process)
         reason = str(error)
 
     emit_warning(
@@ -160,6 +166,12 @@ async def _render_preamble(conversation_key: str) -> str:
         f"Failure: {reason}\n"
         "</operator-diagnostic>"
     )
+
+
+async def _stop_process(process: asyncio.subprocess.Process) -> None:
+    with suppress(ProcessLookupError):
+        process.kill()
+    await process.wait()
 
 
 def _remove_process_newline(value: str) -> str:
@@ -187,10 +199,11 @@ async def _agent_run_context(
 
 
 async def _session_end() -> None:
-    for task in _render_tasks.values():
-        if not task.done():
-            task.cancel()
+    tasks = tuple(_render_tasks.values())
     _render_tasks.clear()
+    for task in tasks:
+        task.cancel()
+    await asyncio.gather(*tasks, return_exceptions=True)
 
 
 def _custom_command(_command: str, name: str) -> CustomCommandResult | None:
@@ -269,6 +282,12 @@ def _launch_update() -> None:
             stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
+            creationflags=(
+                subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
+                if os.name == "nt"
+                else 0
+            ),
+            start_new_session=os.name != "nt",
         )
     except OSError:
         pass

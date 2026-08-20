@@ -34,7 +34,11 @@ export const installCodePuppy = Effect.fn("installCodePuppy")(function* (context
         return { exitCode: 0, output: "✓ Code Puppy plugin installed" };
       }
 
-      if (targetKind !== "directory" || (await readOptional(marker)) !== CODE_PUPPY_MARKER) {
+      if (
+        targetKind !== "directory"
+        || (await pathKind(marker)) !== "file"
+        || (await readOptional(marker)) !== CODE_PUPPY_MARKER
+      ) {
         return {
           exitCode: 1,
           output: `✗ Preserved unmanaged Code Puppy plugin at ${target}`,

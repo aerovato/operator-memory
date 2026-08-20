@@ -153,6 +153,24 @@ test("preserves an unmanaged Code Puppy plugin", async () => {
 });
 
 test.runIf(process.platform !== "win32")(
+  "does not accept a symlink as the managed Code Puppy marker",
+  async () => {
+    const plugin = join(directory, ".code_puppy", "plugins", "operator");
+    const marker = join(directory, "matching-marker");
+    fs.mkdirSync(plugin, { recursive: true });
+    fs.writeFileSync(marker, "Operator Memory managed Code Puppy plugin.\n");
+    fs.symlinkSync(marker, join(plugin, ".operator-managed"));
+    fs.writeFileSync(join(plugin, "register_callbacks.py"), "user owned");
+
+    const result = await execute(["install", "code-puppy"], "4.5.6");
+
+    expect(result.exitCode).toBe(1);
+    expect(result.output).toContain("Preserved unmanaged Code Puppy plugin");
+    expect(fs.readFileSync(join(plugin, "register_callbacks.py"), "utf8")).toBe("user owned");
+  },
+);
+
+test.runIf(process.platform !== "win32")(
   "automatically updates through Bun with the minimum release age disabled",
   async () => {
     executable(

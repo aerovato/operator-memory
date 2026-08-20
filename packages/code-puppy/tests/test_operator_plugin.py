@@ -242,6 +242,59 @@ async def test_helper_failure_is_an_immutable_diagnostic(
 
 
 @pytest.mark.asyncio
+async def test_render_cancellation_stops_helper(
+    plugin: Any, monkeypatch: pytest.MonkeyPatch
+):
+    class Process:
+        returncode = None
+        killed = False
+        waited = False
+
+        async def communicate(self) -> tuple[bytes, bytes]:
+            await asyncio.Event().wait()
+            raise AssertionError("unreachable")
+
+        def kill(self) -> None:
+            self.killed = True
+
+        async def wait(self) -> int:
+            self.waited = True
+            return 0
+
+    process = Process()
+
+    async def create_process(*_args: Any, **_kwargs: Any) -> Process:
+        return process
+
+    monkeypatch.setattr(asyncio, "create_subprocess_exec", create_process)
+    task = asyncio.create_task(plugin._render_preamble("conversation"))
+    await asyncio.sleep(0)
+    task.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await task
+    assert process.killed
+    assert process.waited
+
+
+@pytest.mark.asyncio
+async def test_stop_process_tolerates_an_already_exited_helper(plugin: Any):
+    class Process:
+        waited = False
+
+        def kill(self) -> None:
+            raise ProcessLookupError
+
+        async def wait(self) -> int:
+            self.waited = True
+            return 0
+
+    process = Process()
+    await plugin._stop_process(process)
+    assert process.waited
+
+
+@pytest.mark.asyncio
 async def test_session_end_clears_cached_tasks(
     plugin: Any, monkeypatch: pytest.MonkeyPatch
 ):
@@ -256,6 +309,33 @@ async def test_session_end_clears_cached_tasks(
     assert await plugin._get_preamble("conversation") == "1"
     await plugin._session_end()
     assert await plugin._get_preamble("conversation") == "2"
+
+
+@pytest.mark.asyncio
+async def test_session_end_awaits_cancelled_render(
+    plugin: Any, monkeypatch: pytest.MonkeyPatch
+):
+    started = asyncio.Event()
+    cancelled = asyncio.Event()
+
+    async def render(_key: str) -> str:
+        started.set()
+        try:
+            await asyncio.Event().wait()
+            raise AssertionError("unreachable")
+        finally:
+            cancelled.set()
+
+    monkeypatch.setattr(plugin, "_render_preamble", render)
+    task = asyncio.create_task(plugin._get_preamble("conversation"))
+    await started.wait()
+
+    await plugin._session_end()
+
+    with pytest.raises(asyncio.CancelledError):
+        await task
+    assert cancelled.is_set()
+    assert plugin._render_tasks == {}
 
 
 def test_commands_return_agent_input_and_preserve_unknown_commands(
@@ -321,3 +401,9 @@ def test_automatic_update_launches_once(plugin: Any, monkeypatch: pytest.MonkeyP
     assert launches[0][0] == ("operator-helper", "install", "code-puppy")
     assert launches[0][1]["stdout"] is subprocess.DEVNULL
     assert launches[0][1]["stderr"] is subprocess.DEVNULL
+    if sys.platform == "win32":
+        assert launches[0][1]["creationflags"] == (
+            subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
+        )
+    else:
+        assert launches[0][1]["start_new_session"] is True
