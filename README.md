@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/read-build-document.png" alt="Promotional banner for Operator Memory" width="720">
+</p>
+
 # Operator Memory
 
 ### Durable context for agent-driven development.
