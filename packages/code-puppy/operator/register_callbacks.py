@@ -10,7 +10,7 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager, suppress
 from typing import Any
 
-from code_puppy.callbacks import CustomCommandResult, register_callback
+from code_puppy.callbacks import register_callback
 from code_puppy.config import get_current_session_name
 from code_puppy.messaging import emit_warning
 from code_puppy.tools.subagent_context import get_conversation_root_id
@@ -27,6 +27,19 @@ from pydantic_ai.settings import ModelSettings
 
 _MARKER_KEY = "operator_memory"
 _MARKER_VALUE = "synthetic-preamble-v1"
+
+try:
+    from code_puppy.callbacks import CustomCommandResult
+except ImportError:
+    try:
+        # Code Puppy < 0.0.698 exposes the same contract in the
+        # customizable-commands plugin.
+        from code_puppy.plugins.customizable_commands.register_callbacks import (
+            MarkdownCommandResult as CustomCommandResult,
+        )
+    except ImportError:
+        CustomCommandResult = None
+
 _RENDER_TIMEOUT_SECONDS = 30
 _COMMAND_TIMEOUT_SECONDS = 60
 _render_tasks: dict[str, asyncio.Task[str]] = {}
@@ -195,8 +208,34 @@ async def _agent_run_context(
     if model is None:
         yield
         return
+    if _is_dbos_agent(pydantic_agent):
+        _warn_dbos_incompatible()
+        yield
+        return
     with pydantic_agent.override(model=OperatorModel(model, _conversation_key())):
         yield
+
+
+def _is_dbos_agent(pydantic_agent: Any) -> bool:
+    # DBOSAgent installs its own captured DBOSModel through a nested
+    # override inside run(), which supersedes any override applied here.
+    # Duck-type: avoid importing the optional durable_exec module.
+    return hasattr(pydantic_agent, "_dbos_overrides")
+
+
+_DBOS_WARNED = False
+
+
+def _warn_dbos_incompatible() -> None:
+    global _DBOS_WARNED
+    if _DBOS_WARNED:
+        return
+    _DBOS_WARNED = True
+    emit_warning(
+        "Operator Memory preamble injection is disabled: DBOS durable execution "
+        "supersedes the model override it relies on. Disable DBOS to restore "
+        "Operator Memory: /set enable_dbos false, then restart Code Puppy."
+    )
 
 
 async def _session_end() -> None:
@@ -363,8 +402,15 @@ async def _agent_run_end(*_args: Any) -> None:
 
 register_callback("agent_run_context", _agent_run_context)
 register_callback("session_end", _session_end)
-register_callback("custom_command", _custom_command)
-register_callback("custom_command_help", _custom_command_help)
+if CustomCommandResult is not None:
+    register_callback("custom_command", _custom_command)
+    register_callback("custom_command_help", _custom_command_help)
+else:
+    emit_warning(
+        "Operator commands are disabled: this Code Puppy version is too old to "
+        "process command output as user input. Preamble injection still works. "
+        "Upgrade Code Puppy to enable the /operator:* commands."
+    )
 register_callback("startup", _show_status_indicator)
 register_callback("agent_run_start", _agent_run_start)
 register_callback("agent_run_end", _agent_run_end)
