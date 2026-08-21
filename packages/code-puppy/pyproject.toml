@@ -3,7 +3,7 @@ name = "operator-code-puppy-development"
 version = "0.0.0"
 description = "Development environment for the Operator Memory Code Puppy adapter"
 requires-python = ">=3.11,<3.15"
-dependencies = ["code-puppy==0.0.746"]
+dependencies = ["code-puppy==0.0.753"]
 
 [dependency-groups]
 dev = [
