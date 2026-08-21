@@ -208,8 +208,34 @@ async def _agent_run_context(
     if model is None:
         yield
         return
+    if _is_dbos_agent(pydantic_agent):
+        _warn_dbos_incompatible()
+        yield
+        return
     with pydantic_agent.override(model=OperatorModel(model, _conversation_key())):
         yield
+
+
+def _is_dbos_agent(pydantic_agent: Any) -> bool:
+    # DBOSAgent installs its own captured DBOSModel through a nested
+    # override inside run(), which supersedes any override applied here.
+    # Duck-type: avoid importing the optional durable_exec module.
+    return hasattr(pydantic_agent, "_dbos_overrides")
+
+
+_DBOS_WARNED = False
+
+
+def _warn_dbos_incompatible() -> None:
+    global _DBOS_WARNED
+    if _DBOS_WARNED:
+        return
+    _DBOS_WARNED = True
+    emit_warning(
+        "Operator Memory preamble injection is disabled: DBOS durable execution "
+        "supersedes the model override it relies on. Disable DBOS to restore "
+        "Operator Memory: /set enable_dbos false, then restart Code Puppy."
+    )
 
 
 async def _session_end() -> None:

@@ -63,6 +63,7 @@ def plugin() -> Any:
 @pytest.fixture(autouse=True)
 def clear_plugin_state(plugin: Any) -> Generator[None, None, None]:
     plugin._render_tasks.clear()
+    plugin._DBOS_WARNED = False
     yield
     for task in plugin._render_tasks.values():
         if not task.done():
@@ -541,3 +542,71 @@ async def test_update_monitor_failure_is_silent(plugin: Any, status_bar: list[st
     plugin._monitor_update(Broken())
 
     assert status_bar == []
+
+
+class _OverrideContext:
+    def __enter__(self) -> "_OverrideContext":
+        return self
+
+    def __exit__(self, *_args: Any) -> None:
+        return None
+
+
+class FakeAgent:
+    def __init__(self, model: Any) -> None:
+        self.model = model
+        self.overridden = False
+        self.override_model: Any = None
+
+    def override(self, **kwargs: Any) -> "_OverrideContext":
+        self.overridden = True
+        self.override_model = kwargs.get("model")
+        return _OverrideContext()
+
+
+class FakeDbosAgent(FakeAgent):
+    def _dbos_overrides(self) -> None:
+        return None
+
+
+@pytest.mark.asyncio
+async def test_run_context_skips_override_and_warns_on_dbos_agent(
+    plugin: Any, monkeypatch: pytest.MonkeyPatch
+):
+    warnings: list[str] = []
+    monkeypatch.setattr(plugin, "emit_warning", warnings.append)
+    agent = FakeDbosAgent(RecordingModel())
+
+    async with plugin._agent_run_context(None, agent, "group", None):
+        assert agent.overridden is False
+
+    assert len(warnings) == 1
+    assert "DBOS" in warnings[0]
+
+
+@pytest.mark.asyncio
+async def test_run_context_warns_about_dbos_only_once(
+    plugin: Any, monkeypatch: pytest.MonkeyPatch
+):
+    warnings: list[str] = []
+    monkeypatch.setattr(plugin, "emit_warning", warnings.append)
+    agent = FakeDbosAgent(RecordingModel())
+
+    async with plugin._agent_run_context(None, agent, "group", None):
+        pass
+    async with plugin._agent_run_context(None, agent, "group", None):
+        pass
+
+    assert len(warnings) == 1
+
+
+@pytest.mark.asyncio
+async def test_run_context_overrides_plain_agent(
+    plugin: Any, monkeypatch: pytest.MonkeyPatch
+):
+    monkeypatch.setattr(plugin, "emit_warning", lambda _message: None)
+    agent = FakeAgent(RecordingModel())
+
+    async with plugin._agent_run_context(None, agent, "group", None):
+        assert agent.override_model is not None
+        assert isinstance(agent.override_model, plugin.OperatorModel)
