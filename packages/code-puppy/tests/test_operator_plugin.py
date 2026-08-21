@@ -96,6 +96,74 @@ def user_prompt_content(message: ModelMessage) -> str:
 
 
 @pytest.mark.asyncio
+async def test_supported_callback_transforms_messages_in_place(
+    plugin: Any, monkeypatch: pytest.MonkeyPatch
+):
+    async def render(key: str) -> str:
+        assert key == "conversation"
+        return "operator preamble"
+
+    monkeypatch.setattr(plugin, "_render_preamble", render)
+    monkeypatch.setattr(plugin, "_conversation_key", lambda: "conversation")
+    original = request("hello", instructions="exact instructions")
+    messages: list[ModelMessage] = [original]
+
+    await plugin._transform_model_messages("code-puppy", messages)
+
+    assert len(messages) == 2
+    assert messages[1] is original
+    assert original.instructions == "exact instructions"
+    assert user_prompt_content(messages[0]) == "operator preamble"
+    assert isinstance(messages[0], ModelRequest)
+    assert messages[0].metadata == {plugin._MARKER_KEY: plugin._MARKER_VALUE}
+
+
+@pytest.mark.parametrize(
+    ("version", "supported"),
+    [
+        ("0.0.752", False),
+        ("0.0.753", True),
+        ("0.0.754+local", True),
+        ("invalid", False),
+        (None, False),
+    ],
+)
+def test_model_message_transform_version_gate(
+    plugin: Any, version: str | None, supported: bool
+):
+    assert plugin._supports_model_message_transform(version) is supported
+
+
+@pytest.mark.parametrize(
+    ("version", "phase"),
+    [
+        ("0.0.752", "agent_run_context"),
+        ("0.0.753", "transform_model_messages"),
+    ],
+)
+def test_version_gate_registers_one_injection_path(
+    plugin: Any,
+    monkeypatch: pytest.MonkeyPatch,
+    version: str,
+    phase: str,
+):
+    registrations: list[tuple[str, Any]] = []
+    monkeypatch.setattr(
+        plugin,
+        "register_callback",
+        lambda registered_phase, callback: registrations.append(
+            (registered_phase, callback)
+        ),
+    )
+
+    plugin._register_preamble_injection(version)
+
+    assert [registered_phase for registered_phase, _callback in registrations] == [
+        phase
+    ]
+
+
+@pytest.mark.asyncio
 async def test_request_inserts_one_preamble_without_mutating_input(
     plugin: Any, monkeypatch: pytest.MonkeyPatch
 ):

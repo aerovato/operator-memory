@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import importlib.metadata
 import os
 import subprocess
 import threading
@@ -27,6 +28,7 @@ from pydantic_ai.settings import ModelSettings
 
 _MARKER_KEY = "operator_memory"
 _MARKER_VALUE = "synthetic-preamble-v1"
+_MODEL_MESSAGE_TRANSFORM_VERSION = (0, 0, 753)
 
 try:
     from code_puppy.callbacks import CustomCommandResult
@@ -120,6 +122,12 @@ async def _inject_preamble(
     return transformed
 
 
+async def _transform_model_messages(
+    _agent_name: str | None, messages: list[ModelMessage]
+) -> None:
+    messages[:] = await _inject_preamble(messages, _conversation_key())
+
+
 def _is_operator_request(message: ModelMessage) -> bool:
     return (
         isinstance(message, ModelRequest)
@@ -198,6 +206,31 @@ def _remove_process_newline(value: str) -> str:
 
 def _conversation_key() -> str:
     return get_conversation_root_id() or get_current_session_name()
+
+
+def _installed_code_puppy_version() -> str | None:
+    try:
+        return importlib.metadata.version("code-puppy")
+    except Exception:
+        return None
+
+
+def _supports_model_message_transform(version: str | None) -> bool:
+    if version is None:
+        return False
+    release = version.partition("+")[0].partition("-")[0]
+    try:
+        parts = tuple(int(part) for part in release.split("."))
+    except ValueError:
+        return False
+    return parts >= _MODEL_MESSAGE_TRANSFORM_VERSION
+
+
+def _register_preamble_injection(version: str | None) -> None:
+    if _supports_model_message_transform(version):
+        register_callback("transform_model_messages", _transform_model_messages)
+    else:
+        register_callback("agent_run_context", _agent_run_context)
 
 
 @asynccontextmanager
@@ -400,7 +433,7 @@ async def _agent_run_end(*_args: Any) -> None:
         _paint_status_indicator("")
 
 
-register_callback("agent_run_context", _agent_run_context)
+_register_preamble_injection(_installed_code_puppy_version())
 register_callback("session_end", _session_end)
 if CustomCommandResult is not None:
     register_callback("custom_command", _custom_command)
