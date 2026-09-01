@@ -11,6 +11,7 @@
   "scripts": {
     "build:helper": "bun run --cwd packages/helper build",
     "build:opencode": "bun run --cwd packages/opencode build",
+    "build:opencode-v2": "bun run --cwd packages/opencode-v2 build",
     "preview:opencode": "bun ./scripts/preview-opencode.ts",
     "install:helper": "bun run build:helper && bun link --cwd packages/helper",
     "install:opencode": "bun run build:opencode && bun ./scripts/install-opencode.ts",
@@ -23,7 +24,8 @@
     "check": "./scripts/check.sh",
     "prepare": "git rev-parse --git-dir >/dev/null 2>&1 && git config core.hooksPath .githooks || true",
     "publish:helper": "sh scripts/publish-helper.sh",
-    "publish:opencode": "sh scripts/publish-opencode.sh"
+    "publish:opencode": "sh scripts/publish-opencode.sh",
+    "publish:opencode-v2": "sh scripts/publish-opencode-v2.sh"
   },
   "repository": {
     "type": "git",
