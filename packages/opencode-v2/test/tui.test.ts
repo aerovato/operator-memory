@@ -1,7 +1,7 @@
 import type { Context, SlotClaim } from "@opencode-ai/plugin/tui/context";
 import { expect, test, vi } from "vitest";
 
-import OperatorTuiPlugin, { statusLabel } from "./tui.tsx";
+import OperatorTuiPlugin, { statusLabel } from "../src/tui.tsx";
 
 test("queries server status and registers parity slots", async () => {
   const claims: SlotClaim[] = [];

@@ -8,7 +8,7 @@ const { spawn } = vi.hoisted(() => ({ spawn: vi.fn() }));
 
 vi.mock("node:child_process", () => ({ spawn }));
 
-import { registerCommands } from "./commands.ts";
+import { registerCommands } from "../src/commands.ts";
 
 test("runs Helper operations in order and admits their output", async () => {
   spawn.mockImplementation((command: string) => {

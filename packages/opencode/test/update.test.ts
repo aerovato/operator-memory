@@ -5,7 +5,12 @@ import { pathToFileURL } from "node:url";
 
 import { afterEach, expect, test } from "vitest";
 
-import { checkAutoUpdate, clearInstallCache, isVersionNewer, resolveUpdate } from "./update.ts";
+import {
+  checkAutoUpdate,
+  clearInstallCache,
+  isVersionNewer,
+  resolveUpdate,
+} from "../src/update.ts";
 
 const temporaryDirectories: string[] = [];
 

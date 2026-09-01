@@ -4,7 +4,7 @@ import { join } from "node:path";
 
 import { afterEach, expect, test } from "vitest";
 
-import { loadPreamble } from "./preamble.ts";
+import { loadPreamble } from "../src/preamble.ts";
 
 const temporaryDirectories: string[] = [];
 

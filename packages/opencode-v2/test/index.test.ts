@@ -22,10 +22,10 @@ const { child, emitToast, loadMemorySnapshot, loadPreamble, spawn, startAutoUpda
 
 vi.mock("node:child_process", () => ({ spawn }));
 vi.mock("@aerovato/operator-core/memory/load", () => ({ loadMemorySnapshot }));
-vi.mock("./preamble.ts", () => ({ loadPreamble }));
-vi.mock("./update.ts", () => ({ startAutoUpdate }));
+vi.mock("../src/preamble.ts", () => ({ loadPreamble }));
+vi.mock("../src/update.ts", () => ({ startAutoUpdate }));
 
-import OperatorPlugin from "./index.ts";
+import OperatorPlugin from "../src/index.ts";
 
 test("registers commands and injects the preamble through the context hook", async () => {
   spawn.mockReturnValue(child);
