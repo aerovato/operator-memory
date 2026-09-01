@@ -6,6 +6,7 @@ import { indexLint } from "./commands/index/lint.ts";
 import { indexStatus } from "./commands/index/status.ts";
 import { installCodePuppy } from "./commands/install/code-puppy.ts";
 import { installOpenCode } from "./commands/install/opencode.ts";
+import { installOpenCodeV2 } from "./commands/install/opencode-v2.ts";
 import { memoryCheck } from "./commands/memory/check.ts";
 import { preamble } from "./commands/preamble.ts";
 import { projectGuide } from "./commands/project/guide.ts";
@@ -27,6 +28,7 @@ ${renderTable([
   ["help", "Show help for operator-helper"],
   ["version", "Show the installed version"],
   ["operator-helper install opencode", "Install or update the OpenCode plugin"],
+  ["operator-helper install opencode-v2", "Install or update the OpenCode V2 plugin"],
   ["operator-helper install code-puppy", "Install or update the Code Puppy plugin"],
 ])}
 
@@ -95,6 +97,8 @@ export function runCli(
         return yield* memoryCheck(context);
       case "install opencode":
         return yield* installOpenCode(context);
+      case "install opencode-v2":
+        return yield* installOpenCodeV2(context);
       case "install code-puppy":
         return yield* installCodePuppy(context);
       default:
