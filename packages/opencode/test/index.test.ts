@@ -9,10 +9,10 @@ const { child, client, spawn, startAutoUpdate } = vi.hoisted(() => ({
 }));
 
 vi.mock("node:child_process", () => ({ spawn }));
-vi.mock("./client.ts", () => ({ createV2Client: () => client }));
-vi.mock("./update.ts", () => ({ startAutoUpdate }));
+vi.mock("../src/client.ts", () => ({ createV2Client: () => client }));
+vi.mock("../src/update.ts", () => ({ startAutoUpdate }));
 
-import OperatorPlugin from "./index.ts";
+import OperatorPlugin from "../src/index.ts";
 
 const originalSkipUpdate = process.env.OPERATOR_HELPER_SKIP_UPDATE;
 

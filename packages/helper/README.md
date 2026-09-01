@@ -24,6 +24,9 @@ Install an adapter:
 # OpenCode
 operator-helper install opencode
 
+# OpenCode V2 beta
+operator-helper install opencode-v2
+
 # Code Puppy
 operator-helper install code-puppy
 ```

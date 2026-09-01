@@ -5,7 +5,7 @@ const { loadMemorySnapshot } = vi.hoisted(() => ({ loadMemorySnapshot: vi.fn() }
 
 vi.mock("@aerovato/operator-core/memory/load", () => ({ loadMemorySnapshot }));
 
-import OperatorTuiPlugin, { readyLabel } from "./tui.tsx";
+import OperatorTuiPlugin, { readyLabel } from "../src/tui.tsx";
 
 beforeEach(() => {
   loadMemorySnapshot.mockReset();

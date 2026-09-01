@@ -1,7 +1,7 @@
 import type { Config } from "@opencode-ai/plugin";
 import { expect, test } from "vitest";
 
-import { OPERATOR_COMMAND_NAMES, registerCommands } from "./commands.ts";
+import { OPERATOR_COMMAND_NAMES, registerCommands } from "../src/commands.ts";
 
 test("registers inline setup commands without replacing user commands", () => {
   const config = {

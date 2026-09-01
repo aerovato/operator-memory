@@ -97,6 +97,23 @@ test.runIf(process.platform !== "win32")(
   },
 );
 
+test.runIf(process.platform !== "win32")(
+  "installs the latest OpenCode V2 plugin globally",
+  async () => {
+    executable(
+      "opencode2",
+      'printf "%s\n%s" "$*" "$NPM_CONFIG_MIN_RELEASE_AGE" > "$OPERATOR_TEST_RECORD"\nprintf "installed"',
+    );
+
+    const result = await execute(["install", "opencode-v2"], "4.5.6");
+
+    expect(result).toEqual({ exitCode: 0, output: "installed" });
+    expect(fs.readFileSync(record, "utf8")).toBe(
+      "plugin add @aerovato/operator-opencode-v2@latest\n0",
+    );
+  },
+);
+
 test("installs and reuses the current managed Code Puppy plugin", async () => {
   const result = await execute(["install", "code-puppy"], "4.5.6");
   const plugin = join(directory, ".code_puppy", "plugins", "operator");

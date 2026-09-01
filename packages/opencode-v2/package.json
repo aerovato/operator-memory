@@ -1,0 +1,67 @@
+{
+  "name": "@aerovato/operator-opencode-v2",
+  "version": "0.1.0",
+  "description": "Operator Memory adapter for OpenCode V2.",
+  "license": "BSD-3-Clause",
+  "author": "Aerovato Research",
+  "homepage": "https://github.com/aerovato/operator-memory#readme",
+  "bugs": {
+    "url": "https://github.com/aerovato/operator-memory/issues"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./server": "./dist/index.js",
+    "./rpc": "./dist/notifications.js",
+    "./tui": "./dist/tui.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "memory",
+    "plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aerovato/operator-memory.git",
+    "directory": "packages/opencode-v2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "bun ./scripts/build.ts",
+    "prepack": "bun run build"
+  },
+  "peerDependencies": {
+    "@opencode-ai/plugin": "^0.0.0-beta-18721",
+    "@opentui/core": ">=0.5.9",
+    "@opentui/solid": ">=0.5.9",
+    "solid-js": ">=1.9.0"
+  },
+  "peerDependenciesMeta": {
+    "@opentui/core": {
+      "optional": true
+    },
+    "@opentui/solid": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@aerovato/operator-core": "workspace:*",
+    "@opencode-ai/plugin": "0.0.0-beta-18721",
+    "@opentui/core": "0.5.9",
+    "@opentui/solid": "0.5.9",
+    "solid-js": "1.9.12"
+  }
+}
