@@ -1,6 +1,6 @@
 {
   "name": "@aerovato/operator-opencode-v2",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Operator Memory adapter for OpenCode V2.",
   "license": "BSD-3-Clause",
   "author": "Aerovato Research",
