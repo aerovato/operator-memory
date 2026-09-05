@@ -11,6 +11,7 @@ import { USER_SETUP_TEMPLATE } from "./templates/user/setup.ts";
 
 export enum TemplatePath {
   UserOperator = "user/operator.md",
+  UserCatalog = "user/catalog.md",
   UserSetup = "user/setup.md",
   ProjectOperator = "project/operator.md",
   ProjectIndex = "project/index.md",
@@ -23,6 +24,7 @@ export enum TemplatePath {
 
 const TEMPLATES = {
   [TemplatePath.UserOperator]: USER_OPERATOR_TEMPLATE,
+  [TemplatePath.UserCatalog]: CATALOG_TEMPLATE,
   [TemplatePath.UserSetup]: USER_SETUP_TEMPLATE,
   [TemplatePath.ProjectOperator]: PROJECT_OPERATOR_TEMPLATE,
   [TemplatePath.ProjectIndex]: PROJECT_INDEX_TEMPLATE,

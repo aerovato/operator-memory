@@ -35,8 +35,8 @@ ${renderTable([
 AGENT COMMANDS
 
 ${renderTable([
-  ["operator-helper user status", "Show User Instructions status"],
-  ["operator-helper user init", "Initialize User Instructions without overwriting content"],
+  ["operator-helper user status", "Show User Partition status"],
+  ["operator-helper user init", "Initialize User Partition core files without overwriting content"],
   ["operator-helper user guide", "Print the agent guide for completing User Setup"],
   [
     "operator-helper project status",
