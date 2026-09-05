@@ -60,7 +60,7 @@ Living map of **codebase** structure and intent. Answers what code exists, what 
 The knowledge itself. Indexes and catalogs only point at it; \`operator.md\` only governs behavior. Everything the brain actually knows lives in freeform files, found through their catalog entries.
 
 - Project freeform — project memory, specs (system truth and contracts the code cannot show), research and guides (library, SDK, API), product vision, plans, etc.
-- User freeform — replaces skills, and goes further: everything a skill pack would hold (reusable instruction sets, style guides, playbooks), plus what skills never carried — cross-project research and guides, personal standards, long-term memory.
+- User freeform — replaces skills, and goes further: everything a skill pack would hold (reusable instruction sets, style guides, playbooks), plus what skills never carried — cross-project research and guides, personal standards, long-term memory. Freeform is not limited to Markdown: artifact-backed skills (folder containing entry document plus code, images, or other artifacts) is valid freeform.
 - **Read a matching freeform file before implementing or exploring the code — specs are system truth the code cannot own. Do not skip it because the code looks sufficient.**
 
 ## Update the Brain
@@ -131,6 +131,7 @@ Agent-maintained map of a partition's brain root. One \`catalog.md\` per partiti
 - Project catalogs never list \`index/\`; the Project Index is injected separately. Never list other partitions' paths.
 - Every entry needs a \`Description\` and \`Read If\`. \`operator.md\` and \`catalog.md\` are auto-injected; keep their seed entries and catalog every other path.
 - Same density rules as the Project Index: document densely (paths, roles, grouping, "Ditto" where obvious); directory-only lines for large or low-value dirs. No catalog subindexes.
+- Artifact-backed freeform (e.g. a ported skill folder): catalog the entry file path (e.g. \`powerpoint-builder/SKILL.md\`) as a single entry. Do not catalog individual artifacts.
 - **DO** update the catalog after creating or significantly changing freeform files or layout.
 - **DO NOT** put codebase structure into Project catalogs — that lives in the Project Index.
 - Catalogs use a **fixed structure and entry syntax**. Filled catalogs need only real content — no placeholders or example trees from seed templates.
