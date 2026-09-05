@@ -49,4 +49,4 @@ Read-only memory module with no barrel export.
 
 - `project-index.ts` — Main Project Index document syntax template
 - `project-subindex.ts` — Project Index subindex document syntax template
-- `project-catalog.ts` — Partition Catalog document syntax template
+- `catalog.ts` — Project / User Catalog document syntax template

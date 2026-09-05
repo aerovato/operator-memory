@@ -6,7 +6,7 @@ test("reads an embedded template by its enum path", () => {
   expect(readTemplate(TemplatePath.ProjectIndex)).toContain("# {Private|Shared} Project Index");
   expect(readTemplate(TemplatePath.ProjectSubindex)).toContain("## Coverage");
   expect(readTemplate(TemplatePath.ProjectCatalog)).toContain(
-    "# {Private|Shared} Partition Catalog",
+    "# {User|Private|Shared} Partition Catalog",
   );
   expect(readTemplate(TemplatePath.ProjectIndex)).not.toContain("## Guidelines");
 });

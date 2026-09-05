@@ -10,7 +10,7 @@
     "./preamble": "./src/preamble.ts",
     "./templates/project-index": "./src/templates/project-index.ts",
     "./templates/project-subindex": "./src/templates/project-subindex.ts",
-    "./templates/project-catalog": "./src/templates/project-catalog.ts"
+    "./templates/catalog": "./src/templates/catalog.ts"
   },
   "dependencies": {
     "yaml": "^2.9.0"

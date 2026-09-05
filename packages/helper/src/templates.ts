@@ -1,4 +1,4 @@
-import { PROJECT_CATALOG_TEMPLATE } from "@aerovato/operator-core/templates/project-catalog";
+import { CATALOG_TEMPLATE } from "@aerovato/operator-core/templates/catalog";
 import { PROJECT_INDEX_TEMPLATE } from "@aerovato/operator-core/templates/project-index";
 import { PROJECT_SUBINDEX_TEMPLATE } from "@aerovato/operator-core/templates/project-subindex";
 
@@ -27,7 +27,7 @@ const TEMPLATES = {
   [TemplatePath.ProjectOperator]: PROJECT_OPERATOR_TEMPLATE,
   [TemplatePath.ProjectIndex]: PROJECT_INDEX_TEMPLATE,
   [TemplatePath.ProjectSubindex]: PROJECT_SUBINDEX_TEMPLATE,
-  [TemplatePath.ProjectCatalog]: PROJECT_CATALOG_TEMPLATE,
+  [TemplatePath.ProjectCatalog]: CATALOG_TEMPLATE,
   [TemplatePath.ProjectSetup]: PROJECT_SETUP_TEMPLATE,
   [TemplatePath.ProjectIndexSetup]: PROJECT_INDEX_SETUP_TEMPLATE,
   [TemplatePath.ProjectSharedReadme]: PROJECT_SHARED_README_TEMPLATE,
