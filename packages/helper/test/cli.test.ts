@@ -47,7 +47,7 @@ afterEach(() => {
 
 test("routes help, version, and invalid commands", async () => {
   const help = await executeCli(["help"], context);
-  expect(help.output).toContain("operator-helper user status     Show User Instructions status");
+  expect(help.output).toContain("operator-helper user status     Show User Partition status");
   expect(help.output).toContain("operator-helper project init    Initialize project partitions");
   expect(help.output).toContain("operator-helper index status    Show Private and Shared main");
   expect(help.output).toContain("operator-helper index lint      Check Project Index structure");
@@ -68,30 +68,51 @@ test("formats help as plaintext", async () => {
   const help = (await executeCli(["help"], context)).output;
   expect(help).toContain("Operator Helper");
   expect(help).toContain("COMMANDS\n\n");
-  expect(help).toContain("operator-helper user status     Show User Instructions status");
+  expect(help).toContain("operator-helper user status     Show User Partition status");
   expect(help).not.toContain("FLAGS");
   expect(help).not.toContain("\u001B");
 });
 
-test("reports, initializes, preserves, and guides user instructions", async () => {
+test("reports, initializes, preserves, and guides the user partition", async () => {
   const missing = await executeCli(["user", "status"], context);
-  expect(missing.output).toContain("User Instructions Missing");
+  expect(missing.output).toContain("⚠ User Partition Missing");
 
   const initialized = await executeCli(["user", "init"], context);
   expect(initialized.exitCode).toBe(0);
   expect(initialized.output).toBe(
-    "✓ User Instructions Initialized\nCreated  ~/.operator/user/operator.md",
+    "✓ User Partition Initialized\n"
+      + "Created  ~/.operator/user/operator.md\n"
+      + "Created  ~/.operator/user/catalog.md",
   );
   expect(fs.readFileSync(resolvePath("/home/.operator/user/operator.md"), "utf8")).toBe(
     readTemplate(TemplatePath.UserOperator),
+  );
+  expect(fs.readFileSync(resolvePath("/home/.operator/user/catalog.md"), "utf8")).toBe(
+    readTemplate(TemplatePath.UserCatalog),
   );
   if (process.platform !== "win32") {
     expect(fs.statSync(resolvePath("/home/.operator")).mode & 0o777).toBe(0o700);
   }
 
+  const status = await executeCli(["user", "status"], context);
+  expect(status.exitCode).toBe(0);
+  expect(status.output).toContain("✓ User Partition Found");
+  expect(status.output).toContain("User Instructions");
+  expect(status.output).toContain("User Catalog");
+  expect(status.output).toContain("~/.operator/user/catalog.md (");
+  expect(status.output).toContain("Freeform Content");
+  expect(status.output).not.toContain("/operator:user-init");
+
   fs.writeFileSync(resolvePath("/home/.operator/user/operator.md"), "custom");
-  expect((await executeCli(["user", "init"], context)).output).toContain("Unmodified");
+  expect((await executeCli(["user", "init"], context)).output).toContain("Preserved");
   expect(fs.readFileSync(resolvePath("/home/.operator/user/operator.md"), "utf8")).toBe("custom");
+
+  fs.rmSync(resolvePath("/home/.operator/user/catalog.md"));
+  const incomplete = await executeCli(["user", "status"], context);
+  expect(incomplete.exitCode).toBe(0);
+  expect(incomplete.output).toContain("Missing (~/.operator/user/catalog.md)");
+  expect(incomplete.output).toContain("/operator:user-init");
+
   expect((await executeCli(["user", "guide"], context)).output).toBe(
     `Follow the agent instructions below to complete User Setup.\n\n${readTemplate(TemplatePath.UserSetup)}`,
   );

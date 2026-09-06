@@ -5,7 +5,7 @@ import type { ProjectPartitionSnapshot } from "./memory/project.ts";
 import type { UserPartitionSnapshot } from "./memory/user.ts";
 import { renderPreamble as renderMemoryPreamble } from "./preamble.ts";
 import { PREAMBLE_PROMPT, PREAMBLE_TENETS } from "./prompts/preamble.ts";
-import { PROJECT_CATALOG_TEMPLATE } from "./templates/project-catalog.ts";
+import { CATALOG_TEMPLATE } from "./templates/catalog.ts";
 import { PROJECT_INDEX_TEMPLATE } from "./templates/project-index.ts";
 import { PROJECT_SUBINDEX_TEMPLATE } from "./templates/project-subindex.ts";
 import { failure, success } from "./utils.ts";
@@ -13,19 +13,23 @@ import { failure, success } from "./utils.ts";
 test("embeds core document templates in fixed guidance", () => {
   expect(PREAMBLE_PROMPT).toContain(PROJECT_INDEX_TEMPLATE.trimEnd());
   expect(PREAMBLE_PROMPT).toContain(PROJECT_SUBINDEX_TEMPLATE.trimEnd());
-  expect(PREAMBLE_PROMPT).toContain(PROJECT_CATALOG_TEMPLATE.trimEnd());
+  expect(PREAMBLE_PROMPT).toContain(CATALOG_TEMPLATE.trimEnd());
 });
 
 test("renders fixed guidance and the missing-catalog warning for empty memory", () => {
   const memory: LoadedMemorySnapshot = {
     shared: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
-    user: { exists: false, operatorInstructions: null },
+    user: { exists: false, operatorInstructions: null, catalog: null },
     private: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
   };
 
   expect(renderPreamble(memory)).toBe(`${PREAMBLE_PROMPT}
 
 ${PREAMBLE_TENETS}
+
+<operator-warning>
+The ~/.operator/user directory does not exist. If the user would benefit from cross-project user memory, ask the user to run /operator:user-init first to initialize the User Partition. If not needed, do not ask; they may be working without user memory intentionally.
+</operator-warning>
 
 <operator-warning>
 Neither the .operator nor .operator-shared directory exists. If the user requests significant amounts of work to be done on the project, ask the user to run /operator:project-init first to initialize Operator. If the user is not requesting work to be done, do not ask to initialize; they could simply be exploring.
@@ -51,7 +55,7 @@ test("renders conditional memory in authority and partition order", () => {
         },
       ],
     },
-    user: { exists: true, operatorInstructions: "user instructions" },
+    user: { exists: true, operatorInstructions: "user instructions", catalog: "user catalog" },
     private: {
       exists: true,
       operatorInstructions: "private instructions",
@@ -81,6 +85,21 @@ private instructions
 </file-content>
 </operator-instructions>
 
+<user-catalog>
+<file-content path="~/.operator/user/catalog.md">
+user catalog
+</file-content>
+</user-catalog>
+
+<partition-catalog>
+<file-content path=".operator-shared/catalog.md">
+shared catalog
+</file-content>
+<file-content path=".operator/catalog.md">
+private catalog
+</file-content>
+</partition-catalog>
+
 <project-index>
 .operator-shared/index/
 ├── index.md
@@ -105,22 +124,13 @@ private main index
 </file-content>
 </project-index>
 
-<partition-catalog>
-<file-content path=".operator-shared/catalog.md">
-shared catalog
-</file-content>
-<file-content path=".operator/catalog.md">
-private catalog
-</file-content>
-</partition-catalog>
-
 ${PREAMBLE_TENETS}`);
 });
 
 test("renders identical bytes for the same snapshot", () => {
   const memory: LoadedMemorySnapshot = {
     shared: { exists: true, operatorInstructions: null, catalog: "catalog", indexes: [] },
-    user: { exists: false, operatorInstructions: null },
+    user: { exists: false, operatorInstructions: null, catalog: null },
     private: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
   };
 
@@ -151,7 +161,7 @@ test("renders index listing connectors and metadata for every valid index", () =
         },
       ],
     },
-    user: { exists: false, operatorInstructions: null },
+    user: { exists: false, operatorInstructions: null, catalog: null },
     private: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
   };
 
@@ -177,7 +187,7 @@ main index
 test("renders an index listing without a main index body", () => {
   const memory: LoadedMemorySnapshot = {
     shared: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
-    user: { exists: false, operatorInstructions: null },
+    user: { exists: false, operatorInstructions: null, catalog: null },
     private: {
       exists: true,
       operatorInstructions: null,
@@ -208,7 +218,7 @@ test("renders an index listing without a main index body", () => {
 test("renders only available instructions and catalogs", () => {
   const memory: LoadedMemorySnapshot = {
     shared: { exists: true, operatorInstructions: null, catalog: "shared catalog", indexes: [] },
-    user: { exists: true, operatorInstructions: "user instructions" },
+    user: { exists: true, operatorInstructions: "user instructions", catalog: "user catalog" },
     private: {
       exists: true,
       operatorInstructions: "private instructions",
@@ -223,14 +233,16 @@ test("renders only available instructions and catalogs", () => {
   expect(preamble).toContain('<file-content path="~/.operator/user/operator.md">');
   expect(preamble).toContain('<file-content path=".operator/operator.md">');
   expect(preamble).toContain('<file-content path=".operator-shared/catalog.md">');
+  expect(preamble).toContain('<file-content path="~/.operator/user/catalog.md">');
   expect(preamble).not.toContain('<file-content path=".operator/catalog.md">');
   expect(preamble).not.toContain("Neither .operator/catalog.md");
+  expect(preamble).not.toContain("~/.operator/user/catalog.md does not");
 });
 
 test("renders component warnings for an existing empty project partition", () => {
   const memory: LoadedMemorySnapshot = {
     shared: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
-    user: { exists: false, operatorInstructions: null },
+    user: { exists: false, operatorInstructions: null, catalog: null },
     private: { exists: true, operatorInstructions: null, catalog: null, indexes: [] },
   };
 
@@ -240,6 +252,37 @@ test("renders component warnings for an existing empty project partition", () =>
   expect(preamble).toContain("ask the user to run /operator:index");
   expect(preamble).toContain("You must create and maintain a catalog.md");
   expect(preamble.indexOf(PREAMBLE_TENETS)).toBeLessThan(preamble.indexOf("<operator-warning>"));
+});
+
+test("injects the user catalog without a project brain", () => {
+  const memory: LoadedMemorySnapshot = {
+    shared: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
+    user: { exists: true, operatorInstructions: null, catalog: "user catalog" },
+    private: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
+  };
+
+  const preamble = renderPreamble(memory);
+
+  expect(preamble).toContain("<user-catalog>");
+  expect(preamble).toContain('<file-content path="~/.operator/user/catalog.md">');
+  expect(preamble).not.toContain("<project-index>");
+  expect(preamble).not.toContain("<partition-catalog>");
+});
+
+test("warns about a missing user catalog independently of project catalogs", () => {
+  const memory: LoadedMemorySnapshot = {
+    shared: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
+    user: { exists: true, operatorInstructions: "user instructions", catalog: null },
+    private: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
+  };
+
+  const preamble = renderPreamble(memory);
+
+  expect(preamble).toContain("~/.operator/user/catalog.md does not");
+  expect(preamble).not.toContain(
+    "You must create and maintain a catalog.md to document any non-empty Project Brain partitions.",
+  );
+  expect(preamble).not.toContain("<user-catalog>");
 });
 
 test("renders only recovery diagnostics when any partition fails", () => {

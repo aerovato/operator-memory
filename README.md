@@ -43,7 +43,7 @@ Knowledge is separated by ownership:
 
 - `.operator/` — private project knowledge
 - `.operator-shared/` — project knowledge intentionally published with the repository
-- `~/.operator/user/` — private instructions used across projects
+- `~/.operator/user/` — private memory used across projects
 
 For partitions and how sessions load them, see [Architecture](docs/architecture.md).
 
@@ -78,7 +78,7 @@ operator-helper install code-puppy
 
 Setup is a conversation with your agent. Run each command in a new conversation.
 
-1. First time only: `/operator:user-init` — set your user-global instructions.
+1. First time only: `/operator:user-init` — set up your global user partition.
 2. In each new project: `/operator:project-init` — scaffold Operator and migrate existing documents.
 3. In existing repositories: `/operator:index` — map the repo so later sessions can navigate it.
 4. Start a new conversation and do normal work.

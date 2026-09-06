@@ -7,6 +7,7 @@ import { getErrorMessage } from "./utils.ts";
 const SHARED_ROOT = ".operator-shared";
 const PRIVATE_ROOT = ".operator";
 const USER_INSTRUCTIONS_PATH = "~/.operator/user/operator.md";
+const USER_CATALOG_PATH = "~/.operator/user/catalog.md";
 
 export type RenderedPreamble = {
   readonly content: string;
@@ -40,6 +41,23 @@ export function renderPreamble(memory: MemorySnapshot): RenderedPreamble {
     sections.push(instructions);
   }
 
+  const userCatalog = renderUserCatalog(loaded.user);
+  if (userCatalog !== null) {
+    sections.push(userCatalog);
+  } else if (loaded.user.exists) {
+    warnings.push(
+      `<operator-warning>
+The User Partition exists but ~/.operator/user/catalog.md does not. You must create and maintain a catalog.md to document any non-empty User Partition.
+</operator-warning>`,
+    );
+  } else {
+    warnings.push(
+      `<operator-warning>
+The ~/.operator/user directory does not exist. If the user would benefit from cross-project user memory, ask the user to run /operator:user-init first to initialize the User Partition. If not needed, do not ask; they may be working without user memory intentionally.
+</operator-warning>`,
+    );
+  }
+
   if (!loaded.shared.exists && !loaded.private.exists) {
     warnings.push(
       `<operator-warning>
@@ -50,23 +68,22 @@ Neither the .operator nor .operator-shared directory exists. If the user request
     const indexes = renderIndexes(loaded);
     const catalogs = renderCatalogs(loaded);
 
-    if (indexes !== null) {
-      sections.push(indexes);
-    }
     if (catalogs !== null) {
       sections.push(catalogs);
+    } else {
+      warnings.push(
+        `<operator-warning>
+Neither .operator/catalog.md nor .operator-shared/catalog.md exists. You must create and maintain a catalog.md to document any non-empty Project Brain partitions.
+</operator-warning>`,
+      );
+    }
+    if (indexes !== null) {
+      sections.push(indexes);
     }
     if (!hasMainIndex(loaded)) {
       warnings.push(
         `<operator-warning>
 Neither .operator/index/index.md nor .operator-shared/index/index.md exists. If the project is not in an empty state, ask the user to run /operator:index to initialize a project index before performing any work.
-</operator-warning>`,
-      );
-    }
-    if (catalogs === null) {
-      warnings.push(
-        `<operator-warning>
-Neither .operator/catalog.md nor .operator-shared/catalog.md exists. You must create and maintain a catalog.md to document any non-empty Project Brain partitions.
 </operator-warning>`,
       );
     }
@@ -186,6 +203,18 @@ function renderIndexListing(root: string, indexes: ReadonlyArray<IndexDocument>)
   }
 
   return lines.join("\n");
+}
+
+function renderUserCatalog(partition: UserPartitionSnapshot): string | null {
+  if (partition.catalog === null) {
+    return null;
+  }
+
+  return `<user-catalog>
+<file-content path="${USER_CATALOG_PATH}">
+${partition.catalog}
+</file-content>
+</user-catalog>`;
 }
 
 function renderCatalogs(memory: LoadedMemorySnapshot): string | null {

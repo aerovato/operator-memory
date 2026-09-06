@@ -31,7 +31,7 @@ test("loads an empty memory snapshot when all optional paths are absent", async 
 
   expect(result).toEqual({
     shared: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
-    user: { exists: false, operatorInstructions: null },
+    user: { exists: false, operatorInstructions: null, catalog: null },
     private: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
   });
 
@@ -74,6 +74,7 @@ test("loads core documents and recursive indexes in stable path order", async ()
     join(HOME_DIRECTORY, ".operator", "user", "operator.md"),
     "user instructions",
   );
+  await writeDocument(join(HOME_DIRECTORY, ".operator", "user", "catalog.md"), "user catalog");
   await writeDocument(join(PROJECT_DIRECTORY, ".operator", "operator.md"), "private instructions");
   await writeDocument(join(PROJECT_DIRECTORY, ".operator", "catalog.md"), "private catalog");
 
@@ -87,6 +88,7 @@ test("loads core documents and recursive indexes in stable path order", async ()
     value: { description: "Main index", readIf: "Always" },
   });
   expect(result.user.operatorInstructions).toBe("user instructions");
+  expect(result.user.catalog).toBe("user catalog");
   expect(result.private.operatorInstructions).toBe("private instructions");
   expect(result.private.catalog).toBe("private catalog");
 });
@@ -200,6 +202,17 @@ test("loads independent partition statuses while validating memory structure", a
     expect(status.shared.error.path).toBe(
       join(PROJECT_DIRECTORY, ".operator-shared", "operator.md"),
     );
+  }
+});
+
+test("fails the user status when catalog.md is obstructed", async () => {
+  fs.mkdirSync(join(HOME_DIRECTORY, ".operator", "user", "catalog.md"), { recursive: true });
+
+  const status = await loadMemorySnapshot(PROJECT_DIRECTORY, HOME_DIRECTORY, false);
+
+  expect(status.user.ok).toBe(false);
+  if (!status.user.ok) {
+    expect(status.user.error.path).toBe(join(HOME_DIRECTORY, ".operator", "user", "catalog.md"));
   }
 });
 
