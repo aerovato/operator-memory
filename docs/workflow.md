@@ -17,7 +17,7 @@ Demo workflow: To see this workflow in practice, browse the [demo conversation](
 
 Run each Operator command in a new conversation so the agent can focus on setup, indexing, or repair with a clean working context.
 
-- `/operator:user-init` — Initializes or revises private user-global instructions in the current conversation.
+- `/operator:user-init` — Initializes or revises private user-global memory (instructions and freeform) in the current conversation.
 - `/operator:project-init` — Initializes or revises project setup without overwriting existing content. It configures Private and guides optional Shared activation.
 - `/operator:index` — Builds or refreshes the Project Index so future agents can navigate repository structure and applicable subsystem context. Run it after initial setup, substantial repository restructuring, or stale index discovery.
 - `/operator:repair` — Diagnoses and repairs missing, malformed, or unloadable Operator context in the current conversation. See [Troubleshooting](troubleshooting.md).
@@ -71,4 +71,4 @@ Shared is ordinary repository content. Review it like code. Promote material fro
 
 ### User
 
-`~/.operator/user/` holds project-agnostic instructions that should apply across projects: communication preferences, engineering and verification standards, tooling expectations, and global boundaries on agent behavior.
+`~/.operator/user/` holds project-agnostic memory that should apply across projects: `operator.md` for communication preferences, engineering and verification standards, tooling expectations, and global boundaries on agent behavior, plus freeform documents — skills, style guides, playbooks, and captured lessons — mapped by the User Partition Catalog.

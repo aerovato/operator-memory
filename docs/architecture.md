@@ -22,7 +22,7 @@ Knowledge is separated by ownership and publication intent.
 
 ### User
 
-`~/.operator/user/` holds private, project-agnostic instructions that apply across projects.
+`~/.operator/user/` holds private, project-agnostic memory that applies across projects: `operator.md` (User Instructions), `catalog.md` (User Partition Catalog), and freeform documents such as skills, style guides, and playbooks. Freeform may be artifact-backed: a folder containing an entry document plus code, images, or other artifacts.
 
 ## Brain Components
 
