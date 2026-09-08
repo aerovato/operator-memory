@@ -1,51 +1,34 @@
-<p align="center">
-  <img src="docs/assets/read-build-document.png" alt="Promotional banner for Operator Memory" width="720">
-</p>
-
 # Operator Memory
 
-### Durable context for agent-driven development.
+### The self-improving context engine for coding agents.
 
-<p align="center">
-  <img src="docs/assets/operator-tree.svg" alt="Sample harness repository beside Operator Memory" width="720">
-</p>
+Agents excel in a session but forget everything the moment it ends. Future sessions waste tokens re-gathering an incomplete context: re-exploring the codebase, re-learning the architecture, re-teaching decisions and corrections.
 
-Operator Memory turns agent work into lasting project knowledge. It gives the agent a durable workspace of ordinary Markdown, kept in three places: shared files that travel with the team, private project files that stay on your machine, and user rules that follow you across projects.
+Operator Memory gives the agent a brain for documenting all their work. As the agent works, it automatically documents within this brain — specs, decisions, standards, research, lessons. Every new session starts from those files.
 
-Each new session starts from those files. As the agent works, it writes and updates them — specs, decisions, standards, research, and lessons — instead of leaving that understanding trapped in a chat. You can open any file, correct it, share it, or remove it.
+## What You Get
 
-Continuous documentation is the practice. Durable memory is what it produces.
+- **A Complete Context Engine** — Operator Memory provides memory, documentation, codebase indexes, and skills within a single integrated system.
+- **Automatic Documentation** — Specs, decisions, research, and lessons are automatically documented by the agent during normal work. No capture step. No background tasks.
+- **Transparent Memory** — Memory is stored as documents you can read, update, and delete.
+- **Sharable Knowledge** — Every document is optionally shareable. Track documents with Git and share knowledge with your team.
+- **Zero Infrastructure** — No embeddings, no vector database, no background pipelines, no model configuration.
 
-## Why Operator Memory
+## How It Works
 
-Agents excel in a single session. Multi-session work breaks down for two reasons:
+Operator gives the agent a durable workspace of Markdown, kept in three places:
 
-- Context resets every conversation. Prior exploration, architecture, constraints, decisions, and conventions are often lost forever.
-- Agents are strong at execution and weak at documentation. Specs, design choices, decisions, standards, and lessons rarely survive as durable project knowledge.
+- `.operator/` — private project knowledge, stays on your machine
+- `.operator-shared/` — project knowledge published with the repository
+- `~/.operator/user/` — your personal rules and knowledge, used across projects
 
-### Memory plugins solve the wrong problem
+Every session runs the same loop:
 
-Standard memory plugins treat forgetting as a problem. They try to fix by capturing fragments from transcripts and replaying these fragments — or they try to compress a single session along forever and never write down durable organizational facts. Both approaches fall short.
+1. **Consult** — the agent starts from your Brain: instructions, codebase index, specs, guides.
+2. **Build** — the agent does normal development work, informed by that knowledge.
+3. **Update** — the agent records what changed: new specs, decisions, standards, lessons.
 
-- **Snippets are not knowledge.** Memory plugins record snippets as memory — incomplete, lacking context, and stale almost instantly.
-- **Retrieval is a lottery.** RAG-based plugins accumulate thousands of chunks and returns a lossy top-k slice.
-- **Compression is not documentation.** Summarizing the session keeps the chat window alive but persists zero project truth.
-- **Memory fails silently.** The store is a black box: you cannot see what was remembered, what was forgotten, or why — failures surface later as bad answers.
-- **You pay to maintain garbage.** Every background dreamer, curator, and analyst is a token furnace that burns quota without ever producing a document you can read or trust.
-
-### Operator fixes it at the source
-
-Operator Memory fixes the problem at the source: agents write lasting project knowledge as ordinary Markdown they maintain during normal work. Those files are yours to inspect and direct: read, create, consolidate, split, correct, or remove. No embeddings, vector database, or hidden retrieval taxes.
-
-New sessions start from that knowledge instead of rediscovering the project. When truth changes, the agent updates the canonical file instead of adding a competing record.
-
-Knowledge is separated by ownership:
-
-- `.operator/` — private project knowledge
-- `.operator-shared/` — project knowledge intentionally published with the repository
-- `~/.operator/user/` — private memory used across projects
-
-For partitions and how sessions load them, see [Architecture](docs/architecture.md).
+When project truth changes, the agent updates the canonical file instead of adding a RAG database record. For more details, see [Architecture](docs/architecture.md).
 
 ## Install Operator
 
@@ -87,20 +70,32 @@ When starting cold on an existing project, it's recommended to ask the agent to 
 
 ## Everyday Workflow
 
-Operator gives the agent a durable workspace. Agents consult and maintain existing documents as they work.
-
 1. Give the agent normal development work.
-2. Agents refer to existing project knowledge: index for navigating code, specs for module contracts, guides for 3rd party integration details.
-3. When project truth changes: agents proactively update files while reasoning is still fresh. Specs, decisions, standards, research, lessons.
-4. The next session continues from those files.
+2. The agent automatically consults existing knowledge: index for navigating code, specs for module contracts, guides for third-party integration details.
+3. The agent automatically updates existing knowledge: When project truth changes, the relevant documents are automatically updated.
+4. The next session continues from the updated knowledge.
 
-Sometimes, agents hesitate to create new documents, consolidate documents, or split documents; in that case, steer the agent towards making larger architectural decisions:
+Sometimes agents hesitate to create, consolidate, or split documents. In that case, steer the agent towards making larger architectural decisions:
 
-- “Write a spec for this feature before implementing it.”
-- “Record this research so we do not repeat the investigation.”
-- “These two documents overlap. Consolidate them.”
-- “This document is too large. Split it.”
-- “Promote this spec to Shared so the team receives it.”
+- "Write a spec for this feature before implementing it."
+- "Record this research so we do not repeat the investigation."
+- "These two documents overlap. Consolidate them."
+- "This document is too large. Split it."
+- "Promote this spec to Shared so the team receives it."
+
+## VS Other Memory Plugins
+
+Other memory plugins treat forgetting as the problem. They think the solution is to replay past context to agents; either by capture fragments and retrieving via RAG, or compress one giant session along forever without documenting anything. Both approaches fall short.
+
+- **Snippets are not knowledge.** Other plugins record snippets as memory — incomplete, lacking context, and stale on arrival.
+- **Retrieval is a lottery.** RAG plugins accumulate thousands of chunks and only return a lossy top-k slice. There's no way to know what was lost.
+- **Memory fails silently.** The store is a black box: you cannot see what was remembered, what was forgotten, or why — failures surface later as bad answers.
+- **Compression is not documentation.** Context compression keeps the context window alive, but persists zero sharable, inspectable project truth.
+- **You pay to maintain garbage.** Every background dreamer, curator, and analyst is a token furnace that burns quota, never producing a document you can read or trust.
+
+Operator Memory does not try to recall the past. It writes down the present so the future does not need to guess. What the agent knows is a file you can open. Not 13 rows in a RAG database.
+
+RAG agents recall. Operator understands.
 
 ## Roadmap
 
