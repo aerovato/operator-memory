@@ -114,6 +114,15 @@ test.runIf(process.platform !== "win32")(
   },
 );
 
+test.runIf(process.platform !== "win32")("installs the Pi plugin globally", async () => {
+  executable("pi", 'printf "%s" "$*" > "$OPERATOR_TEST_RECORD"\nprintf "installed"');
+
+  const result = await execute(["install", "pi"], "4.5.6");
+
+  expect(result).toEqual({ exitCode: 0, output: "installed" });
+  expect(fs.readFileSync(record, "utf8")).toBe("install npm:@aerovato/operator-pi");
+});
+
 test("installs and reuses the current managed Code Puppy plugin", async () => {
   const result = await execute(["install", "code-puppy"], "4.5.6");
   const plugin = join(directory, ".code_puppy", "plugins", "operator");
