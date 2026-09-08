@@ -39,7 +39,7 @@ read_if: Working anywhere in the committed Operator Memory project
 - `docs/workflow.md` - User guide to continuous documentation, Brain maintenance, partition placement, review, and session boundaries.
 - `docs/architecture.md` - User-facing Brain, partition, catalog, Project Index, deterministic loading, failure, and OpenCode architecture.
 - `docs/troubleshooting.md` - User-facing installation, status, lint, memory-check, repair, Git, Shared, update, and support guidance.
-- `docs/assets/operator-tree.svg` - README figure of a sample harness tree beside Shared and Private Operator documents.
+- `docs/assets/banner.jpeg` - Operator Memory README banner.
 - `LICENSE` - BSD 3-Clause repository license.
 - `.github/workflows/ci.yml` - Frozen-install workspace quality checks, Code Puppy `uv` provisioning, and package validation.
 - `.github/workflows/publish-helper.yml`, `.github/workflows/publish-opencode.yml`, `.github/workflows/publish-opencode-v2.yml` - Independent tag-driven npm provenance publishing and GitHub releases.
