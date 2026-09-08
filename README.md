@@ -57,6 +57,9 @@ operator-helper install opencode
 # OpenCode V2 beta
 operator-helper install opencode-v2
 
+# Pi
+operator-helper install pi
+
 # Code Puppy
 operator-helper install code-puppy
 ```
@@ -117,7 +120,6 @@ RAG agents recall. Operator understands.
 
 #### Additional Harnesses
 
-- **Pi** — Next adapter
 - **Claude Code** — Pending research
 - **Codex** — Pending research
 

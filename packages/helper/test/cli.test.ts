@@ -54,6 +54,7 @@ test("routes help, version, and invalid commands", async () => {
   expect(help.output).toContain("operator-helper memory check    Check that all Operator memory");
   expect(help.output).toContain("operator-helper preamble        Render the Operator preamble");
   expect(help.output).toContain("operator-helper install code-puppy");
+  expect(help.output).toContain("operator-helper install pi");
   expect(help.output).not.toContain("operator-helper upgrade");
   expect(help.output).not.toContain("templates index");
   expect((await executeCli(["version"], context)).output).toBe("1.2.3");

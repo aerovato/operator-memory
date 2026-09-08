@@ -27,6 +27,9 @@ operator-helper install opencode
 # OpenCode V2 beta
 operator-helper install opencode-v2
 
+# Pi
+operator-helper install pi
+
 # Code Puppy
 operator-helper install code-puppy
 ```
@@ -43,6 +46,8 @@ The direct user-facing Helper operation is adapter installation:
 
 ```sh
 operator-helper install opencode
+operator-helper install opencode-v2
+operator-helper install pi
 operator-helper install code-puppy
 ```
 
