@@ -16,7 +16,7 @@
     "preview:opencode": "bun ./scripts/preview-opencode.ts",
     "install:helper": "bun run build:helper && bun link --cwd packages/helper",
     "install:opencode": "bun run build:opencode && bun ./scripts/install-opencode.ts",
-    "install:all": "bun install && bun run install:helper && bun run install:opencode",
+    "install:pi": "bun run build:pi && bun ./scripts/install-pi.ts",
     "format": "biome format --write .",
     "format:check": "biome format .",
     "lint": "biome lint .",

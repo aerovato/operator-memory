@@ -48,6 +48,7 @@ read_if: Working anywhere in the committed Operator Memory project
 - `.githooks/commit-msg` - Commit-message hook requiring an area for `feat` commits.
 - `scripts/check.sh` - Full-workspace or package-scoped validation runner, including Code Puppy Ruff and pytest checks.
 - `scripts/install-opencode.ts` - Globally registers the built local OpenCode package through a package-qualified absolute file spec.
+- `scripts/install-pi.ts` - Persistently registers the built local Pi package through its absolute package-root path.
 - `scripts/preview-opencode.ts` - Generates project-local OpenCode server and TUI configuration for the absolute local package path.
 - `scripts/publish-helper.sh`, `scripts/publish-opencode.sh`, `scripts/publish-opencode-v2.sh`, `scripts/publish-pi.sh` - Preflight-validated package check, build, version, lockfile, commit, tag, and atomic push release automation; accepts semantic bump names, `X.Y.Z`, or `vX.Y.Z`.
 - `scripts/resolve-publish-version.sh`, `scripts/resolve-publish-version.test.ts` - Shared semantic bump resolution and focused validation coverage for package releases.

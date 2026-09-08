@@ -29,6 +29,7 @@ Runtime code uses portable Node APIs. Bun owns workspace management, dependency 
 - Use `bun run test [optional: packages/<package>]` for tests.
 - Use `bun run check [optional: packages/<package>]` as a master command for formatting, linting, typechecking, and testing.
   - This command will report formatting errors but also automatically format files. Only fix linting errors; formatting is automatically applied.
+- Use `<type>(<area>): <summary>` for development commit messages, for example `feat(pi): add preamble injection`.
 
 ## Code Style
 
