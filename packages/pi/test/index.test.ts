@@ -1,0 +1,135 @@
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { beforeEach, expect, test, vi } from "vitest";
+
+const core = vi.hoisted(() => ({
+  loadMemorySnapshot: vi.fn(),
+  renderPreamble: vi.fn(),
+}));
+
+vi.mock("@aerovato/operator-core/memory/load", () => ({
+  loadMemorySnapshot: core.loadMemorySnapshot,
+}));
+vi.mock("@aerovato/operator-core/preamble", () => ({
+  renderPreamble: core.renderPreamble,
+}));
+
+import operatorPi from "../src/index.ts";
+
+type TestContext = {
+  readonly cwd: string;
+  readonly hasUI: boolean;
+  readonly abort: ReturnType<typeof vi.fn>;
+  readonly ui: { readonly notify: ReturnType<typeof vi.fn> };
+};
+
+type ContextHandler = (
+  event: { readonly messages: unknown[] },
+  context: TestContext,
+) => Promise<{ readonly messages: unknown[] }>;
+type ShutdownHandler = () => void;
+
+beforeEach(() => {
+  core.loadMemorySnapshot.mockReset();
+  core.renderPreamble.mockReset();
+});
+
+test("coalesces rendering and reuses the complete synthetic message", async () => {
+  const deferred = Promise.withResolvers<object>();
+  core.loadMemorySnapshot.mockReturnValue(deferred.promise);
+  core.renderPreamble.mockReturnValue({ loaded: true, content: "preamble" });
+  const extension = createExtension();
+  const context = createContext();
+
+  const firstPending = extension.context({ messages: [] }, context);
+  const secondPending = extension.context({ messages: [] }, context);
+  expect(core.loadMemorySnapshot).toHaveBeenCalledOnce();
+
+  deferred.resolve({});
+  const [first, second] = await Promise.all([firstPending, secondPending]);
+  expect(first.messages[0]).toBe(second.messages[0]);
+  expect(first.messages[0]).toEqual({
+    role: "user",
+    content: [{ type: "text", text: "preamble" }],
+    timestamp: expect.any(Number),
+  });
+
+  const repeated = await extension.context({ messages: [] }, context);
+  expect(repeated.messages[0]).toBe(first.messages[0]);
+  expect(core.loadMemorySnapshot).toHaveBeenCalledOnce();
+});
+
+test("injects a canonical load diagnostic and shows one recovery notice", async () => {
+  core.loadMemorySnapshot.mockResolvedValue({});
+  core.renderPreamble.mockReturnValue({ loaded: false, content: "canonical diagnostic" });
+  const extension = createExtension();
+  const context = createContext();
+
+  const first = await extension.context({ messages: [] }, context);
+  const second = await extension.context({ messages: [] }, context);
+
+  expect(first.messages[0]).toMatchObject({
+    role: "user",
+    content: [{ type: "text", text: "canonical diagnostic" }],
+  });
+  expect(second.messages[0]).toBe(first.messages[0]);
+  expect(context.ui.notify).toHaveBeenCalledOnce();
+  expect(context.abort).not.toHaveBeenCalled();
+});
+
+test("aborts every affected call after an unexpected render failure", async () => {
+  core.loadMemorySnapshot.mockRejectedValue(new Error("read failed"));
+  const extension = createExtension();
+  const context = createContext();
+  const original = [{ role: "user", content: "request" }];
+  const provider = vi.fn();
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const result = await extension.context({ messages: original }, context);
+    if (context.abort.mock.calls.length === 0) provider(result.messages);
+    expect(result.messages).toBe(original);
+  }
+
+  expect(context.abort).toHaveBeenCalledTimes(2);
+  expect(context.ui.notify).toHaveBeenCalledOnce();
+  expect(provider).not.toHaveBeenCalled();
+  expect(core.loadMemorySnapshot).toHaveBeenCalledOnce();
+});
+
+test("clears cached state on session shutdown", async () => {
+  core.loadMemorySnapshot.mockResolvedValue({});
+  core.renderPreamble
+    .mockReturnValueOnce({ loaded: true, content: "first" })
+    .mockReturnValueOnce({ loaded: true, content: "second" });
+  const extension = createExtension();
+  const context = createContext();
+
+  const first = await extension.context({ messages: [] }, context);
+  extension.shutdown();
+  const second = await extension.context({ messages: [] }, context);
+
+  expect(first.messages[0]).not.toBe(second.messages[0]);
+  expect(core.loadMemorySnapshot).toHaveBeenCalledTimes(2);
+});
+
+function createExtension(): {
+  readonly context: ContextHandler;
+  readonly shutdown: ShutdownHandler;
+} {
+  const handlers = new Map<string, unknown>();
+  operatorPi({
+    on: (event: string, handler: unknown) => handlers.set(event, handler),
+  } as unknown as ExtensionAPI);
+  return {
+    context: handlers.get("context") as ContextHandler,
+    shutdown: handlers.get("session_shutdown") as ShutdownHandler,
+  };
+}
+
+function createContext(): TestContext {
+  return {
+    cwd: "/project",
+    hasUI: true,
+    abort: vi.fn(),
+    ui: { notify: vi.fn() },
+  };
+}

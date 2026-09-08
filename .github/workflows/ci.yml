@@ -49,3 +49,10 @@ jobs:
       - name: Check OpenCode plugin package
         working-directory: packages/opencode
         run: npm pack --dry-run
+
+      - name: Build Pi plugin
+        run: bun run build:pi
+
+      - name: Check Pi plugin package
+        working-directory: packages/pi
+        run: npm pack --dry-run
