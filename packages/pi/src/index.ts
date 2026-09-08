@@ -1,14 +1,20 @@
+import { spawn } from "node:child_process";
 import { homedir } from "node:os";
 
 import { loadMemorySnapshot } from "@aerovato/operator-core/memory/load";
 import { renderPreamble } from "@aerovato/operator-core/preamble";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
+import { registerCommands } from "./commands.ts";
+
 export default function operatorPi(pi: ExtensionAPI): void {
   let message: Awaited<ReturnType<typeof renderMessage>> | null = null;
   let pending: Promise<Awaited<ReturnType<typeof renderMessage>>> | null = null;
   let recoveryNoticeShown = false;
   let failureNoticeShown = false;
+
+  startHelperUpdate();
+  registerCommands(pi);
 
   pi.on("context", async (event, context) => {
     try {
@@ -39,6 +45,23 @@ export default function operatorPi(pi: ExtensionAPI): void {
     recoveryNoticeShown = false;
     failureNoticeShown = false;
   });
+}
+
+function startHelperUpdate(): void {
+  const environment = { ...process.env };
+  delete environment.OPERATOR_HELPER_SKIP_UPDATE;
+  try {
+    const child = spawn("operator-helper", ["version"], {
+      detached: true,
+      env: environment,
+      stdio: "ignore",
+      windowsHide: true,
+    });
+    child.on("error", () => undefined);
+    child.unref();
+  } catch {
+    // The installed plugin remains usable when Helper is unavailable.
+  }
 }
 
 async function renderMessage(projectDirectory: string) {
