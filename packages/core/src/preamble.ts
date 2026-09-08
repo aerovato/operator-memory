@@ -119,7 +119,10 @@ ${status("Private", memory.private)}
 
 IMPORTANT: You MUST focus explicitly and exclusively on fixing Operator memory loading before proceeding with the user's requested work; otherwise, user and project instructions will not be loaded and you may not perform according to the user's wishes.
 
-Use the error paths and causes above to repair the affected partitions, then run \`operator-helper memory check\` to validate the full load. If the check succeeds, read the applicable Operator Instructions, Project Indexes, and Partition Catalogs before resuming the user's work. If you cannot resolve the loading failure, stop and ask the user for guidance.
+Use the error paths and causes above to repair the affected partitions, then run \`operator-helper memory check\` to validate the full load. \`operator-helper\` is the globally installed Operator CLI (npm package \`@aerovato/operator-helper\`), not a project dependency; it runs directly in any shell.
+
+- If the check succeeds: tell the user to start a new session and resubmit their original request so the next session loads the full preamble.
+- If you cannot resolve the loading failure: stop, ask the user for guidance, and suggest they run \`/operator:repair\` in a standalone session to perform self-repair.
 </operator-diagnostic>`;
 }
 
