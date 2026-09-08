@@ -20,6 +20,12 @@ bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest
 # Install OpenCode plugin
 operator-helper install opencode
 
+# Install OpenCode V2 plugin
+operator-helper install opencode-v2
+
+# Install Pi plugin
+operator-helper install pi
+
 # Install Code Puppy plugin
 operator-helper install code-puppy
 \`\`\`

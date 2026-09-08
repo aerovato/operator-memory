@@ -15,6 +15,7 @@ read_if: Working in packages/pi or changing Pi extension behavior
 
 ## `packages/pi/` Index
 
+- `README.md` - Published npm landing page with installation, runtime behavior, commands, status, and native updates.
 - `package.json`, `tsconfig.check.json` - Ditto.
 
 ### `packages/pi/src/`

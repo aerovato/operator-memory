@@ -2,7 +2,7 @@
 
 ## Overview
 
-You are working directly on the Operator Memory project. Operator turns agent work into lasting project knowledge. The MVP supports OpenCode and Code Puppy and injects durable project and user context from markdown files agents own and maintain.
+You are working directly on the Operator Memory project. Operator turns agent work into lasting project knowledge. The MVP supports OpenCode, Pi, and Code Puppy and injects durable project and user context from markdown files agents own and maintain.
 
 The Bun/TypeScript monorepo has five TypeScript packages:
 
