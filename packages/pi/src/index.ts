@@ -50,10 +50,7 @@ export default function operatorPi(pi: ExtensionAPI): void {
 
   pi.on("session_start", (_event, context) => {
     if (context.hasUI) {
-      context.ui.setStatus(
-        "__operator",
-        context.ui.theme.fg("accent", `· Operator Active (${detail})`),
-      );
+      context.ui.setStatus("__operator", `\u001B[35m· Operator Active (${detail})\u001B[39m`);
     }
   });
 

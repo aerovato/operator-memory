@@ -87,7 +87,7 @@ test("sets and clears the local-build status with the session lifecycle", () => 
   expect(context.ui.setStatus).toHaveBeenNthCalledWith(
     1,
     "__operator",
-    "[accent] · Operator Active (Local Build)",
+    "\u001B[35m· Operator Active (Local Build)\u001B[39m",
   );
   expect(context.ui.setStatus).toHaveBeenNthCalledWith(2, "__operator", undefined);
 });
