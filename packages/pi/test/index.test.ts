@@ -21,14 +21,18 @@ type TestContext = {
   readonly cwd: string;
   readonly hasUI: boolean;
   readonly abort: ReturnType<typeof vi.fn>;
-  readonly ui: { readonly notify: ReturnType<typeof vi.fn> };
+  readonly ui: {
+    readonly notify: ReturnType<typeof vi.fn>;
+    readonly setStatus: ReturnType<typeof vi.fn>;
+    readonly theme: { readonly fg: ReturnType<typeof vi.fn> };
+  };
 };
 
 type ContextHandler = (
   event: { readonly messages: unknown[] },
   context: TestContext,
 ) => Promise<{ readonly messages: unknown[] }>;
-type ShutdownHandler = () => void;
+type LifecycleHandler = (event: object, context: TestContext) => void;
 
 beforeEach(() => {
   childProcess.spawn.mockReset();
@@ -73,6 +77,21 @@ test("starts one detached Helper update check per extension runtime", () => {
   );
 });
 
+test("sets and clears the local-build status with the session lifecycle", () => {
+  const extension = createExtension();
+  const context = createContext();
+
+  extension.start({}, context);
+  extension.shutdown({}, context);
+
+  expect(context.ui.setStatus).toHaveBeenNthCalledWith(
+    1,
+    "__operator",
+    "[accent] · Operator Active (Local Build)",
+  );
+  expect(context.ui.setStatus).toHaveBeenNthCalledWith(2, "__operator", undefined);
+});
+
 test("injects a canonical load diagnostic and shows one recovery notice", async () => {
   core.loadMemorySnapshot.mockResolvedValue({});
   core.renderPreamble.mockReturnValue({ loaded: false, content: "canonical diagnostic" });
@@ -88,6 +107,7 @@ test("injects a canonical load diagnostic and shows one recovery notice", async 
   });
   expect(second.messages[0]).toBe(first.messages[0]);
   expect(context.ui.notify).toHaveBeenCalledOnce();
+  expect(context.ui.setStatus).toHaveBeenCalledWith("__operator", "[error] · Operator Unavailable");
   expect(context.abort).not.toHaveBeenCalled();
 });
 
@@ -106,6 +126,7 @@ test("aborts every affected call after an unexpected render failure", async () =
 
   expect(context.abort).toHaveBeenCalledTimes(2);
   expect(context.ui.notify).toHaveBeenCalledOnce();
+  expect(context.ui.setStatus).toHaveBeenCalledWith("__operator", "[error] · Operator Error");
   expect(provider).not.toHaveBeenCalled();
   expect(core.loadMemorySnapshot).toHaveBeenCalledOnce();
 });
@@ -119,7 +140,7 @@ test("clears cached state on session shutdown", async () => {
   const context = createContext();
 
   const first = await extension.context({ messages: [] }, context);
-  extension.shutdown();
+  extension.shutdown({}, context);
   const second = await extension.context({ messages: [] }, context);
 
   expect(first.messages[0]).not.toBe(second.messages[0]);
@@ -128,7 +149,8 @@ test("clears cached state on session shutdown", async () => {
 
 function createExtension(): {
   readonly context: ContextHandler;
-  readonly shutdown: ShutdownHandler;
+  readonly start: LifecycleHandler;
+  readonly shutdown: LifecycleHandler;
 } {
   const handlers = new Map<string, unknown>();
   operatorPi({
@@ -137,7 +159,8 @@ function createExtension(): {
   } as unknown as ExtensionAPI);
   return {
     context: handlers.get("context") as ContextHandler,
-    shutdown: handlers.get("session_shutdown") as ShutdownHandler,
+    start: handlers.get("session_start") as LifecycleHandler,
+    shutdown: handlers.get("session_shutdown") as LifecycleHandler,
   };
 }
 
@@ -146,6 +169,10 @@ function createContext(): TestContext {
     cwd: "/project",
     hasUI: true,
     abort: vi.fn(),
-    ui: { notify: vi.fn() },
+    ui: {
+      notify: vi.fn(),
+      setStatus: vi.fn(),
+      theme: { fg: vi.fn((color: string, text: string) => `[${color}] ${text}`) },
+    },
   };
 }

@@ -1,10 +1,13 @@
 import { spawn } from "node:child_process";
 import { homedir } from "node:os";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { loadMemorySnapshot } from "@aerovato/operator-core/memory/load";
 import { renderPreamble } from "@aerovato/operator-core/preamble";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
+import packageJson from "../package.json" with { type: "json" };
 import { registerCommands } from "./commands.ts";
 
 export default function operatorPi(pi: ExtensionAPI): void {
@@ -12,6 +15,7 @@ export default function operatorPi(pi: ExtensionAPI): void {
   let pending: Promise<Awaited<ReturnType<typeof renderMessage>>> | null = null;
   let recoveryNoticeShown = false;
   let failureNoticeShown = false;
+  const detail = installationDetail(import.meta.url);
 
   startHelperUpdate();
   registerCommands(pi);
@@ -22,6 +26,7 @@ export default function operatorPi(pi: ExtensionAPI): void {
       message ??= await pending;
       if (!message.loaded && context.hasUI && !recoveryNoticeShown) {
         recoveryNoticeShown = true;
+        context.ui.setStatus("__operator", context.ui.theme.fg("error", "· Operator Unavailable"));
         context.ui.notify(
           "Operator memory failed to load. The agent is attempting to recover.",
           "error",
@@ -32,19 +37,41 @@ export default function operatorPi(pi: ExtensionAPI): void {
       context.abort();
       if (context.hasUI && !failureNoticeShown) {
         failureNoticeShown = true;
-        const detail = cause instanceof Error ? ` ${cause.message}` : "";
-        context.ui.notify(`Operator failed to create the session preamble.${detail}`, "error");
+        const causeMessage = cause instanceof Error ? cause.message : "Preamble Error";
+        context.ui.setStatus("__operator", context.ui.theme.fg("error", "· Operator Error"));
+        context.ui.notify(
+          `Operator failed to create the session preamble. ${causeMessage}`,
+          "error",
+        );
       }
       return { messages: event.messages };
     }
   });
 
-  pi.on("session_shutdown", () => {
+  pi.on("session_start", (_event, context) => {
+    if (context.hasUI) {
+      context.ui.setStatus(
+        "__operator",
+        context.ui.theme.fg("accent", `· Operator Active (${detail})`),
+      );
+    }
+  });
+
+  pi.on("session_shutdown", (_event, context) => {
+    if (context.hasUI) context.ui.setStatus("__operator", undefined);
     message = null;
     pending = null;
     recoveryNoticeShown = false;
     failureNoticeShown = false;
   });
+}
+
+function installationDetail(moduleUrl: string): string {
+  const packageDirectory = dirname(dirname(fileURLToPath(moduleUrl)));
+  const separator = process.platform === "win32" ? "\\" : "/";
+  return packageDirectory.includes(`${separator}node_modules${separator}`)
+    ? `v${packageJson.version}`
+    : "Local Build";
 }
 
 function startHelperUpdate(): void {
