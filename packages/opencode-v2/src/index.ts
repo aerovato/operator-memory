@@ -4,7 +4,7 @@ import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { loadMemorySnapshot, type MemoryStatusSnapshot } from "@aerovato/operator-core/memory/load";
-import { Plugin } from "@opencode-ai/plugin";
+import { Plugin } from "@opencode/plugin";
 
 import packageJson from "../package.json" with { type: "json" };
 import { registerCommands } from "./commands.ts";
@@ -15,7 +15,6 @@ import {
   type OperatorToast,
   type PartitionStatus,
 } from "./notifications.ts";
-import { startAutoUpdate } from "./update.ts";
 
 let helperUpdateStarted = false;
 
@@ -40,7 +39,6 @@ const OperatorPlugin = Plugin.define({
     });
     const showToast = (toast: OperatorToast) => notifications.events.emit("toast", toast);
     startHelperUpdate();
-    void startAutoUpdate(showToast).catch(() => undefined);
     await registerCommands(context);
     await context.session.hook("context", async event => {
       const result = await loadPreamble({

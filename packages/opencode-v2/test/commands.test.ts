@@ -1,7 +1,7 @@
 import { EventEmitter } from "node:events";
 
-import type { Context } from "@opencode-ai/plugin/promise/plugin";
-import type { CommandDefinition, CommandDraft } from "@opencode-ai/plugin/promise/command";
+import type { Context } from "@opencode/plugin/promise/plugin";
+import type { CommandDefinition, CommandEditor } from "@opencode/plugin/promise/command";
 import { expect, test, vi } from "vitest";
 
 const { spawn } = vi.hoisted(() => ({ spawn: vi.fn() }));
@@ -30,7 +30,7 @@ test("runs Helper operations in order and admits their output", async () => {
     location: { directory: "/project" },
     command: {
       list: () => Promise.resolve({ data: [], location: { directory: "/project" } }),
-      transform: async (callback: (draft: CommandDraft) => void) =>
+      transform: async (callback: (editor: CommandEditor) => void) =>
         callback({ add: definition => definitions.push(definition) }),
     },
     session: { prompt },
@@ -69,7 +69,7 @@ test("preserves existing user commands", async () => {
           data: [{ name: "operator:index", description: "User command" }],
           location: { directory: "/project" },
         }),
-      transform: async (callback: (draft: CommandDraft) => void) =>
+      transform: async (callback: (editor: CommandEditor) => void) =>
         callback({ add: definition => definitions.push(definition) }),
     },
   } as unknown as Context;

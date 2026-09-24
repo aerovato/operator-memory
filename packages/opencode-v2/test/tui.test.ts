@@ -1,4 +1,4 @@
-import type { Context, SlotClaim } from "@opencode-ai/plugin/tui/context";
+import type { Context, SlotClaim } from "@opencode/plugin/tui/context";
 import { expect, test, vi } from "vitest";
 
 import OperatorTuiPlugin, { statusLabel } from "../src/tui.tsx";
