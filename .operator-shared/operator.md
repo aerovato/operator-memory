@@ -30,6 +30,7 @@ Runtime code uses portable Node APIs. Bun owns workspace management, dependency 
 - Use `bun run check [optional: packages/<package>]` as a master command for formatting, linting, typechecking, and testing.
   - This command will report formatting errors but also automatically format files. Only fix linting errors; formatting is automatically applied.
 - Use `<type>(<area>): <summary>` for development commit messages, for example `feat(pi): add preamble injection`.
+- Name development branches `<type>/<short-kebab-description>` (for example `fix/opencode-v2-status`), matching the repository's PR branch convention. Use the relevant change type such as `fix`, `feat`, `docs`, or `chore`.
 
 ## Code Style
 
