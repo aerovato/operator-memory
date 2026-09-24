@@ -1,6 +1,8 @@
 import { rm } from "node:fs/promises";
 import { join, resolve } from "node:path";
 
+import solidPlugin from "@opentui/solid/bun-plugin";
+
 const packageDirectory = resolve(import.meta.dir, "..");
 const outputDirectory = join(packageDirectory, "dist");
 
@@ -16,6 +18,7 @@ const build = await Bun.build({
   target: "node",
   format: "esm",
   sourcemap: "external",
+  plugins: [solidPlugin],
   external: ["@opencode/plugin", "@opentui/core", "@opentui/solid", "solid-js"],
 });
 

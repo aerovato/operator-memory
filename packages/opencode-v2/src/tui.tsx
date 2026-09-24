@@ -81,8 +81,11 @@ const OperatorTuiPlugin = Plugin.define({
         refresh(session?.location ?? context.location, true);
       }),
       context.ui.slot({
-        append: "home.footer",
-        render: () => <ReadyIndicator context={context} status={() => status(context.location)} />,
+        append: "home.footer.status",
+        render: () => {
+          createEffect(() => refresh(context.location, false));
+          return <ReadyIndicator context={context} status={() => status(context.location)} />;
+        },
       }),
       context.ui.slot({
         append: "sidebar.content",

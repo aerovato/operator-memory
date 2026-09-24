@@ -3,6 +3,17 @@ import { expect, test, vi } from "vitest";
 
 import OperatorTuiPlugin, { statusLabel } from "../src/tui.tsx";
 
+const { effects } = vi.hoisted(() => ({ effects: [] as Array<() => void> }));
+vi.mock("solid-js", async importOriginal => ({
+  ...(await importOriginal<typeof import("solid-js")>()),
+  createEffect: (effect: () => void) => effects.push(effect),
+}));
+vi.mock("@opentui/solid/jsx-runtime", () => ({
+  jsx: () => null,
+  jsxs: () => null,
+}));
+vi.mock("@opentui/solid/jsx-dev-runtime", () => ({ jsxDEV: () => null }));
+
 test("queries server status and registers parity slots", async () => {
   const claims: SlotClaim[] = [];
   const status = vi.fn(() =>
@@ -25,9 +36,42 @@ test("queries server status and registers parity slots", async () => {
 
   await vi.waitFor(() => expect(status).toHaveBeenCalledWith({ refresh: false }, undefined));
   expect(claims.map(claim => "append" in claim && claim.append)).toEqual([
-    "home.footer",
+    "home.footer.status",
     "sidebar.content",
   ]);
+});
+
+test("queries status when the initial home location resolves", async () => {
+  const claims: SlotClaim[] = [];
+  const location: { current: { directory: string } | undefined } = { current: undefined };
+  const status = vi.fn(() =>
+    Promise.resolve({ detail: "v2.0.0", user: "loaded", private: "loaded", shared: "loaded" }),
+  );
+  const context = createContext({
+    status,
+    slot: claim => {
+      claims.push(claim);
+      return vi.fn();
+    },
+  });
+  Object.defineProperty(context, "location", { get: () => location.current });
+  OperatorTuiPlugin.setup(context);
+
+  const home = claims.find(claim => "append" in claim && claim.append === "home.footer.status");
+  if (home === undefined) throw new Error("Home footer slot was not registered");
+  home.render({});
+  expect(effects).toHaveLength(1);
+  effects[0]?.();
+  location.current = { directory: "/project" };
+  effects[0]?.();
+
+  await vi.waitFor(() =>
+    expect(status).toHaveBeenCalledWith(
+      { refresh: false },
+      { location: { directory: "/project" } },
+    ),
+  );
+  effects.length = 0;
 });
 
 test("shows server notification events as toasts", () => {

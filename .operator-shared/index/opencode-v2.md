@@ -37,4 +37,4 @@ read_if: Working in packages/opencode-v2 or changing OpenCode V2 preamble inject
 
 ### `packages/opencode-v2/scripts/`
 
-- `build.ts` — Clean server JavaScript bundle build
+- `build.ts` — Server and Solid-transformed TUI JavaScript bundle build
