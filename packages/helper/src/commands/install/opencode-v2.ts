@@ -7,7 +7,7 @@ const OPENCODE_V2_PLUGIN = "@aerovato/operator-opencode-v2@latest";
 
 export const installOpenCodeV2 = Effect.fn("installOpenCodeV2")(function* (context: CliContext) {
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
-  const command = ChildProcess.make("opencode2", ["plugin", "add", OPENCODE_V2_PLUGIN], {
+  const command = ChildProcess.make("opencode", ["plugin", "add", OPENCODE_V2_PLUGIN], {
     cwd: context.cwd,
     env: { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
     extendEnv: true,
@@ -32,7 +32,7 @@ export const installOpenCodeV2 = Effect.fn("installOpenCodeV2")(function* (conte
       execution.failure instanceof PlatformError.PlatformError
         ? (execution.failure.reason.description ?? execution.failure.message)
         : getErrorMessage(execution.failure);
-    return { exitCode: 1, output: `✗ Could not run opencode2: ${message}` };
+    return { exitCode: 1, output: `✗ Could not run opencode: ${message}` };
   }
   const output = [execution.success.stdout.trim(), execution.success.stderr.trim()]
     .filter(Boolean)

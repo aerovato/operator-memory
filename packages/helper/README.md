@@ -21,11 +21,11 @@ bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest
 Install an adapter:
 
 ```sh
-# OpenCode
-operator-helper install opencode
-
-# OpenCode V2 beta
+# OpenCode 2
 operator-helper install opencode-v2
+
+# OpenCode 1 (legacy)
+operator-helper install opencode
 
 # Pi
 operator-helper install pi
