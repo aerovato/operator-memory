@@ -1,5 +1,5 @@
-import { Plugin } from "@opencode-ai/plugin/tui";
-import type { Context } from "@opencode-ai/plugin/tui/context";
+import { Plugin } from "@opencode/plugin/tui";
+import type { Context } from "@opencode/plugin/tui/context";
 import { createEffect, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 

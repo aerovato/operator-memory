@@ -101,7 +101,7 @@ test.runIf(process.platform !== "win32")(
   "installs the latest OpenCode V2 plugin globally",
   async () => {
     executable(
-      "opencode2",
+      "opencode",
       'printf "%s\n%s" "$*" "$NPM_CONFIG_MIN_RELEASE_AGE" > "$OPERATOR_TEST_RECORD"\nprintf "installed"',
     );
 

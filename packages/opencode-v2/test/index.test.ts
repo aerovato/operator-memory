@@ -1,29 +1,25 @@
-import type { Context } from "@opencode-ai/plugin/promise/plugin";
+import type { Context } from "@opencode/plugin/promise/plugin";
 import { expect, test, vi } from "vitest";
 
-const { child, emitToast, loadMemorySnapshot, loadPreamble, spawn, startAutoUpdate } = vi.hoisted(
-  () => ({
-    child: { on: vi.fn(), unref: vi.fn() },
-    emitToast: vi.fn(() => Promise.resolve()),
-    loadMemorySnapshot: vi.fn(() =>
-      Promise.resolve({
-        user: { ok: true as const, value: { exists: true } },
-        private: { ok: true as const, value: { exists: false } },
-        shared: { ok: false as const, error: { message: "failed" } },
-      }),
-    ),
-    loadPreamble: vi.fn(() =>
-      Promise.resolve({ ok: true as const, value: { content: "operator preamble", loaded: true } }),
-    ),
-    spawn: vi.fn(),
-    startAutoUpdate: vi.fn(() => Promise.resolve()),
-  }),
-);
+const { child, emitToast, loadMemorySnapshot, loadPreamble, spawn } = vi.hoisted(() => ({
+  child: { on: vi.fn(), unref: vi.fn() },
+  emitToast: vi.fn(() => Promise.resolve()),
+  loadMemorySnapshot: vi.fn(() =>
+    Promise.resolve({
+      user: { ok: true as const, value: { exists: true } },
+      private: { ok: true as const, value: { exists: false } },
+      shared: { ok: false as const, error: { message: "failed" } },
+    }),
+  ),
+  loadPreamble: vi.fn(() =>
+    Promise.resolve({ ok: true as const, value: { content: "operator preamble", loaded: true } }),
+  ),
+  spawn: vi.fn(),
+}));
 
 vi.mock("node:child_process", () => ({ spawn }));
 vi.mock("@aerovato/operator-core/memory/load", () => ({ loadMemorySnapshot }));
 vi.mock("../src/preamble.ts", () => ({ loadPreamble }));
-vi.mock("../src/update.ts", () => ({ startAutoUpdate }));
 
 import OperatorPlugin from "../src/index.ts";
 
@@ -57,7 +53,6 @@ test("registers commands and injects the preamble through the context hook", asy
     expect.objectContaining({ detached: true, stdio: "ignore", windowsHide: true }),
   );
   expect(commandTransform).toHaveBeenCalledOnce();
-  expect(startAutoUpdate).toHaveBeenCalledWith(expect.any(Function));
   expect(addCommand.mock.calls.map(([command]) => command.name)).toEqual([
     "operator:user-init",
     "operator:project-init",

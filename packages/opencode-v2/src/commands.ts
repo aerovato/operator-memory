@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 
-import type { Context } from "@opencode-ai/plugin/promise/plugin";
+import type { Context } from "@opencode/plugin/promise/plugin";
 
 export const OPERATOR_COMMAND_NAMES = [
   "operator:user-init",
