@@ -1,0 +1,12 @@
+{
+  "name": "operator-local",
+  "plugins": [
+    {
+      "name": "operator",
+      "source": "./packages/codex",
+      "policy": {
+        "installation": "AVAILABLE"
+      }
+    }
+  ]
+}

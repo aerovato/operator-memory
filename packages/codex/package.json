@@ -1,0 +1,32 @@
+{
+  "name": "@aerovato/operator-codex",
+  "version": "0.1.0",
+  "description": "Operator Memory adapter for Codex.",
+  "license": "BSD-3-Clause",
+  "author": "Aerovato Research",
+  "homepage": "https://github.com/aerovato/operator-memory#readme",
+  "bugs": {
+    "url": "https://github.com/aerovato/operator-memory/issues"
+  },
+  "files": [
+    ".codex-plugin"
+  ],
+  "keywords": [
+    "codex",
+    "codex-plugin",
+    "memory",
+    "plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aerovato/operator-memory.git",
+    "directory": "packages/codex"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module"
+}

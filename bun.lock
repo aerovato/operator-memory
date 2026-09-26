@@ -16,6 +16,10 @@
         "vitest": "^4.1.10",
       },
     },
+    "packages/codex": {
+      "name": "@aerovato/operator-codex",
+      "version": "0.1.0",
+    },
     "packages/core": {
       "name": "@aerovato/operator-core",
       "version": "0.0.0",
@@ -25,7 +29,7 @@
     },
     "packages/helper": {
       "name": "@aerovato/operator-helper",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "bin": {
         "operator-helper": "dist/index.js",
       },
@@ -69,7 +73,7 @@
     },
     "packages/opencode-v2": {
       "name": "@aerovato/operator-opencode-v2",
-      "version": "1.0.0",
+      "version": "2.1.0",
       "devDependencies": {
         "@aerovato/operator-core": "workspace:*",
         "@opencode/plugin": "2.0.14",
@@ -105,6 +109,8 @@
     },
   },
   "packages": {
+    "@aerovato/operator-codex": ["@aerovato/operator-codex@workspace:packages/codex"],
+
     "@aerovato/operator-core": ["@aerovato/operator-core@workspace:packages/core"],
 
     "@aerovato/operator-helper": ["@aerovato/operator-helper@workspace:packages/helper"],
