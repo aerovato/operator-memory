@@ -9,7 +9,9 @@
     "url": "https://github.com/aerovato/operator-memory/issues"
   },
   "files": [
-    ".codex-plugin"
+    ".codex-plugin",
+    "hooks",
+    "dist"
   ],
   "keywords": [
     "codex",
@@ -27,6 +29,10 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "scripts": {
+    "build": "bun ./scripts/build.ts",
+    "prepack": "bun run build"
   },
   "type": "module"
 }

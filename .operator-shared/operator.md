@@ -12,7 +12,7 @@ The Bun/TypeScript monorepo has five TypeScript packages:
 - `@aerovato/operator-opencode-v2` — published OpenCode V2 server, RPC, and TUI plugin adapter
 - `@aerovato/operator-pi` — published Pi extension adapter
 
-The repository also contains the helper-bundled Python adapter source under `packages/code-puppy`.
+The repository also contains the JavaScript `@aerovato/operator-codex` plugin package and the helper-bundled Python adapter source under `packages/code-puppy`.
 
 Runtime code uses portable Node APIs. Bun owns workspace management, dependency installation, building, and tests.
 

@@ -1,5 +1,6 @@
 {
   "name": "operator",
   "version": "0.1.0",
-  "description": "Operator Memory"
+  "description": "Operator Memory",
+  "hooks": "./hooks/hooks.json"
 }
