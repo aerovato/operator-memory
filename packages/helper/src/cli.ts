@@ -20,7 +20,7 @@ import { userStatus } from "./commands/user/status.ts";
 import { fileFailure } from "./commands/common.ts";
 import { upgrade } from "./commands/upgrade.ts";
 import type { GitRunner } from "./git.ts";
-import { NpmRegistry } from "./npm-registry.ts";
+import type { NpmRegistry } from "./npm-registry.ts";
 import { renderTable } from "./output.ts";
 import type { CliContext, CliResult } from "./utils.ts";
 

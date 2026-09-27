@@ -1,9 +1,7 @@
 import { Effect } from "effect";
-import type { ChildProcessSpawner } from "effect/unstable/process";
 
-import { NpmRegistry } from "../npm-registry.ts";
 import { autoUpdate } from "../update.ts";
-import type { CliContext, CliResult } from "../utils.ts";
+import type { CliContext } from "../utils.ts";
 
 export const upgrade = Effect.fn("upgrade")(function* (context: CliContext) {
   const result = yield* autoUpdate(context.version, context, true);
