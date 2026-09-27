@@ -287,7 +287,7 @@ test.runIf(process.platform !== "win32")(
 
     const result = await update("4.5.6");
 
-    expect(result).toEqual({ status: "updated" });
+    expect(result).toEqual({ status: "updated", latest: "4.5.6" });
     expect(fs.readFileSync(record, "utf8")).toBe(
       "add --global --minimum-release-age 0 @aerovato/operator-helper@4.5.6",
     );
@@ -305,7 +305,7 @@ test.runIf(process.platform !== "win32")(
 
     const result = await update("4.5.6");
 
-    expect(result).toEqual({ status: "updated" });
+    expect(result).toEqual({ status: "updated", latest: "4.5.6" });
     expect(fs.readFileSync(record, "utf8")).toBe(
       "install --global @aerovato/operator-helper@4.5.6\n0",
     );
@@ -347,7 +347,7 @@ test("reuses a recent update check", async () => {
   );
   const run = () =>
     Effect.runPromise(
-      autoUpdate(context.version, context).pipe(
+      autoUpdate(context.version, context, false).pipe(
         Effect.provide(Layer.mergeAll(child, registryLayer)),
       ),
     );
@@ -355,6 +355,42 @@ test("reuses a recent update check", async () => {
   await expect(run()).resolves.toEqual({ status: "current" });
   await expect(run()).resolves.toEqual({ status: "current" });
   expect(checks).toBe(1);
+});
+
+test("bypasses the update-check cache when forced", async () => {
+  let checks = 0;
+  const child = NodeChildProcessSpawner.layer.pipe(
+    Layer.provide(NodeFileSystem.layer),
+    Layer.provide(NodePath.layer),
+  );
+  const registryLayer = Layer.succeed(
+    NpmRegistry.Service,
+    NpmRegistry.Service.of({
+      latestVersion: () => {
+        checks += 1;
+        return Effect.succeed("1.2.3");
+      },
+    }),
+  );
+  const run = (bypassCache: boolean) =>
+    Effect.runPromise(
+      autoUpdate(context.version, context, bypassCache).pipe(
+        Effect.provide(Layer.mergeAll(child, registryLayer)),
+      ),
+    );
+
+  await expect(run(false)).resolves.toEqual({ status: "current" });
+  await expect(run(true)).resolves.toEqual({ status: "current" });
+  expect(checks).toBe(2);
+});
+
+test.runIf(process.platform !== "win32")("upgrade reports an up-to-date helper", async () => {
+  const result = await execute(["upgrade"], "1.2.3");
+
+  expect(result).toEqual({
+    exitCode: 0,
+    output: "Operator Helper 1.2.3 is up to date.",
+  });
 });
 
 test.runIf(process.platform !== "win32")(
@@ -430,7 +466,7 @@ function update(latest: string) {
     Layer.provide(NodePath.layer),
   );
   return Effect.runPromise(
-    autoUpdate(context.version, context).pipe(
+    autoUpdate(context.version, context, false).pipe(
       Effect.provide(Layer.mergeAll(child, registry(latest))),
     ),
   );

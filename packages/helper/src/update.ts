@@ -29,7 +29,7 @@ type InstallationChannel = "bun" | "npm" | "unknown";
 
 export type UpdateResult =
   | { readonly status: "current" }
-  | { readonly status: "updated" }
+  | { readonly status: "updated"; readonly latest: string }
   | { readonly status: "unknown"; readonly latest: string }
   | { readonly status: "failed" };
 
@@ -41,8 +41,9 @@ function updateCheckPath(context: CliContext): string {
 export const autoUpdate = Effect.fn("autoUpdate")(function* (
   currentVersion: string,
   context: CliContext,
+  bypassCache: boolean,
 ) {
-  const cached = yield* Effect.promise(() => readUpdateCheck(context));
+  const cached = bypassCache ? null : yield* Effect.promise(() => readUpdateCheck(context));
   if (cached !== null && isFresh(cached)) {
     if (cached.status === "unknown") {
       return { status: "unknown", latest: cached.latest } satisfies UpdateResult;
@@ -102,7 +103,7 @@ export const autoUpdate = Effect.fn("autoUpdate")(function* (
     yield* Effect.promise(() =>
       writeUpdateCheck(context, { checkedAt: Date.now(), status: "current" }),
     );
-    return { status: "updated" } satisfies UpdateResult;
+    return { status: "updated", latest: latest.value } satisfies UpdateResult;
   }
   yield* Effect.promise(() =>
     writeUpdateCheck(context, { checkedAt: Date.now(), status: "failed" }),

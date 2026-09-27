@@ -45,7 +45,7 @@ const main = Effect.gen(function* () {
     version: packageJson.version,
   };
   if (process.env[SKIP_UPDATE_ENVIRONMENT_VARIABLE] !== "1") {
-    const update = yield* autoUpdate(packageJson.version, environment);
+    const update = yield* autoUpdate(packageJson.version, environment, false);
     if (update.status === "updated") {
       const entrypoint = process.argv[1];
       if (entrypoint !== undefined) {

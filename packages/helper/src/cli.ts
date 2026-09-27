@@ -18,7 +18,9 @@ import { userGuide } from "./commands/user/guide.ts";
 import { userInit } from "./commands/user/init.ts";
 import { userStatus } from "./commands/user/status.ts";
 import { fileFailure } from "./commands/common.ts";
+import { upgrade } from "./commands/upgrade.ts";
 import type { GitRunner } from "./git.ts";
+import { NpmRegistry } from "./npm-registry.ts";
 import { renderTable } from "./output.ts";
 import type { CliContext, CliResult } from "./utils.ts";
 
@@ -29,6 +31,7 @@ USER COMMANDS
 ${renderTable([
   ["help", "Show help for operator-helper"],
   ["version", "Show the installed version"],
+  ["upgrade", "Update Operator Helper to the latest release"],
   ["operator-helper install codex", "Install or update the Codex plugin"],
   ["operator-helper install opencode", "Install or update the OpenCode plugin"],
   ["operator-helper install opencode-v2", "Install or update the OpenCode V2 plugin"],
@@ -61,7 +64,11 @@ export function runCli(
 ): Effect.Effect<
   CliResult,
   never,
-  ChildProcessSpawner.ChildProcessSpawner | FileSystem.FileSystem | GitRunner.Service | Path.Path
+  | ChildProcessSpawner.ChildProcessSpawner
+  | FileSystem.FileSystem
+  | GitRunner.Service
+  | NpmRegistry.Service
+  | Path.Path
 > {
   return Effect.gen(function* () {
     if (arguments_.length === 1 && arguments_[0] === "help") {
@@ -72,6 +79,9 @@ export function runCli(
     }
     if (arguments_.length === 1 && arguments_[0] === "preamble") {
       return yield* preamble(context);
+    }
+    if (arguments_.length === 1 && arguments_[0] === "upgrade") {
+      return yield* upgrade(context);
     }
     if (arguments_.length !== 2) {
       return { exitCode: 2, output: HELP };

@@ -27,7 +27,8 @@
     "node": ">=20"
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/*.map"
   ],
   "keywords": [
     "opencode",
