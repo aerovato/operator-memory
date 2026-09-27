@@ -13,6 +13,7 @@ operator-helper install opencode
 operator-helper install opencode-v2
 operator-helper install pi
 operator-helper install code-puppy
+operator-helper install codex
 ```
 
 Restart the harness after installation or repair. Until the harness reloads the adapter, setup commands and preamble injection will not behave as expected.
@@ -21,7 +22,7 @@ Restart the harness after installation or repair. Until the harness reloads the 
 
 Operator Helper automtically checks for and installs updates when commands run. If it cannot determine whether Bun or npm owns the global installation, it asks for a manual update using the original installation method. Registry and installation failures do not block the requested command.
 
-The OpenCode adapters check for updates and apply successful updates after the harness restarts. Pi reports available package updates at startup; run `pi update --extensions` to apply them. If installation or recovery fails, rerun the matching Helper install command and restart the harness.
+The OpenCode adapters check for updates and apply successful updates after the harness restarts. Pi reports available package updates at startup; run `pi update --extensions` to apply them. Codex plugins are updated by rerunning `operator-helper install codex`, then starting a fresh Codex session. If installation or recovery fails, rerun the matching Helper install command and restart the harness.
 
 ## Partition And Memory Repair
 

@@ -13,7 +13,9 @@
     "build:opencode": "bun run --cwd packages/opencode build",
     "build:opencode-v2": "bun run --cwd packages/opencode-v2 build",
     "build:pi": "bun run --cwd packages/pi build",
+    "build:codex": "bun run --cwd packages/codex build",
     "preview:opencode": "bun ./scripts/preview-opencode.ts",
+    "preview:codex": "bun ./scripts/preview-codex.ts",
     "install:helper": "bun run build:helper && bun link --cwd packages/helper",
     "install:opencode": "bun run build:opencode && bun ./scripts/install-opencode.ts",
     "install:pi": "bun run build:pi && bun ./scripts/install-pi.ts",
@@ -27,7 +29,8 @@
     "publish:helper": "sh scripts/publish-helper.sh",
     "publish:opencode": "sh scripts/publish-opencode.sh",
     "publish:opencode-v2": "sh scripts/publish-opencode-v2.sh",
-    "publish:pi": "sh scripts/publish-pi.sh"
+    "publish:pi": "sh scripts/publish-pi.sh",
+    "publish:codex": "sh scripts/publish-codex.sh"
   },
   "repository": {
     "type": "git",
