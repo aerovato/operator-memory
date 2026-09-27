@@ -54,7 +54,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 ### `packages/helper/test/`
 
 - `cli.test.ts` — Temporary-filesystem command routing, memory check, guide, status, initialization, and lint integration coverage
-- `install-update.test.ts` — OpenCode V1/V2, Pi, and managed Code Puppy installation plus Bun/npm automatic update, release-age override, channel fallback, and failure coverage
+- `install-update.test.ts` — Codex, OpenCode V1/V2, Pi, and managed Code Puppy installation plus Bun/npm automatic update, release-age override, channel fallback, and failure coverage
 - `npm-registry.test.ts` — Latest-version response decoding and typed registry failure coverage
 - `filesystem.test.ts` — Live temporary-filesystem path and symlink inspection, text I/O, non-overwriting writes, and recursive listing coverage
 - `git.test.ts` — Configured and fallback global ignore plus tracked Private file coverage
@@ -69,6 +69,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 - `common.ts` — Shared typed filesystem failure rendering at the CLI boundary
 ##### `commands/install/`
 
+- `codex.ts` — Helper-managed npm marketplace, Codex CLI installation, and installed/enabled verification
 - `opencode.ts` — OpenCode CLI installation and stable-cache recovery
 - `opencode-v2.ts` — OpenCode V2 CLI package installation
 - `pi.ts` — Pi CLI package installation through its unversioned npm package spec

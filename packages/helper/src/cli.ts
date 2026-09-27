@@ -5,6 +5,7 @@ import { indexGuide } from "./commands/index/guide.ts";
 import { indexLint } from "./commands/index/lint.ts";
 import { indexStatus } from "./commands/index/status.ts";
 import { installCodePuppy } from "./commands/install/code-puppy.ts";
+import { installCodex } from "./commands/install/codex.ts";
 import { installOpenCode } from "./commands/install/opencode.ts";
 import { installOpenCodeV2 } from "./commands/install/opencode-v2.ts";
 import { installPi } from "./commands/install/pi.ts";
@@ -28,6 +29,7 @@ USER COMMANDS
 ${renderTable([
   ["help", "Show help for operator-helper"],
   ["version", "Show the installed version"],
+  ["operator-helper install codex", "Install or update the Codex plugin"],
   ["operator-helper install opencode", "Install or update the OpenCode plugin"],
   ["operator-helper install opencode-v2", "Install or update the OpenCode V2 plugin"],
   ["operator-helper install pi", "Install or update the Pi plugin"],
@@ -97,6 +99,8 @@ export function runCli(
         return yield* indexLint(context);
       case "memory check":
         return yield* memoryCheck(context);
+      case "install codex":
+        return yield* installCodex(context);
       case "install opencode":
         return yield* installOpenCode(context);
       case "install opencode-v2":

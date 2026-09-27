@@ -2,7 +2,7 @@
   "name": "operator-local",
   "plugins": [
     {
-      "name": "operator",
+      "name": "aerovato",
       "source": "./packages/codex",
       "policy": {
         "installation": "AVAILABLE"

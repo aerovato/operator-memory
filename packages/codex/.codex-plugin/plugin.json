@@ -1,5 +1,5 @@
 {
-  "name": "operator",
+  "name": "aerovato",
   "version": "0.1.0",
   "description": "Operator Memory",
   "hooks": "./hooks/hooks.json"

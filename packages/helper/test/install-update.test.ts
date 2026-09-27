@@ -47,6 +47,82 @@ afterEach(() => {
 });
 
 test.runIf(process.platform !== "win32")(
+  "installs and verifies the Codex plugin through a managed npm marketplace",
+  async () => {
+    executable(
+      "codex",
+      `printf '%s|%s\n' "$NPM_CONFIG_MIN_RELEASE_AGE" "$*" >> "$OPERATOR_TEST_RECORD"
+if [ "$1 $2 $3" = "plugin marketplace add" ]; then printf '{"marketplaceName":"operator-memory"}'; exit 0; fi
+if [ "$1 $2 $3" = "plugin add aerovato@operator-memory" ]; then printf '{"pluginId":"aerovato@operator-memory"}'; exit 0; fi
+printf '{"installed":[{"pluginId":"aerovato@operator-memory","installed":true,"enabled":true}]}'`,
+    );
+
+    const result = await execute(["install", "codex"], "4.5.6");
+    const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
+    const marketplace = JSON.parse(
+      fs.readFileSync(join(marketplaceRoot, ".agents", "plugins", "marketplace.json"), "utf8"),
+    );
+
+    expect(result).toEqual({
+      exitCode: 0,
+      output:
+        "✓ Codex plugin installed and enabled\n"
+        + "Start a new Codex session and approve the Operator hooks if prompted.",
+    });
+    expect(marketplace).toEqual({
+      name: "operator-memory",
+      plugins: [
+        {
+          name: "aerovato",
+          source: {
+            source: "npm",
+            package: "@aerovato/operator-codex",
+            version: "latest",
+          },
+          policy: { installation: "AVAILABLE" },
+        },
+      ],
+    });
+    expect(fs.readFileSync(record, "utf8")).toBe(
+      `0|plugin marketplace add ${marketplaceRoot} --json\n`
+        + "0|plugin add aerovato@operator-memory --json\n"
+        + "0|plugin list --marketplace operator-memory --json\n",
+    );
+  },
+);
+
+test.runIf(process.platform !== "win32")(
+  "rejects a Codex installation that is not enabled",
+  async () => {
+    executable(
+      "codex",
+      `if [ "$1 $2 $3" = "plugin marketplace add" ]; then printf '{}'; exit 0; fi
+if [ "$1 $2 $3" = "plugin add aerovato@operator-memory" ]; then printf '{}'; exit 0; fi
+printf '{"installed":[{"pluginId":"aerovato@operator-memory","installed":true,"enabled":false}]}'`,
+    );
+
+    expect(await execute(["install", "codex"], "4.5.6")).toEqual({
+      exitCode: 1,
+      output: "✗ Codex plugin installation finished but the plugin is not installed and enabled",
+    });
+  },
+);
+
+test("preserves an unmanaged Codex marketplace", async () => {
+  const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
+  fs.mkdirSync(marketplaceRoot, { recursive: true });
+  fs.writeFileSync(join(marketplaceRoot, "user-file"), "user owned");
+
+  const result = await execute(["install", "codex"], "4.5.6");
+
+  expect(result).toEqual({
+    exitCode: 1,
+    output: `✗ Preserved unmanaged Codex marketplace at ${marketplaceRoot}`,
+  });
+  expect(fs.readFileSync(join(marketplaceRoot, "user-file"), "utf8")).toBe("user owned");
+});
+
+test.runIf(process.platform !== "win32")(
   "installs the latest OpenCode plugin globally",
   async () => {
     const cache = join(
