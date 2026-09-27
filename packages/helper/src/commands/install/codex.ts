@@ -39,6 +39,9 @@ export const installCodex = Effect.fn("installCodex")(function* (context: CliCon
     context.cwd,
     { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
   );
+  if (!addMarketplace.ok && isMissingBinary(addMarketplace.error)) {
+    return yield* registerDesktopMarketplace(context, marketplace.path);
+  }
   const addFailure = commandFailure(addMarketplace, "Codex marketplace installation failed");
   if (addFailure !== null) return addFailure;
 
@@ -111,6 +114,70 @@ function writeMarketplace(
       } as const;
     }
   });
+}
+
+function isMissingBinary(error: string): boolean {
+  return error.startsWith("NotFound:");
+}
+
+function registerDesktopMarketplace(
+  context: CliContext,
+  marketplacePath: string,
+): Effect.Effect<{ readonly exitCode: number; readonly output: string }> {
+  return Effect.promise(async () => {
+    const codexHome = process.env.CODEX_HOME || join(context.home, ".codex");
+    const config = join(codexHome, "config.toml");
+    try {
+      const content = await readOptionalFile(config);
+      await mkdir(codexHome, { recursive: true });
+      await writeFile(config, upsertMarketplaceTable(content, marketplacePath));
+    } catch (error) {
+      return {
+        exitCode: 1,
+        output: `✗ Could not register the Codex marketplace: ${getErrorMessage(error)}`,
+      };
+    }
+
+    return {
+      exitCode: 0,
+      output: [
+        "✓ Registered the Operator Codex marketplace",
+        "Codex CLI unavailable: install aerovato@operator-memory from the Codex plugins browser, then start a new session and approve the Operator hooks.",
+      ].join("\n"),
+    };
+  });
+}
+
+function upsertMarketplaceTable(content: string | null, source: string): string {
+  const header = `[marketplaces.${MARKETPLACE_NAME}]`;
+  const block = `${header}\nsource_type = "local"\nsource = ${JSON.stringify(source)}\n`;
+  if (content === null) return block;
+
+  const lines = content.split("\n");
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (/^marketplaces\s*=/.test(trimmed) || /^marketplaces\./.test(trimmed)) {
+      throw new Error("config.toml expresses marketplaces without tables; refusing to edit it");
+    }
+  }
+
+  const headerPattern = new RegExp(`^\\[\\s*marketplaces\\.${MARKETPLACE_NAME}\\s*\\]$`);
+  const headerIndex = lines.findIndex(line => headerPattern.test(line.trim()));
+  if (headerIndex === -1) {
+    return content.endsWith("\n") || content.length === 0
+      ? `${content}${block}`
+      : `${content}\n${block}`;
+  }
+
+  let end = lines.length;
+  for (let index = headerIndex + 1; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (line !== undefined && /^\s*\[\[?/.test(line)) {
+      end = index;
+      break;
+    }
+  }
+  return [...lines.slice(0, headerIndex), ...block.split("\n"), ...lines.slice(end)].join("\n");
 }
 
 function isInstalledAndEnabled(output: string): boolean {
