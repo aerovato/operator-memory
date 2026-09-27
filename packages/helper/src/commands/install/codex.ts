@@ -1,10 +1,10 @@
-import { lstat, mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import { Effect, PlatformError, Result, Stream } from "effect";
-import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process";
+import { Effect } from "effect";
 
-import { type CliContext, type CliResult, getErrorMessage } from "../../utils.ts";
+import { type CliContext, getErrorMessage } from "../../utils.ts";
+import { pathKind, type ProcessResult, readOptionalFile, runProcess } from "../common.ts";
 
 const MARKETPLACE_MARKER = "Operator Memory managed Codex marketplace.\n";
 const MARKETPLACE_NAME = "operator-memory";
@@ -33,21 +33,30 @@ export const installCodex = Effect.fn("installCodex")(function* (context: CliCon
   const marketplace = yield* writeMarketplace(context.home);
   if (!marketplace.ok) return marketplace.result;
 
-  const addMarketplace = yield* runCodex(
+  const addMarketplace = yield* runProcess(
+    "codex",
     ["plugin", "marketplace", "add", marketplace.path, "--json"],
     context.cwd,
+    { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
   );
-  if (addMarketplace.exitCode !== 0) return addMarketplace;
+  const addFailure = commandFailure(addMarketplace, "Codex marketplace installation failed");
+  if (addFailure !== null) return addFailure;
 
-  const install = yield* runCodex(["plugin", "add", PLUGIN_ID, "--json"], context.cwd);
-  if (install.exitCode !== 0) return install;
+  const install = yield* runProcess("codex", ["plugin", "add", PLUGIN_ID, "--json"], context.cwd, {
+    NPM_CONFIG_MIN_RELEASE_AGE: "0",
+  });
+  const installFailure = commandFailure(install, "Codex plugin installation failed");
+  if (installFailure !== null) return installFailure;
 
-  const status = yield* runCodex(
+  const status = yield* runProcess(
+    "codex",
     ["plugin", "list", "--marketplace", MARKETPLACE_NAME, "--json"],
     context.cwd,
+    { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
   );
-  if (status.exitCode !== 0) return status;
-  if (!isInstalledAndEnabled(status.stdout)) {
+  const statusFailure = commandFailure(status, "Could not verify Codex plugin installation");
+  if (statusFailure !== null) return statusFailure;
+  if (!(status.ok && isInstalledAndEnabled(status.stdout))) {
     return {
       exitCode: 1,
       output: "✗ Codex plugin installation finished but the plugin is not installed and enabled",
@@ -77,7 +86,7 @@ function writeMarketplace(
       const kind = await pathKind(root);
       if (
         kind !== "missing"
-        && (kind !== "directory" || (await readOptional(marker)) !== MARKETPLACE_MARKER)
+        && (kind !== "directory" || (await readOptionalFile(marker)) !== MARKETPLACE_MARKER)
       ) {
         return {
           ok: false,
@@ -101,56 +110,6 @@ function writeMarketplace(
         },
       } as const;
     }
-  });
-}
-
-function runCodex(
-  arguments_: ReadonlyArray<string>,
-  cwd: string,
-): Effect.Effect<
-  CliResult & { readonly stdout: string },
-  never,
-  ChildProcessSpawner.ChildProcessSpawner
-> {
-  return Effect.gen(function* () {
-    const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
-    const command = ChildProcess.make("codex", [...arguments_], {
-      cwd,
-      env: { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
-      extendEnv: true,
-    });
-    const execution = yield* Effect.scoped(
-      Effect.gen(function* () {
-        const handle = yield* spawner.spawn(command);
-        const [stdout, stderr, exitCode] = yield* Effect.all(
-          [
-            handle.stdout.pipe(Stream.decodeText(), Stream.mkString),
-            handle.stderr.pipe(Stream.decodeText(), Stream.mkString),
-            handle.exitCode,
-          ] as const,
-          { concurrency: "unbounded" },
-        );
-        return { stdout, stderr, exitCode: Number(exitCode) };
-      }),
-    ).pipe(Effect.result);
-
-    if (Result.isFailure(execution)) {
-      const message =
-        execution.failure instanceof PlatformError.PlatformError
-          ? (execution.failure.reason.description ?? execution.failure.message)
-          : getErrorMessage(execution.failure);
-      return { exitCode: 1, output: `✗ Could not run codex: ${message}`, stdout: "" };
-    }
-    const output = [execution.success.stdout.trim(), execution.success.stderr.trim()]
-      .filter(Boolean)
-      .join("\n");
-    return execution.success.exitCode === 0
-      ? { exitCode: 0, output, stdout: execution.success.stdout.trim() }
-      : {
-          exitCode: execution.success.exitCode,
-          output: output || "Codex plugin installation failed",
-          stdout: execution.success.stdout.trim(),
-        };
   });
 }
 
@@ -178,25 +137,12 @@ function isInstalledAndEnabled(output: string): boolean {
   }
 }
 
-async function pathKind(path: string): Promise<"missing" | "file" | "directory" | "other"> {
-  try {
-    const info = await lstat(path);
-    return info.isFile() ? "file" : info.isDirectory() ? "directory" : "other";
-  } catch (error) {
-    if (isNodeError(error) && error.code === "ENOENT") return "missing";
-    throw error;
-  }
-}
-
-async function readOptional(path: string): Promise<string | null> {
-  try {
-    return await readFile(path, "utf8");
-  } catch (error) {
-    if (isNodeError(error) && error.code === "ENOENT") return null;
-    throw error;
-  }
-}
-
-function isNodeError(error: unknown): error is NodeJS.ErrnoException {
-  return error instanceof Error && "code" in error;
+function commandFailure(
+  result: ProcessResult,
+  fallback: string,
+): { readonly exitCode: number; readonly output: string } | null {
+  if (!result.ok) return { exitCode: 1, output: `✗ Could not run codex: ${result.error}` };
+  return result.exitCode === 0
+    ? null
+    : { exitCode: result.exitCode, output: result.output || fallback };
 }

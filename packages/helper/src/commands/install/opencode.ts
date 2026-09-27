@@ -1,14 +1,13 @@
-import { Effect, FileSystem, Path, PlatformError, Result, Stream } from "effect";
-import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process";
+import { Effect, FileSystem, Path, Result } from "effect";
 
-import { type CliContext, getErrorMessage } from "../../utils.ts";
+import type { CliContext } from "../../utils.ts";
+import { runProcess } from "../common.ts";
 
 const OPENCODE_PLUGIN = "@aerovato/operator-opencode@latest";
 
 export const installOpenCode = Effect.fn("installOpenCode")(function* (context: CliContext) {
   const fileSystem = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
-  const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
 
   const cacheRoot = process.env.XDG_CACHE_HOME || path.join(context.home, ".cache");
   const isCacheRemoved = yield* fileSystem
@@ -24,44 +23,19 @@ export const installOpenCode = Effect.fn("installOpenCode")(function* (context: 
     };
   }
 
-  const command = ChildProcess.make(
+  const execution = yield* runProcess(
     "opencode",
     ["plugin", OPENCODE_PLUGIN, "--global", "--force"],
-    {
-      cwd: context.cwd,
-      env: { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
-      extendEnv: true,
-    },
+    context.cwd,
+    { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
   );
-  const execution = yield* Effect.scoped(
-    Effect.gen(function* () {
-      const handle = yield* spawner.spawn(command);
-      const [stdout, stderr, exitCode] = yield* Effect.all(
-        [
-          handle.stdout.pipe(Stream.decodeText(), Stream.mkString),
-          handle.stderr.pipe(Stream.decodeText(), Stream.mkString),
-          handle.exitCode,
-        ] as const,
-        { concurrency: "unbounded" },
-      );
-      return { stdout, stderr, exitCode: Number(exitCode) };
-    }),
-  ).pipe(Effect.result);
-
-  if (Result.isFailure(execution)) {
-    const message =
-      execution.failure instanceof PlatformError.PlatformError
-        ? (execution.failure.reason.description ?? execution.failure.message)
-        : getErrorMessage(execution.failure);
-    return { exitCode: 1, output: `✗ Could not run opencode: ${message}` };
+  if (!execution.ok) {
+    return { exitCode: 1, output: `✗ Could not run opencode: ${execution.error}` };
   }
-  const output = [execution.success.stdout.trim(), execution.success.stderr.trim()]
-    .filter(Boolean)
-    .join("\n");
-  return execution.success.exitCode === 0
-    ? { exitCode: 0, output }
+  return execution.exitCode === 0
+    ? { exitCode: 0, output: execution.output }
     : {
-        exitCode: execution.success.exitCode,
-        output: output || "OpenCode plugin installation failed",
+        exitCode: execution.exitCode,
+        output: execution.output || "OpenCode plugin installation failed",
       };
 });

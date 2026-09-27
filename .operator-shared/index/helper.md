@@ -66,7 +66,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 
 #### `packages/helper/src/commands/`
 
-- `common.ts` — Shared typed filesystem failure rendering at the CLI boundary
+- `common.ts` — Shared command-layer filesystem failure rendering, subprocess execution, and safe optional-file inspection
 ##### `commands/install/`
 
 - `codex.ts` — Helper-managed npm marketplace, Codex CLI installation, and installed/enabled verification

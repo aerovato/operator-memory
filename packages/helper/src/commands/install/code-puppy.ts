@@ -1,11 +1,12 @@
 import { randomUUID } from "node:crypto";
-import { lstat, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { Effect } from "effect";
 
 import { type CliContext, getErrorMessage } from "../../utils.ts";
+import { pathKind, readOptionalFile } from "../common.ts";
 
 const CODE_PUPPY_MARKER = "Operator Memory managed Code Puppy plugin.\n";
 const CODE_PUPPY_MARKER_FILE = ".operator-managed";
@@ -37,7 +38,7 @@ export const installCodePuppy = Effect.fn("installCodePuppy")(function* (context
       if (
         targetKind !== "directory"
         || (await pathKind(marker)) !== "file"
-        || (await readOptional(marker)) !== CODE_PUPPY_MARKER
+        || (await readOptionalFile(marker)) !== CODE_PUPPY_MARKER
       ) {
         return {
           exitCode: 1,
@@ -45,7 +46,7 @@ export const installCodePuppy = Effect.fn("installCodePuppy")(function* (context
         };
       }
 
-      if ((await readOptional(callbacks)) === source) {
+      if ((await readOptionalFile(callbacks)) === source) {
         return { exitCode: 0, output: "✓ Code Puppy plugin is current" };
       }
 
@@ -78,31 +79,4 @@ async function codePuppyAdapterPath(): Promise<string> {
     }
   }
   throw new Error("bundled Code Puppy adapter is missing");
-}
-
-async function pathKind(path: string): Promise<"missing" | "file" | "directory" | "other"> {
-  try {
-    const info = await lstat(path);
-    return info.isFile() ? "file" : info.isDirectory() ? "directory" : "other";
-  } catch (error) {
-    if (isNodeError(error) && error.code === "ENOENT") {
-      return "missing";
-    }
-    throw error;
-  }
-}
-
-async function readOptional(path: string): Promise<string | null> {
-  try {
-    return await readFile(path, "utf8");
-  } catch (error) {
-    if (isNodeError(error) && error.code === "ENOENT") {
-      return null;
-    }
-    throw error;
-  }
-}
-
-function isNodeError(error: unknown): error is NodeJS.ErrnoException {
-  return error instanceof Error && "code" in error;
 }
