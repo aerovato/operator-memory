@@ -108,6 +108,41 @@ printf '{"installed":[{"pluginId":"aerovato@operator-memory","installed":true,"e
   },
 );
 
+test("registers the Codex marketplace in configuration when the CLI is unavailable", async () => {
+  const result = await execute(["install", "codex"], "4.5.6");
+  const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
+
+  expect(result).toEqual({
+    exitCode: 0,
+    output:
+      "⚠ Codex CLI is unavailable; registered the Operator marketplace in Codex configuration\n"
+      + "Open Codex, run /plugins, and install aerovato@operator-memory.\n"
+      + "Start a new Codex session and approve the Operator hooks if prompted.",
+  });
+  expect(fs.readFileSync(join(directory, ".codex", "config.toml"), "utf8")).toBe(
+    `[marketplaces.operator-memory]\nsource_type = "local"\nsource = ${JSON.stringify(marketplaceRoot)}\n`,
+  );
+});
+
+test("replaces only the Operator table when registering alongside user configuration", async () => {
+  const configPath = join(directory, ".codex");
+  fs.mkdirSync(configPath, { recursive: true });
+  fs.writeFileSync(
+    join(configPath, "config.toml"),
+    'model = "gpt-5"\n\n[marketplaces.operator-memory]\nsource_type = "local"\nsource = "/old/path"\n\n[projects."demo"]\ntrust_level = "trusted"\n',
+  );
+
+  const result = await execute(["install", "codex"], "4.5.6");
+  const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
+
+  expect(result.exitCode).toBe(0);
+  expect(fs.readFileSync(join(configPath, "config.toml"), "utf8")).toBe(
+    'model = "gpt-5"\n\n'
+      + `[marketplaces.operator-memory]\nsource_type = "local"\nsource = ${JSON.stringify(marketplaceRoot)}\n\n`
+      + '[projects."demo"]\ntrust_level = "trusted"\n',
+  );
+});
+
 test("preserves an unmanaged Codex marketplace", async () => {
   const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
   fs.mkdirSync(marketplaceRoot, { recursive: true });

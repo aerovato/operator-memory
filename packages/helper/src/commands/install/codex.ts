@@ -39,6 +39,20 @@ export const installCodex = Effect.fn("installCodex")(function* (context: CliCon
     context.cwd,
     { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
   );
+  if (!addMarketplace.ok) {
+    // Codex CLI unavailable (Codex Desktop only): register the marketplace the same way
+    // `codex plugin marketplace add` does, then hand installation off to Codex's plugin UI.
+    const registration = yield* registerMarketplaceConfiguration(context.home, marketplace.path);
+    if (!registration.ok) return registration.result;
+    return {
+      exitCode: 0,
+      output: [
+        "⚠ Codex CLI is unavailable; registered the Operator marketplace in Codex configuration",
+        "Open Codex, run /plugins, and install aerovato@operator-memory.",
+        "Start a new Codex session and approve the Operator hooks if prompted.",
+      ].join("\n"),
+    };
+  }
   const addFailure = commandFailure(addMarketplace, "Codex marketplace installation failed");
   if (addFailure !== null) return addFailure;
 
@@ -111,6 +125,61 @@ function writeMarketplace(
       } as const;
     }
   });
+}
+
+function registerMarketplaceConfiguration(
+  home: string,
+  marketplaceRoot: string,
+): Effect.Effect<
+  | { readonly ok: true }
+  | { readonly ok: false; readonly result: { readonly exitCode: 1; readonly output: string } }
+> {
+  return Effect.promise(async () => {
+    const configPath = join(home, ".codex", "config.toml");
+    const header = `[marketplaces.${MARKETPLACE_NAME}]`;
+    const table = `${header}\nsource_type = "local"\nsource = ${JSON.stringify(marketplaceRoot)}\n`;
+    try {
+      const existing = await readOptionalFile(configPath);
+      await mkdir(join(home, ".codex"), { recursive: true });
+      await writeFile(
+        configPath,
+        existing === null ? table : replaceConfigTable(existing, header, table),
+      );
+      return { ok: true } as const;
+    } catch (error) {
+      return {
+        ok: false,
+        result: {
+          exitCode: 1,
+          output: `✗ Could not register the Codex marketplace: ${getErrorMessage(error)}`,
+        },
+      } as const;
+    }
+  });
+}
+
+function replaceConfigTable(config: string, header: string, table: string): string {
+  const lines = config.split("\n");
+  const start = lines.findIndex(line => line.trim() === header);
+  if (start === -1) {
+    const separator = config.endsWith("\n") || config.length === 0 ? "" : "\n";
+    return `${config}${separator}\n${table}`;
+  }
+
+  let end = lines.length;
+  let followedByTable = false;
+  for (let index = start + 1; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (line !== undefined && line.trimStart().startsWith("[")) {
+      end = index;
+      followedByTable = true;
+      break;
+    }
+  }
+  const tableLines = table.slice(0, -1).split("\n");
+  lines.splice(start, end - start, ...tableLines, ...(followedByTable ? [""] : []));
+  const joined = lines.join("\n");
+  return joined.endsWith("\n") ? joined : `${joined}\n`;
 }
 
 function isInstalledAndEnabled(output: string): boolean {

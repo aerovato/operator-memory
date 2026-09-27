@@ -10,6 +10,8 @@ operator-helper install codex
 
 Start a fresh Codex session after installation. Codex reviews plugin hooks on startup; approve the Operator hooks when prompted. Until the hooks are trusted, Codex skips preamble injection.
 
+If the Codex CLI is not installed (Codex Desktop only), Helper registers the Operator marketplace directly in Codex configuration; open Codex, run `/plugins`, and install `aerovato@operator-memory` from there.
+
 The plugin injects the Operator preamble into new and cleared sessions, reinjects it after context compaction, and injects it into delegated subagents. Resumed and forked sessions keep their existing context.
 
 The four Operator workflows are available as explicitly invoked skills: `$operator-user-init`, `$operator-project-init`, `$operator-index`, and `$operator-repair`. Codex plugins do not register slash commands; invoke the skills by name.
