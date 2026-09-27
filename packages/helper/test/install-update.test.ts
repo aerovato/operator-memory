@@ -15,6 +15,7 @@ import type { CliContext, CliResult } from "../src/utils.ts";
 
 const originalPath = process.env.PATH;
 const originalXdgCacheHome = process.env.XDG_CACHE_HOME;
+const originalCodexHome = process.env.CODEX_HOME;
 let directory: string;
 let context: CliContext;
 let record: string;
@@ -41,6 +42,11 @@ afterEach(() => {
     delete process.env.XDG_CACHE_HOME;
   } else {
     process.env.XDG_CACHE_HOME = originalXdgCacheHome;
+  }
+  if (originalCodexHome === undefined) {
+    delete process.env.CODEX_HOME;
+  } else {
+    process.env.CODEX_HOME = originalCodexHome;
   }
   delete process.env.OPERATOR_TEST_RECORD;
   fs.rmSync(directory, { recursive: true, force: true });
@@ -120,6 +126,72 @@ test("preserves an unmanaged Codex marketplace", async () => {
     output: `✗ Preserved unmanaged Codex marketplace at ${marketplaceRoot}`,
   });
   expect(fs.readFileSync(join(marketplaceRoot, "user-file"), "utf8")).toBe("user owned");
+});
+
+test("registers the marketplace in config.toml when the Codex CLI is unavailable", async () => {
+  const codexHome = join(directory, "codex-home");
+  process.env.CODEX_HOME = codexHome;
+  const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
+
+  const result = await execute(["install", "codex"], "4.5.6");
+
+  expect(result).toEqual({
+    exitCode: 0,
+    output:
+      "✓ Registered the Operator Codex marketplace\n"
+      + "Codex CLI unavailable: install aerovato@operator-memory from the Codex plugins browser, then start a new session and approve the Operator hooks.",
+  });
+  expect(fs.readFileSync(join(codexHome, "config.toml"), "utf8")).toBe(
+    `[marketplaces.operator-memory]\nsource_type = "local"\nsource = ${JSON.stringify(marketplaceRoot)}\n`,
+  );
+});
+
+test("refreshes an existing marketplace table without touching other config", async () => {
+  const codexHome = join(directory, "codex-home");
+  process.env.CODEX_HOME = codexHome;
+  const config = join(codexHome, "config.toml");
+  fs.mkdirSync(codexHome, { recursive: true });
+  fs.writeFileSync(
+    config,
+    [
+      'model = "gpt-5"',
+      "",
+      "[marketplaces.operator-memory]",
+      'source_type = "local"',
+      'source = "/old/path"',
+      "",
+      "[profiles.fast]",
+      'model = "gpt-5-mini"',
+      "",
+    ].join("\n"),
+  );
+  const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
+
+  const result = await execute(["install", "codex"], "4.5.6");
+
+  expect(result.exitCode).toBe(0);
+  const content = fs.readFileSync(config, "utf8");
+  expect(content).toContain(`source = ${JSON.stringify(marketplaceRoot)}`);
+  expect(content).not.toContain("/old/path");
+  expect(content).toContain('model = "gpt-5-mini"');
+});
+
+test("refuses config.toml that expresses marketplaces without tables", async () => {
+  const codexHome = join(directory, "codex-home");
+  process.env.CODEX_HOME = codexHome;
+  fs.mkdirSync(codexHome, { recursive: true });
+  fs.writeFileSync(
+    join(codexHome, "config.toml"),
+    'marketplaces.operator-memory.source = "/old/path"\n',
+  );
+
+  const result = await execute(["install", "codex"], "4.5.6");
+
+  expect(result).toEqual({
+    exitCode: 1,
+    output:
+      "✗ Could not register the Codex marketplace: config.toml expresses marketplaces without tables; refusing to edit it",
+  });
 });
 
 test.runIf(process.platform !== "win32")(
