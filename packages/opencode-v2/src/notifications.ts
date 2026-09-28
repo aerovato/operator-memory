@@ -1,7 +1,9 @@
 import { Rpc } from "@opencode/plugin/rpc";
 
+import { pluginId } from "./id.ts";
+
 export const OperatorNotifications = Rpc.define({
-  id: "aerovato.operator-memory",
+  id: pluginId,
   methods: {
     status: {
       input: {

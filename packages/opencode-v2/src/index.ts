@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import { loadMemorySnapshot, type MemoryStatusSnapshot } from "@aerovato/operator-core/memory/load";
 import { Plugin } from "@opencode/plugin";
+import { pluginId } from "./id.ts";
 
 import packageJson from "../package.json" with { type: "json" };
 import { registerCommands } from "./commands.ts";
@@ -19,7 +20,7 @@ import {
 let helperUpdateStarted = false;
 
 const OperatorPlugin = Plugin.define({
-  id: "aerovato.operator-memory",
+  id: pluginId,
   async setup(context) {
     const cache = new Map<string, ReturnType<typeof loadPreamble>>();
     const recoveryNotices = new Set<string>();

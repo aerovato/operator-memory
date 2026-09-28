@@ -4,6 +4,7 @@ import { createEffect, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import packageJson from "../package.json" with { type: "json" };
+import { pluginId } from "./id.ts";
 import {
   OperatorNotifications,
   type OperatorStatus,
@@ -17,7 +18,7 @@ type StatusState =
   | ({ readonly connection: "ready" } & OperatorStatus);
 
 const OperatorTuiPlugin = Plugin.define({
-  id: "aerovato.operator-memory",
+  id: pluginId,
   setup(context) {
     const [statuses, setStatuses] = createStore<Record<string, StatusState>>({});
     const activeSessions = new Set<string>();
@@ -64,7 +65,7 @@ const OperatorTuiPlugin = Plugin.define({
     refresh(context.location, false);
     const cleanups = [
       context.data.listen(event => {
-        if (event.details.type !== "rpc.aerovato.operator-memory.toast") return;
+        if (event.details.type !== `rpc.${pluginId}.toast`) return;
         const toast = parseToast(event.details.data);
         if (toast === null) return;
         context.ui.toast.show({ ...toast, duration: 10_000 });
