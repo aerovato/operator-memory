@@ -50,8 +50,8 @@ read_if: Working anywhere in the committed Operator Memory project
 - `scripts/check.sh` - Full-workspace or package-scoped validation runner, including Code Puppy Ruff and pytest checks.
 - `scripts/install-opencode.ts` - Globally registers the built local OpenCode package through a package-qualified absolute file spec.
 - `scripts/install-pi.ts` - Persistently registers the built local Pi package through its absolute package-root path.
-- `scripts/preview-opencode.ts` - Generates project-local V2 server configuration for the local package path, shadowing any global registration of the same plugin ID.
-- `scripts/preview-codex.ts` - Registers the repository marketplace through Codex and installs or refreshes the local `aerovato@operator-local` plugin; run `build:codex` first after source changes.
+- `scripts/preview-opencode.ts` - Self-contained local V2 preview: builds and links Helper (`install:helper`), builds the dev-ID plugin bundle, then generates project-local V2 server configuration shadowing any global registration of the same plugin.
+- `scripts/preview-codex.ts` - Self-contained local Codex preview: builds and links Helper, builds the plugin package, then registers the repository marketplace and installs or refreshes the local `aerovato@operator-local` plugin.
 - `scripts/publish-helper.sh`, `scripts/publish-opencode.sh`, `scripts/publish-opencode-v2.sh`, `scripts/publish-pi.sh`, `scripts/publish-codex.sh` - Preflight-validated package check, build, version, lockfile, commit, tag, and atomic push release automation; accepts semantic bump names, `X.Y.Z`, or `vX.Y.Z`.
 - `scripts/resolve-publish-version.sh`, `scripts/resolve-publish-version.test.ts` - Shared semantic bump resolution and focused validation coverage for package releases.
 - `biome.json`, `tsconfig.json`, `vitest.config.ts` - Workspace formatting, typechecking, and test configuration.

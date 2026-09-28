@@ -1,8 +1,13 @@
 import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
+import { $ } from "bun";
 
 const projectDirectory = resolve(import.meta.dirname, "..");
 const plugin = "aerovato@operator-local";
+
+await $`bun run install:helper`.cwd(projectDirectory);
+await $`bun run build:codex`.cwd(projectDirectory);
+
 const marketplace = spawnSync("codex", ["plugin", "marketplace", "add", projectDirectory], {
   cwd: projectDirectory,
   stdio: "inherit",
