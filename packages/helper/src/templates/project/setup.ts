@@ -5,7 +5,7 @@ export const PROJECT_SETUP_TEMPLATE = `# Project Setup
 
 You are helping the user configure the Operator Project Brain across the private \`.operator/\` partition and shared \`.operator-shared/\` partition.
 
-Project indexing is intentionally excluded from this setup.
+Project indexing is excluded from the setup phases; you offer it as the final step in Phase 7.
 
 **Document syntax:** Index and catalog structure, entry syntax, and examples are defined in the fixed preamble (Project Index and Partition Catalog sections). **You must follow that preamble document syntax** when creating or filling indexes and catalogs. Do not invent layouts. \`operator-helper project init\` seeds Private core files with the canonical syntax; fill or rewrite from the preamble. Operator Instructions and Shared README seeds are in the Canonical Seeds section below.
 
@@ -145,22 +145,18 @@ Ask whether anything is incorrect, missing, too strict, too permissive, improper
 
 Apply approved corrections and finish only after the user confirms the setup. Do not end the session in this phase.
 
-## Phase 7: Hand off to Indexing
+## Phase 7: Offer Indexing
 
-Skip this phase when project shape is greenfield and no code exists. If the project is a bare template: Scaffold a quick index for the user, then skip.
+After the user has confirmed Project Setup: Notice that the index has not been populated yet, then offer to index.
 
-Task: Tell the user Project Setup is complete and that they should run \`/operator:index\` in a new conversation later, once the project has real code worth mapping. Stop unless the user asks something else about setup.
+Offer the user two choices:
 
-After the user has confirmed Project Setup: Notice that the index has not been populated yet.
+1. Index now, in this conversation. You run \`operator-helper index status\` and \`operator-helper index guide\` yourself and follow the Project Index Setup guide immediately. Helper output is working context; do not reproduce it for the user.
+2. Start a new conversation and run \`/operator:index\` in their harness to build or refresh the Project Index.
 
-Project Index population is a **separate** operation. Do not index here.
+Recommendation: for a small or medium codebase, including greenfield, recommend indexing now — it is fast and the setup context is still loaded. For a large codebase, recommend a new conversation so the indexing agent starts with clean context, while still offering to index here.
 
-Tell the user clearly:
-
-1. Project Setup is complete.
-2. They should start a new conversation and run \`/operator:index\` in their harness to build or refresh the Project Index.
-
-Stop after delivering this handoff unless the user asks something else about setup.
+If the user declines, tell them \`/operator:index\` is available anytime later. Stop after this phase unless the user asks something else about setup.
 
 ## Canonical Seeds
 
