@@ -67,14 +67,15 @@ operator-helper install codex
 operator-helper install code-puppy
 ```
 
+For harness-specific verification, commands, updates, and troubleshooting, see the [harness docs](docs/harnesses/).
+
 ## Setup Operator
 
 Setup is a conversation with your agent. Run each command in a new conversation.
 
 1. First time only: `/operator:user-init` — set up your global user partition.
-2. In each new project: `/operator:project-init` — scaffold Operator and migrate existing documents.
-3. In existing repositories: `/operator:index` — map the repo so later sessions can navigate it.
-4. Start a new conversation and do normal work.
+2. In each new project: `/operator:project-init` — scaffold Operator, migrate existing documents, and index the repo.
+3. Start a new conversation and do normal work.
 
 When starting cold on an existing project, it's recommended to ask the agent to create their first specs for specific features, modules, or systems that you will work on. Once those documents exist, later sessions will automatically maintain them.
 
@@ -129,7 +130,8 @@ RAG agents recall. Operator understands.
 
 - [Workflow](docs/workflow.md) - how to direct continuous documentation and maintain a useful Brain. Includes the command reference.
 - [Architecture](docs/architecture.md) - how partitions, catalogs, indexes, and deterministic context loading work.
-- [Troubleshooting](docs/troubleshooting.md) - installation, validation, repair, and update recovery.
+- [Harness docs](docs/harnesses/) - per-harness installation, verification, commands, updates, and troubleshooting.
+- [Troubleshooting](docs/troubleshooting.md) - validation, repair, and update recovery.
 - [Demo](https://github.com/aerovato/operator-demo-terra-js) - a Minecraft-like web app built agent-driven with Operator. The [recorded conversation](https://opncd.ai/share/2F8fjjEp) shows the brain being used and maintained throughout.
 
 ## License

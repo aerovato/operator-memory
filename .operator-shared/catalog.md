@@ -17,7 +17,7 @@ Repository-wide Operator product knowledge published with the project.
   - Description: Contributor-facing introduction to Operator Memory.
   - Read If: Do not read during normal agent work; written for newcomers without Operator installed.
 - `operator.md`
-  - Description: Repository tooling, engineering, documentation, and publication rules.
+  - Description: Repository tooling, engineering, and documentation rules.
   - Read If: Auto-injected.
 - `catalog.md`
   - Description: This catalog.

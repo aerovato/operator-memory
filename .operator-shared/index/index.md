@@ -39,6 +39,7 @@ read_if: Working anywhere in the committed Operator Memory project
 
 - `README.md` - Product positioning, installation, agent-assisted setup, everyday workflow, command reference, and documentation entrypoint.
 - `docs/workflow.md` - User guide to continuous documentation, Brain maintenance, partition placement, review, and session boundaries.
+- `docs/harnesses/` - Per-harness guides (OpenCode 2, OpenCode 1, Pi, Codex, Code Puppy): install command, verification, commands, updates, and harness-specific troubleshooting.
 - `docs/architecture.md` - User-facing Brain, partition, catalog, Project Index, deterministic loading, failure, and OpenCode architecture.
 - `docs/troubleshooting.md` - User-facing installation, status, lint, memory-check, repair, Git, Shared, harness update, and support guidance.
 - `docs/assets/banner.jpeg` - Operator Memory README banner.
