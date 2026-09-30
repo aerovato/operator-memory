@@ -1,0 +1,3 @@
+- insert:
+    - id: operator-memory
+      name: '@aerovato/operator-deepseek'

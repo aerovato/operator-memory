@@ -15,6 +15,7 @@
     "build:opencode-v2:dev": "OPERATOR_PLUGIN_ID=aerovato.operator-memory-dev bun run --cwd packages/opencode-v2 build",
     "build:pi": "bun run --cwd packages/pi build",
     "build:codex": "bun run --cwd packages/codex build",
+    "build:deepseek": "bun run --cwd packages/deepseek build",
     "preview:opencode": "bun ./scripts/preview-opencode.ts",
     "preview:codex": "bun ./scripts/preview-codex.ts",
     "install:helper": "bun run build:helper && bun link --cwd packages/helper",

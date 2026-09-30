@@ -1,0 +1,56 @@
+{
+  "name": "@aerovato/operator-deepseek",
+  "version": "0.1.0",
+  "description": "Operator Memory adapter for DeepSeek Harness.",
+  "license": "BSD-3-Clause",
+  "author": "Aerovato Research",
+  "homepage": "https://github.com/aerovato/operator-memory#readme",
+  "bugs": {
+    "url": "https://github.com/aerovato/operator-memory/issues"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "cordis.patch.yml"
+  ],
+  "keywords": [
+    "deepseek",
+    "deepseek-harness",
+    "memory",
+    "plugin"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aerovato/operator-memory.git",
+    "directory": "packages/deepseek"
+  },
+  "engines": {
+    "node": ">=22.19"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "bun ./scripts/build.ts",
+    "prepack": "bun run build"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.0.4",
+    "@deepseek-ai/dsh": ">=0.2.0-rc.2 <0.3.0"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.0.4",
+    "@deepseek-ai/dsh": "0.2.0-rc.2"
+  }
+}

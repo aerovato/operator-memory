@@ -17,7 +17,7 @@ read_if: Working anywhere in the committed Operator Memory project
 
 - Operator Memory is a Bun and TypeScript monorepo for durable context and agent-driven development on coding-agent harnesses.
 - The read-only core runtime supplies shared models and preamble rendering, the helper CLI owns harness installation plus deterministic setup and validation, and thin OpenCode and Code Puppy adapters bind those capabilities to each harness.
-- The workspace, core runtime, preamble renderer, helper CLI, OpenCode V1 and V2 integrations, Pi integration, bundled Code Puppy plugin, and initial Codex plugin packaging are implemented.
+- The workspace, core runtime, preamble renderer, helper CLI, OpenCode V1 and V2 integrations, Pi integration, bundled Code Puppy plugin, initial Codex plugin packaging, and DeepSeek adapter package scaffold are implemented.
 
 ## Project Index
 
@@ -26,6 +26,7 @@ read_if: Working anywhere in the committed Operator Memory project
 - [`core/`](core.md) - Private harness-agnostic runtime for memory loading, shared models, and preamble generation.
 - [`code-puppy/`](code-puppy.md) - Bundled Python user plugin for immutable model-boundary preamble injection and Operator commands.
 - [`codex/`](codex.md) - Codex plugin package with local marketplace installation infrastructure.
+- [`deepseek/`](deepseek.md) - Published DeepSeek Harness Host plugin and installable bundle package.
 - [`helper/`](helper.md) - Published harness installation, automatic update, setup, status, guide, Git, and Project Index lint CLI.
 - [`opencode/`](opencode.md) - Published OpenCode server and TUI plugin adapter for immutable session preamble injection and memory status UI.
 - [`opencode-v2/`](opencode-v2.md) - Published OpenCode V2 server plugin adapter for context-hook preamble injection and Operator commands.
