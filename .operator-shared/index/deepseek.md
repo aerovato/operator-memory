@@ -12,7 +12,7 @@ read_if: Working in packages/deepseek or changing the DeepSeek Harness adapter
 ## Architecture
 
 - The published package is both a Cordis Host plugin and a DeepSeek Harness bundle whose patch mounts that plugin under a stable row id.
-- The Host runtime owns DeepSeek-specific lifecycle behavior and launches one detached Helper version check when activated.
+- The Host runtime lazily renders and caches one complete Core preamble per live agent, contributes it through the asynchronous system-prompt assembly hook, blocks prompt assembly after unexpected render failures, and launches one detached Helper version check when activated.
 
 ## `packages/deepseek/` Index
 
@@ -22,7 +22,7 @@ read_if: Working in packages/deepseek or changing the DeepSeek Harness adapter
 
 ### `src/`
 
-- `index.ts` — Cordis Host plugin entrypoint and detached Helper version check.
+- `index.ts` — Cordis Host plugin entrypoint, lazy Core preamble rendering, system-prompt assembly contribution, and detached Helper version check.
 
 ### `scripts/`
 
@@ -30,4 +30,4 @@ read_if: Working in packages/deepseek or changing the DeepSeek Harness adapter
 
 ### `test/`
 
-- `package.test.ts` — Host export and bundle mount checks.
+- `package.test.ts` — Host export, bundle mount, per-agent rendering, diagnostic, and failure checks.

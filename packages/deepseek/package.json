@@ -47,10 +47,15 @@
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "~4.0.4",
-    "@deepseek-ai/dsh": ">=0.2.0-rc.2 <0.3.0"
+    "@deepseek-ai/dsh": ">=0.2.0-rc.2 <0.3.0",
+    "@deepseek-ai/dsh-agent": ">=0.2.0-rc.2 <0.3.0",
+    "@deepseek-ai/dsh-system-prompt": ">=0.2.0-rc.2 <0.3.0"
   },
   "devDependencies": {
+    "@aerovato/operator-core": "workspace:*",
     "@deepseek-ai/cordis": "4.0.4",
-    "@deepseek-ai/dsh": "0.2.0-rc.2"
+    "@deepseek-ai/dsh": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-agent": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-system-prompt": "0.2.0-rc.2"
   }
 }

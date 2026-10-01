@@ -11,7 +11,12 @@ const build = await Bun.build({
   target: "node",
   format: "esm",
   sourcemap: "external",
-  external: ["@deepseek-ai/cordis", "@deepseek-ai/dsh"],
+  external: [
+    "@deepseek-ai/cordis",
+    "@deepseek-ai/dsh",
+    "@deepseek-ai/dsh-agent",
+    "@deepseek-ai/dsh-system-prompt",
+  ],
 });
 
 if (!build.success) {
