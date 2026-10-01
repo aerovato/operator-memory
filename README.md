@@ -63,6 +63,9 @@ operator-helper install pi
 # Codex
 operator-helper install codex
 
+# DeepSeek Harness
+operator-helper install deepseek
+
 # Code Puppy
 operator-helper install code-puppy
 ```

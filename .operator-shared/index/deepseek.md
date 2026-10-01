@@ -1,5 +1,5 @@
 ---
-description: @aerovato/operator-deepseek package and DeepSeek Harness bundle scaffold
+description: @aerovato/operator-deepseek Host plugin, commands, tests, and installable DeepSeek Harness bundle
 read_if: Working in packages/deepseek or changing the DeepSeek Harness adapter
 ---
 
@@ -13,6 +13,7 @@ read_if: Working in packages/deepseek or changing the DeepSeek Harness adapter
 
 - The published package is both a Cordis Host plugin and a DeepSeek Harness bundle whose patch mounts that plugin under a stable row id.
 - The Host runtime lazily renders and caches one complete Core preamble per live agent, contributes it through the asynchronous system-prompt assembly hook, blocks prompt assembly after unexpected render failures, optionally registers the four Helper-backed Operator commands when DeepSeek supplies its interactive command service, and launches one detached Helper version check when activated.
+- The package is an installable DeepSeek bundle whose stable patch row mounts the Host plugin in any compatible profile.
 
 ## `packages/deepseek/` Index
 
