@@ -17,6 +17,7 @@ read_if: Working in packages/deepseek or changing the DeepSeek Harness adapter
 
 ## `packages/deepseek/` Index
 
+- `README.md` — Ditto.
 - `package.json` — Published package, DeepSeek bundle metadata, compatibility peers, and build command.
 - `cordis.patch.yml` — Bundle patch mounting the Operator Host plugin.
 - `tsconfig.check.json` — Package check configuration.
