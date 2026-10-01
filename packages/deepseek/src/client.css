@@ -1,0 +1,28 @@
+.operator-memory-indicator {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: 1px 8px;
+  border: none;
+  border-radius: 999px;
+  corner-shape: round;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+  font-family: inherit;
+  font-size: calc(var(--dsh-content-font-size-secondary, 13px) - 1px);
+  line-height: calc(20px + var(--dsh-content-font-delta-secondary, 0px));
+  white-space: nowrap;
+  user-select: none;
+}
+
+.operator-memory-indicator:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-secondary);
+}
+
+.operator-memory-indicator__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

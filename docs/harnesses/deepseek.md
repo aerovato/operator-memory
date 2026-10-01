@@ -18,6 +18,8 @@ dsh plugin --profile <profile-name> add @aerovato/operator-deepseek
 
 ## Verify
 
+Web and Desktop display `Operator Ready (vX.Y.Z)` beneath the active conversation's composer when the plugin is available.
+
 In a new conversation, ask:
 
 ```

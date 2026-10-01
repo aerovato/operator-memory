@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { runInNewContext } from "node:vm";
 
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -40,6 +41,101 @@ describe("DeepSeek adapter package", () => {
 
     expect(patch).toContain("id: operator-memory");
     expect(patch).toContain("name: '@aerovato/operator-deepseek'");
+  });
+
+  test("contributes a static Operator indicator beside the composer readings", async () => {
+    const manifest = JSON.parse(
+      await readFile(resolve(packageDirectory, "package.json"), "utf8"),
+    ) as {
+      version: string;
+      exports: Record<string, string>;
+      dsh: { client: { platform: string; inject: string[] } };
+    };
+    expect(manifest.exports["./client"]).toBe("./dist/client.js");
+    expect(manifest.dsh.client).toEqual({
+      platform: "web",
+      inject: ["@deepseek-ai/dsh-client-ui-conversation"],
+    });
+
+    type Element = {
+      type: string;
+      props: Record<string, unknown>;
+      children: Array<Element | string>;
+    };
+    type ClientPlugin = {
+      inject: string[];
+      apply: (context: {
+        effect: (register: () => () => void, label: string) => void;
+        slots: {
+          inject: (name: string, register: () => unknown) => void;
+          register: (options: Record<string, unknown>, component: () => Element) => unknown;
+        };
+      }) => void;
+    };
+    let plugin: ClientPlugin | undefined;
+    const css = await readFile(resolve(packageDirectory, "src/client.css"), "utf8");
+    const source = (await readFile(resolve(packageDirectory, "src/client.js"), "utf8"))
+      .replace("__OPERATOR_VERSION__", manifest.version)
+      .replace('"__OPERATOR_CSS__"', JSON.stringify(css));
+    const style = { textContent: "", remove: vi.fn() };
+    const appendChild = vi.fn();
+    runInNewContext(source, {
+      document: { createElement: vi.fn(() => style), head: { appendChild } },
+      window: {
+        __ModuleLoader__: {
+          load: ({
+            id,
+            factory,
+          }: {
+            id: string;
+            factory: (require: (id: string) => unknown) => ClientPlugin;
+          }) => {
+            expect(id).toBe("@aerovato/operator-deepseek");
+            plugin = factory(id => {
+              expect(id).toBe("react");
+              return {
+                createElement: (
+                  type: string,
+                  props: Record<string, unknown>,
+                  ...children: Array<Element | string>
+                ) => ({ type, props, children }),
+              };
+            });
+          },
+        },
+      },
+    });
+
+    const register = vi.fn();
+    const injectSlot = vi.fn((_name: string, callback: () => unknown) => callback());
+    const effect = vi.fn((callback: () => () => void) => callback());
+    expect(plugin?.inject).toEqual(["slots"]);
+    plugin?.apply({ effect, slots: { inject: injectSlot, register } });
+    expect(effect).toHaveBeenCalledWith(expect.any(Function), "operator-memory: indicator style");
+    expect(style.textContent).toBe(css);
+    expect(appendChild).toHaveBeenCalledWith(style);
+    expect(css).toContain("border: none");
+    expect(css).toContain(".operator-memory-indicator:hover");
+    expect(css).toContain("background: var(--dsw-alias-interactive-bg-hover)");
+    expect(css).toContain("color: var(--dsw-alias-label-secondary)");
+    expect(css).toContain("user-select: none");
+    expect(injectSlot).toHaveBeenCalledWith("conversation.composer.dock", expect.any(Function));
+    expect(register).toHaveBeenCalledWith(
+      { name: "conversation.composer.dock", id: "operator-memory", order: -1 },
+      expect.any(Function),
+    );
+    const indicator = (register.mock.calls[0][1] as () => Element)();
+    expect(indicator.type).toBe("span");
+    expect(indicator.props.className).toBe("operator-memory-indicator");
+    expect(indicator.children).toEqual([
+      {
+        type: "span",
+        props: { className: "operator-memory-indicator__label" },
+        children: [`Operator Ready (v${manifest.version})`],
+      },
+    ]);
+    (effect.mock.results[0].value as () => void)();
+    expect(style.remove).toHaveBeenCalledOnce();
   });
 
   test("coalesces concurrent rendering and keeps one stable preamble per live agent", async () => {

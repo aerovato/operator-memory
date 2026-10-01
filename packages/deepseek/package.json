@@ -12,6 +12,7 @@
   "main": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
+    "./client": "./dist/client.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
@@ -28,6 +29,12 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
     }
   },
   "repository": {
