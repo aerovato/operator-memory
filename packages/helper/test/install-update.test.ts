@@ -426,6 +426,76 @@ test.runIf(process.platform !== "win32")("installs the Pi plugin globally", asyn
   expect(fs.readFileSync(record, "utf8")).toBe("install npm:@aerovato/operator-pi");
 });
 
+test.runIf(process.platform !== "win32")(
+  "installs the DeepSeek plugin into Web and Desktop independently",
+  async () => {
+    executable(
+      "dsh",
+      `printf '%s\n' "$*" >> "$OPERATOR_TEST_RECORD"
+printf '%s installed' "$3"`,
+    );
+
+    const result = await execute(["install", "deepseek"], "4.5.6");
+
+    expect(result).toEqual({
+      exitCode: 0,
+      output:
+        "✓ Web: web installed\n✓ Desktop: desktop installed\n\n"
+        + "To install a profile manually, run:\n\n"
+        + "  dsh plugin --profile <profile-name> add @aerovato/operator-deepseek\n\n"
+        + "If the desktop profile was not installed, quit the desktop application and install manually.",
+    });
+    expect(fs.readFileSync(record, "utf8")).toBe(
+      "plugin --profile web add @aerovato/operator-deepseek\n"
+        + "plugin --profile desktop add @aerovato/operator-deepseek\n",
+    );
+  },
+);
+
+test.runIf(process.platform !== "win32")(
+  "preserves Web installation when the Desktop runtime is unavailable",
+  async () => {
+    executable(
+      "dsh",
+      `printf '%s\n' "$*" >> "$OPERATOR_TEST_RECORD"
+if [ "$3" = "desktop" ]; then printf 'Desktop runtime required' >&2; exit 7; fi
+printf 'web installed'`,
+    );
+
+    const result = await execute(["install", "deepseek"], "4.5.6");
+
+    expect(result).toEqual({
+      exitCode: 1,
+      output:
+        "✓ Web: web installed\n✗ Desktop: Desktop runtime required\n\n"
+        + "To install a profile manually, run:\n\n"
+        + "  dsh plugin --profile <profile-name> add @aerovato/operator-deepseek\n\n"
+        + "If the desktop profile was not installed, quit the desktop application and install manually.",
+    });
+    expect(fs.readFileSync(record, "utf8")).toContain("--profile desktop");
+  },
+);
+
+test.runIf(process.platform !== "win32")(
+  "attempts Desktop installation after Web installation fails",
+  async () => {
+    executable(
+      "dsh",
+      `if [ "$3" = "web" ]; then printf 'web failed' >&2; exit 5; fi
+printf 'desktop installed'`,
+    );
+
+    expect(await execute(["install", "deepseek"], "4.5.6")).toEqual({
+      exitCode: 1,
+      output:
+        "✗ Web: web failed\n✓ Desktop: desktop installed\n\n"
+        + "To install a profile manually, run:\n\n"
+        + "  dsh plugin --profile <profile-name> add @aerovato/operator-deepseek\n\n"
+        + "If the desktop profile was not installed, quit the desktop application and install manually.",
+    });
+  },
+);
+
 test("installs and reuses the current managed Code Puppy plugin", async () => {
   const result = await execute(["install", "code-puppy"], "4.5.6");
   const plugin = join(directory, ".code_puppy", "plugins", "operator");

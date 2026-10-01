@@ -23,8 +23,14 @@ operator-helper install opencode
 # Install OpenCode V2 plugin
 operator-helper install opencode-v2
 
+# Install Codex plugin
+operator-helper install codex
+
 # Install Pi plugin
 operator-helper install pi
+
+# Install DeepSeek Harness plugin
+operator-helper install deepseek
 
 # Install Code Puppy plugin
 operator-helper install code-puppy

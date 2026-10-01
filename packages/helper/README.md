@@ -30,6 +30,9 @@ operator-helper install opencode
 # Pi
 operator-helper install pi
 
+# DeepSeek Harness
+operator-helper install deepseek
+
 # Code Puppy
 operator-helper install code-puppy
 ```
@@ -48,6 +51,7 @@ The direct user-facing Helper operation is adapter installation:
 operator-helper install opencode
 operator-helper install opencode-v2
 operator-helper install pi
+operator-helper install deepseek
 operator-helper install code-puppy
 ```
 
