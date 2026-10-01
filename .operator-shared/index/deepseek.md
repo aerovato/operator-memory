@@ -1,5 +1,5 @@
 ---
-description: @aerovato/operator-deepseek Host plugin, commands, tests, and installable DeepSeek Harness bundle
+description: "@aerovato/operator-deepseek Host plugin, commands, tests, and installable DeepSeek Harness bundle"
 read_if: Working in packages/deepseek or changing the DeepSeek Harness adapter
 ---
 
