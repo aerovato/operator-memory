@@ -32,6 +32,10 @@ Every session runs the same loop:
 2. **Build** — the agent does normal development work, informed by that knowledge.
 3. **Update** — the agent records what changed: new specs, decisions, standards, lessons.
 
+<p>
+  <img src="docs/assets/change-the-loop.png" alt="The memory-aware agentic loop: consult the brain, build, update the brain">
+</p>
+
 When project truth changes, the agent updates the canonical file instead of adding a RAG database record. For more details, see [Architecture](docs/architecture.md).
 
 ## Install Operator
