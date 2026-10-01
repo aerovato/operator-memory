@@ -6,6 +6,8 @@ import { renderPreamble } from "@aerovato/operator-core/preamble";
 import type { Context } from "@deepseek-ai/cordis";
 import type { Agent } from "@deepseek-ai/dsh-agent";
 
+import { registerCommands } from "./commands.ts";
+
 /** Cordis plugin name used by DeepSeek Harness diagnostics. */
 export const name = "operator-memory";
 
@@ -15,6 +17,7 @@ export const inject = ["systemPrompt"];
 /** Start the Operator Host plugin for this DeepSeek Harness runtime. */
 export function apply(context: Context): void {
   startHelperUpdate();
+  context.inject(["commands"], registerCommands);
 
   const renders = new WeakMap<Agent, Promise<string>>();
   context.on("system-prompt/assemble", async (assembly, { agent }, next) => {

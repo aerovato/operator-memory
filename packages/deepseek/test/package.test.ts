@@ -119,6 +119,7 @@ function createRuntime(): {
       ) => Promise<TestAssembly>)
     | undefined;
   const context = {
+    inject: vi.fn(),
     on: (event: string, handler: typeof assemble) => {
       if (event === "system-prompt/assemble") assemble = handler;
     },

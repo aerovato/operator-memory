@@ -15,6 +15,8 @@ const build = await Bun.build({
     "@deepseek-ai/cordis",
     "@deepseek-ai/dsh",
     "@deepseek-ai/dsh-agent",
+    "@deepseek-ai/dsh-commands",
+    "@deepseek-ai/dsh-llm",
     "@deepseek-ai/dsh-system-prompt",
   ],
 });
