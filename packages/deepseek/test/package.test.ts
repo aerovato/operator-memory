@@ -42,19 +42,22 @@ describe("DeepSeek adapter package", () => {
     expect(patch).toContain("name: '@aerovato/operator-deepseek'");
   });
 
-  test("renders one stable preamble for each live agent", async () => {
-    core.loadMemorySnapshot.mockResolvedValue({});
+  test("coalesces concurrent rendering and keeps one stable preamble per live agent", async () => {
+    const deferred = Promise.withResolvers<object>();
+    core.loadMemorySnapshot.mockReturnValue(deferred.promise);
     core.renderPreamble.mockReturnValue({ loaded: true, content: "operator preamble" });
     const agent = createAgent("/project");
     const runtime = createRuntime();
 
     apply(runtime.context);
-    const first = await runtime.assemble(agent);
-    const second = await runtime.assemble(agent);
+    const firstPending = runtime.assemble(agent);
+    const secondPending = runtime.assemble(agent);
 
     expect(childProcess.spawn).toHaveBeenCalledOnce();
     expect(core.loadMemorySnapshot).toHaveBeenCalledOnce();
     expect(core.loadMemorySnapshot).toHaveBeenCalledWith("/project", expect.any(String), true);
+    deferred.resolve({});
+    const [first, second] = await Promise.all([firstPending, secondPending]);
     expect(first.sections[0]).toEqual({
       name: "operator:memory",
       text: "operator preamble",
@@ -62,6 +65,32 @@ describe("DeepSeek adapter package", () => {
     });
     expect(second.sections[0]).toEqual(first.sections[0]);
     expect(core.loadMemorySnapshot).toHaveBeenCalledOnce();
+  });
+
+  test("renders independently for distinct conversation agents", async () => {
+    core.loadMemorySnapshot.mockResolvedValue({});
+    core.renderPreamble
+      .mockReturnValueOnce({ loaded: true, content: "parent preamble" })
+      .mockReturnValueOnce({ loaded: true, content: "child preamble" });
+    const runtime = createRuntime();
+    apply(runtime.context);
+
+    const parent = await runtime.assemble(createAgent("/parent"));
+    const child = await runtime.assemble(createAgent("/child"));
+
+    expect(parent.sections[0]?.text).toBe("parent preamble");
+    expect(child.sections[0]?.text).toBe("child preamble");
+    expect(core.loadMemorySnapshot.mock.calls.map(call => call[0])).toEqual(["/parent", "/child"]);
+  });
+
+  test("does not render for diagnostic assemblies without an agent", async () => {
+    const runtime = createRuntime();
+    apply(runtime.context);
+
+    const assembly = await runtime.assemble(undefined);
+
+    expect(assembly.sections).toEqual([]);
+    expect(core.loadMemorySnapshot).not.toHaveBeenCalled();
   });
 
   test("injects the canonical diagnostic returned by Core", async () => {
