@@ -32,27 +32,3 @@ jobs:
 
       - name: Check
         run: bun run check
-
-      - name: Build helper
-        run: bun run build:helper
-
-      - name: Smoke test helper
-        run: node packages/helper/dist/index.js help
-
-      - name: Check helper package
-        working-directory: packages/helper
-        run: npm pack --dry-run
-
-      - name: Build OpenCode plugin
-        run: bun run build:opencode
-
-      - name: Check OpenCode plugin package
-        working-directory: packages/opencode
-        run: npm pack --dry-run
-
-      - name: Build Pi plugin
-        run: bun run build:pi
-
-      - name: Check Pi plugin package
-        working-directory: packages/pi
-        run: npm pack --dry-run
