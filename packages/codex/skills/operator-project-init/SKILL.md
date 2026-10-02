@@ -12,7 +12,7 @@ For a new conversation to set up the Project Index, tell the user to invoke `$op
 
 ## Recovery
 
-- If Helper cannot start, repair its installation and retry the failed command.
+- If Helper cannot start, install or repair the npm package `@aerovato/operator-helper` globally and retry the failed command.
 - If the version check or upgrade fails, diagnose the error and retry.
 - If `operator-helper project init` reports a failure, use its output to resolve it and rerun it as needed.
 - If you cannot resolve a problem, report the blocker.

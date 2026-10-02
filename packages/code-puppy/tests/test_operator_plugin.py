@@ -427,7 +427,7 @@ def test_commands_return_agent_input_and_preserve_unknown_commands(
     assert "1. Run `operator-helper version`" in result.content
     assert "run `operator-helper upgrade` before continuing" in result.content
     assert f"2. Run `operator-helper {' '.join(arguments)}`" in result.content
-    assert "repair its installation and retry the failed command" in result.content
+    assert "npm package `@aerovato/operator-helper` globally" in result.content
     assert "<operator-command>" not in result.content
     assert plugin._custom_command("/unknown", "unknown") is None
 
