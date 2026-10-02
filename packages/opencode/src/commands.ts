@@ -7,79 +7,52 @@ export const OPERATOR_COMMAND_NAMES = [
   "operator:repair",
 ] as const;
 
-type OperatorCommandName = (typeof OPERATOR_COMMAND_NAMES)[number];
-
 const commands = {
   "operator:user-init": {
     description: "Initialize Operator User Instructions",
-    template: commandTemplate(
-      "operator:user-init",
-      "operator-helper user init 2>&1",
-      "Follow the instructions in the guide output above.",
-    ),
+    operation: "user init",
+    guide:
+      "Follow the User Setup guide in its output, including when initialization reports failures.",
   },
   "operator:project-init": {
     description: "Initialize Operator Project",
-    template: commandTemplate(
-      "operator:project-init",
-      "operator-helper project init 2>&1",
-      "Follow the instructions in the guide output above.",
-    ),
+    operation: "project init",
+    guide:
+      "Follow the Project Setup guide in its output, including when initialization reports failures.",
   },
   "operator:index": {
     description: "Build or refresh the Operator Project Index",
-    template: commandTemplate(
-      "operator:index",
-      "operator-helper index init 2>&1",
-      "Follow the instructions in the guide output above.",
-    ),
+    operation: "index init",
+    guide:
+      "Follow the Project Index Setup guide in its output, including when inspection reports failures.",
   },
   "operator:repair": {
     description: "Repair Operator",
-    template: commandTemplate(
-      "operator:repair",
-      "operator-helper memory check 2>&1",
-      "If the output says `No issues detected.`, no action is needed and you may stop. Otherwise, repair only the reported Operator memory issues; do not initialize uninitialized partitions. Rerun `operator-helper memory check` until it succeeds, then read the applicable Operator memory before continuing.",
-    ),
+    operation: "memory check",
+    guide:
+      "If no issues are detected, stop. Otherwise, repair only the reported load failures without initializing absent partitions. Rerun `operator-helper memory check` to confirm the repair, then read the applicable Operator memory documents.",
   },
-} satisfies NonNullable<Config["command"]>;
+} as const;
 
 export function registerCommands(config: Config): void {
   config.command ??= {};
   for (const name of OPERATOR_COMMAND_NAMES) {
-    config.command[name] ??= commands[name];
+    const command = commands[name];
+    config.command[name] ??= {
+      description: command.description,
+      template: `# ${command.description}
+
+1. Run \`operator-helper version\`. If an update is available, run \`operator-helper upgrade\` before continuing.
+2. Run \`operator-helper ${command.operation}\`. ${command.guide}
+
+## Recovery
+
+- If Helper cannot start, repair its installation and retry the failed command.
+- If the version check or upgrade fails, diagnose the error and retry.
+- If \`operator-helper ${command.operation}\` reports a failure, use its output to resolve it and rerun it as needed.
+- If you cannot resolve a problem, report the blocker.
+
+Use Helper output as working context. Do not reproduce it wholesale or reimplement Helper logic.`,
+    };
   }
-}
-
-function commandTemplate(
-  name: OperatorCommandName,
-  commandLine: string,
-  instructions: string,
-): string {
-  const diagnostic = `Operator Helper is unavailable. Help the user repair the missing operator-helper command (npm: @aerovato/operator-helper). Validate the repair by rerunning \`operator-helper version\`. Once it succeeds, ask the user to rerun \`/${name}\`.`;
-
-  return `!\`operator_command_output="$(${commandLine})"
-operator_command_status=$?
-${printLine("<operator-command>")}
-${printLine(`<command>${commandLine}</command>`)}
-${printLine("<output>")}
-printf '%s\\n' "$operator_command_output"
-${printLine("</output>")}
-${printLine("</operator-command>")}
-if [ "$operator_command_status" -eq 127 ]; then
-${printLine("")}
-${printLine("<operator-diagnostic>")}
-${printLine(diagnostic)}
-${printLine("</operator-diagnostic>")}
-else
-${printLine("")}
-${printLine("<operator-instructions>")}
-${printLine(instructions)}
-${printLine("</operator-instructions>")}
-fi\``;
-}
-
-function printLine(value: string): string {
-  const escaped = value.replaceAll("\\", "\\\\").replaceAll("`", "\\140").replaceAll("'", "'\\''");
-  return `printf '%b\\n' '${escaped}'`;
 }

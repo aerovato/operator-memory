@@ -20,13 +20,13 @@ read_if: Working in packages/pi or changing Pi extension behavior
 
 ### `packages/pi/src/`
 
-- `index.ts` - Factory-local preamble injection, recovery and fatal handling, Helper update trigger, and Pi footer lifecycle.
-- `commands.ts` - Native Operator command registration, single-operation Helper execution and framing, and agent prompt delivery.
+- `index.ts` - Factory-local preamble injection, recovery and fatal handling, and Pi footer lifecycle.
+- `commands.ts` - Native Operator command registration and agent instruction delivery.
 
 ### `packages/pi/test/`
 
-- `commands.test.ts` - Four single-operation commands, exact output framing, Helper failure, and collision coverage.
-- `index.test.ts` - Preamble, failure, session reset, footer lifecycle, and Helper update trigger coverage.
+- `commands.test.ts` - Four instruction-based commands, prompt handoff, and collision coverage.
+- `index.test.ts` - Preamble, failure, session reset, and footer lifecycle coverage.
 
 ### `packages/pi/scripts/`
 

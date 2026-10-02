@@ -1,100 +1,54 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
-
-const childProcess = vi.hoisted(() => ({ execFile: vi.fn() }));
-
-vi.mock("node:child_process", () => ({ execFile: childProcess.execFile }));
+import { describe, expect, test, vi } from "vitest";
 
 import { OPERATOR_COMMAND_NAMES, registerCommands } from "../src/commands.ts";
 
 type Invocation = {
-  readonly agent: {
-    readonly session: { readonly header: { readonly cwd: string } };
-    readonly followup: ReturnType<typeof vi.fn>;
-  };
+  readonly agent: { readonly followup: ReturnType<typeof vi.fn> };
   readonly signal: AbortSignal;
 };
 
 type Definition = {
   readonly name: string;
-  readonly description: string;
   readonly handler: (invocation: Invocation) => Promise<{ readonly kind: string }>;
 };
 
-beforeEach(() => {
-  childProcess.execFile.mockReset();
-});
-
 describe("DeepSeek Operator commands", () => {
   test("registers the four hyphenated command names", () => {
-    const runtime = createRuntime();
-
-    expect([...runtime.definitions.keys()]).toEqual(OPERATOR_COMMAND_NAMES);
+    expect([...createRuntime().keys()]).toEqual(OPERATOR_COMMAND_NAMES);
   });
 
   test.each([
-    ["operator-user-init", ["user", "init"]],
-    ["operator-project-init", ["project", "init"]],
-    ["operator-index", ["index", "init"]],
-    ["operator-repair", ["memory", "check"]],
-  ] as const)("runs one Helper operation for %s", async (name, operation) => {
-    queueRun({ stdout: "output", code: 0 });
-    const runtime = createRuntime();
+    ["operator-user-init", "user init", "User Setup"],
+    ["operator-project-init", "project init", "Project Setup"],
+    ["operator-index", "index init", "Project Index Setup"],
+    ["operator-repair", "memory check", "reported load failures"],
+  ] as const)("hands %s to the agent without executing Helper", async (name, operation, guide) => {
     const invocation = createInvocation();
+    await createRuntime().get(name)?.handler(invocation);
 
-    await runtime.definitions.get(name)?.handler(invocation);
-
-    expect(childProcess.execFile.mock.calls.map(call => call[1])).toEqual([operation]);
-    const text = invocation.agent.followup.mock.calls[0]?.[0].content[0].text as string;
-    expect(text).toContain("<operator-command>");
-    expect(text).toContain("<operator-instructions>");
+    expect(invocation.agent.followup).toHaveBeenCalledOnce();
+    const message = invocation.agent.followup.mock.calls[0]?.[0];
+    const text = message.content[0].text as string;
+    expect(message.source).toEqual({ kind: "user" });
+    expect(text).toContain("1. Run `operator-helper version`");
+    expect(text).toContain("run `operator-helper upgrade` before continuing");
+    expect(text).toContain(`2. Run \`operator-helper ${operation}\``);
+    expect(text).toContain(guide);
+    expect(text).toContain("repair its installation and retry the failed command");
+    expect(text).not.toContain("<operator-command>");
   });
 
-  test("hands Helper repair instructions to the active conversation when unavailable", async () => {
-    queueRun({ stderr: "not found", code: "ENOENT" });
-    const runtime = createRuntime();
-    const invocation = createInvocation();
-
-    await runtime.definitions.get("operator-index")?.handler(invocation);
-
-    expect(childProcess.execFile).toHaveBeenCalledOnce();
-    const text = invocation.agent.followup.mock.calls[0]?.[0].content[0].text as string;
-    expect(text).toContain("<operator-diagnostic>");
-    expect(text).toContain("<command>operator-helper index init</command>");
-    expect(text).toContain("/operator-index");
-  });
-
-  test("hands a failed inspection and its guide to the agent without calling Helper unavailable", async () => {
-    queueRun({ stdout: "Inspection failed\n# Project Index Setup", stderr: "details", code: 1 });
-    const runtime = createRuntime();
-    const invocation = createInvocation();
-
-    await runtime.definitions.get("operator-index")?.handler(invocation);
-
-    expect(childProcess.execFile).toHaveBeenCalledOnce();
-    const text = invocation.agent.followup.mock.calls[0]?.[0].content[0].text as string;
-    expect(text).toContain("Inspection failed\n# Project Index Setup");
-    expect(text).toContain("details");
-    expect(text).toContain("<operator-instructions>");
-    expect(text).not.toContain("<operator-diagnostic>");
-  });
-
-  test("does not hand off cancelled command work", async () => {
+  test("does not hand off a cancelled command", async () => {
     const controller = new AbortController();
     controller.abort();
-    childProcess.execFile.mockImplementationOnce((_command, _arguments, _options, callback) => {
-      queueMicrotask(() => callback(new DOMException("cancelled", "AbortError"), "", ""));
-    });
-    const runtime = createRuntime();
     const invocation = createInvocation(controller.signal);
 
-    await expect(runtime.definitions.get("operator-repair")?.handler(invocation)).rejects.toThrow(
-      "cancelled",
-    );
+    await expect(createRuntime().get("operator-repair")?.handler(invocation)).rejects.toThrow();
     expect(invocation.agent.followup).not.toHaveBeenCalled();
   });
 });
 
-function createRuntime(): { readonly definitions: Map<string, Definition> } {
+function createRuntime(): Map<string, Definition> {
   const definitions = new Map<string, Definition>();
   registerCommands({
     commands: {
@@ -104,29 +58,9 @@ function createRuntime(): { readonly definitions: Map<string, Definition> } {
       },
     },
   } as unknown as Parameters<typeof registerCommands>[0]);
-  return { definitions };
+  return definitions;
 }
 
 function createInvocation(signal = new AbortController().signal): Invocation {
-  return {
-    agent: {
-      session: { header: { cwd: "/project" } },
-      followup: vi.fn(),
-    },
-    signal,
-  };
-}
-
-function queueRun(result: {
-  readonly stdout?: string;
-  readonly stderr?: string;
-  readonly code: number | "ENOENT";
-}): void {
-  childProcess.execFile.mockImplementationOnce((_command, _arguments, _options, callback) => {
-    queueMicrotask(() => {
-      const error =
-        result.code === 0 ? null : Object.assign(new Error("Helper failed"), { code: result.code });
-      callback(error, result.stdout ?? "", result.stderr ?? "");
-    });
-  });
+  return { agent: { followup: vi.fn() }, signal };
 }

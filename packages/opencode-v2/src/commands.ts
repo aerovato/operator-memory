@@ -1,5 +1,3 @@
-import { spawn } from "node:child_process";
-
 import type { Context } from "@opencode/plugin/promise/plugin";
 
 export const OPERATOR_COMMAND_NAMES = [
@@ -9,29 +7,30 @@ export const OPERATOR_COMMAND_NAMES = [
   "operator:repair",
 ] as const;
 
-type OperatorCommandName = (typeof OPERATOR_COMMAND_NAMES)[number];
-
 const commands = {
   "operator:user-init": {
     description: "Initialize Operator User Instructions",
-    operation: ["user", "init"],
-    instructions: "Follow the instructions in the guide output above.",
+    operation: "user init",
+    guide:
+      "Follow the User Setup guide in its output, including when initialization reports failures.",
   },
   "operator:project-init": {
     description: "Initialize Operator Project",
-    operation: ["project", "init"],
-    instructions: "Follow the instructions in the guide output above.",
+    operation: "project init",
+    guide:
+      "Follow the Project Setup guide in its output, including when initialization reports failures.",
   },
   "operator:index": {
     description: "Build or refresh the Operator Project Index",
-    operation: ["index", "init"],
-    instructions: "Follow the instructions in the guide output above.",
+    operation: "index init",
+    guide:
+      "Follow the Project Index Setup guide in its output, including when inspection reports failures.",
   },
   "operator:repair": {
     description: "Repair Operator",
-    operation: ["memory", "check"],
-    instructions:
-      "If the output says `No issues detected.`, no action is needed and you may stop. Otherwise, repair only the reported Operator memory issues; do not initialize uninitialized partitions. Rerun `operator-helper memory check` until it succeeds, then read the applicable Operator memory before continuing.",
+    operation: "memory check",
+    guide:
+      "If no issues are detected, stop. Otherwise, repair only the reported load failures without initializing absent partitions. Rerun `operator-helper memory check` to confirm the repair, then read the applicable Operator memory documents.",
   },
 } as const;
 
@@ -40,74 +39,31 @@ export async function registerCommands(context: Context): Promise<void> {
   await context.command.transform(draft => {
     for (const name of OPERATOR_COMMAND_NAMES) {
       if (existing.has(name)) continue;
+      const command = commands[name];
       draft.add({
         name,
-        description: commands[name].description,
+        description: command.description,
         execute: async input => {
-          const text = await commandOutput(name, context.location.directory);
           await context.session.prompt({
             ...input.prompt,
             sessionID: input.sessionID,
-            text,
+            text: `# ${command.description}
+
+1. Run \`operator-helper version\`. If an update is available, run \`operator-helper upgrade\` before continuing.
+2. Run \`operator-helper ${command.operation}\`. ${command.guide}
+
+## Recovery
+
+- If Helper cannot start, repair its installation and retry the failed command.
+- If the version check or upgrade fails, diagnose the error and retry.
+- If \`operator-helper ${command.operation}\` reports a failure, use its output to resolve it and rerun it as needed.
+- If you cannot resolve a problem, report the blocker.
+
+Use Helper output as working context. Do not reproduce it wholesale or reimplement Helper logic.`,
             delivery: input.delivery,
           });
         },
       });
     }
   });
-}
-
-async function commandOutput(name: OperatorCommandName, cwd: string): Promise<string> {
-  const arguments_ = commands[name].operation;
-  const result = await runHelper(arguments_, cwd);
-  if (result.unavailable) {
-    return [
-      wrapCommand(arguments_, result.output),
-      "",
-      "<operator-diagnostic>",
-      `Operator Helper is unavailable. Help the user repair the missing operator-helper command (npm: @aerovato/operator-helper). Validate the repair by rerunning \`operator-helper version\`. Once it succeeds, ask the user to rerun \`/${name}\`.`,
-      "</operator-diagnostic>",
-    ].join("\n");
-  }
-  return [
-    wrapCommand(arguments_, result.output),
-    "",
-    "<operator-instructions>",
-    commands[name].instructions,
-    "</operator-instructions>",
-  ].join("\n");
-}
-
-function runHelper(
-  arguments_: ReadonlyArray<string>,
-  cwd: string,
-): Promise<{ output: string; unavailable: boolean }> {
-  return new Promise(resolve => {
-    const child = spawn("operator-helper", [...arguments_], {
-      cwd,
-      shell: process.platform === "win32",
-      windowsHide: true,
-    });
-    const output: Buffer[] = [];
-    child.stdout.on("data", chunk => output.push(Buffer.from(chunk)));
-    child.stderr.on("data", chunk => output.push(Buffer.from(chunk)));
-    child.on("error", error => resolve({ output: error.message, unavailable: true }));
-    child.on("close", code =>
-      resolve({
-        output: Buffer.concat(output).toString().trim(),
-        unavailable: process.platform === "win32" && code === 9009,
-      }),
-    );
-  });
-}
-
-function wrapCommand(arguments_: ReadonlyArray<string>, output: string): string {
-  return [
-    "<operator-command>",
-    `<command>operator-helper ${arguments_.join(" ")}</command>`,
-    "<output>",
-    output,
-    "</output>",
-    "</operator-command>",
-  ].join("\n");
 }

@@ -5,7 +5,16 @@ description: Initialize and configure the Operator Project Brain.
 
 # Operator Project Setup
 
-1. Run `operator-helper project init` once. If Helper cannot start, help the user repair it, verify the repair, ask them to invoke `$operator-project-init` again, and stop.
-2. Follow the emitted Project Setup guide with the user, including when initialization reports failures. Preserve and address the reported failure details.
+1. Run `operator-helper version`. If an update is available, run `operator-helper upgrade` before continuing.
+2. Run `operator-helper project init` and follow the emitted Project Setup guide, including when initialization reports failures.
 
-Use Helper output as working context. Do not reproduce it for the user or reimplement Helper logic.
+For a new conversation to set up the Project Index, tell the user to invoke `$operator-index`.
+
+## Recovery
+
+- If Helper cannot start, repair its installation and retry the failed command.
+- If the version check or upgrade fails, diagnose the error and retry.
+- If `operator-helper project init` reports a failure, use its output to resolve it and rerun it as needed.
+- If you cannot resolve a problem, report the blocker.
+
+Use Helper output as working context. Do not reproduce it wholesale or reimplement Helper logic.

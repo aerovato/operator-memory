@@ -22,7 +22,7 @@ read_if: Working in packages/opencode-v2 or changing OpenCode V2 preamble inject
 
 - `index.ts` — V2 plugin definition, context-hook preamble injection, and command wiring
 - `server.ts` — Local-directory server entrypoint for the built preview package
-- `commands.ts` — V2 command transforms, platform-aware single-operation Helper execution, XML framing, and prompt admission
+- `commands.ts` — V2 command transforms and instruction prompt admission without adapter-side Helper execution
 - `notifications.ts` — Typed server-to-TUI status method and notification event contract
 - `preamble.ts` — Core-backed immutable per-session preamble loading and caching
 - `tui.tsx` — RPC status client, connecting/readiness and partition UI, idle refresh, and notification listener
@@ -30,8 +30,8 @@ read_if: Working in packages/opencode-v2 or changing OpenCode V2 preamble inject
 
 ### `packages/opencode-v2/test/`
 
-- `index.test.ts` — Plugin setup, command registration, Helper update trigger, and context injection coverage
-- `commands.test.ts` — User-command preservation, single-operation execution, failure framing, and prompt admission coverage
+- `index.test.ts` — Plugin setup, command registration, and context injection coverage
+- `commands.test.ts` — User-command preservation, instruction content, and prompt admission coverage
 - `preamble.test.ts` — Session immutability coverage
 - `tui.test.ts` — Status display, slot registration, toasts, and idle refresh coverage
 

@@ -152,11 +152,11 @@ After the user has confirmed Project Setup: Notice that the index has not been p
 Offer the user two choices:
 
 1. Index now, in this conversation. You run \`operator-helper index init\` yourself and follow the Project Index Setup guide in its output immediately. Helper output is working context; do not reproduce it for the user.
-2. Start a new conversation and run \`/operator:index\` in their harness to build or refresh the Project Index.
+2. Start a new conversation and invoke the Operator Project Index Setup workflow in their harness to build or refresh the Project Index.
 
 Recommendation: for a small or medium codebase, including greenfield, recommend indexing now — it is fast and the setup context is still loaded. For a large codebase, recommend a new conversation so the indexing agent starts with clean context, while still offering to index here.
 
-If the user declines, tell them \`/operator:index\` is available anytime later. Stop after this phase unless the user asks something else about setup.
+If the user declines, tell them the Operator Project Index Setup workflow is available anytime later. Stop after this phase unless the user asks something else about setup.
 
 ## Canonical Seeds
 

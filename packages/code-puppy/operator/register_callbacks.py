@@ -43,7 +43,6 @@ except ImportError:
         CustomCommandResult = None
 
 _RENDER_TIMEOUT_SECONDS = 30
-_COMMAND_TIMEOUT_SECONDS = 60
 _render_tasks: dict[str, asyncio.Task[str]] = {}
 _update_launched = False
 
@@ -51,25 +50,24 @@ _COMMANDS = {
     "operator:user-init": (
         "Initialize Operator User Instructions",
         "user init",
-        "Follow the instructions in the guide output above.",
+        "Follow the User Setup guide in its output, including when initialization reports failures.",
     ),
     "operator:project-init": (
         "Initialize Operator Project",
         "project init",
-        "Follow the instructions in the guide output above.",
+        "Follow the Project Setup guide in its output, including when initialization reports failures.",
     ),
     "operator:index": (
         "Build or refresh the Operator Project Index",
         "index init",
-        "Follow the instructions in the guide output above.",
+        "Follow the Project Index Setup guide in its output, including when inspection reports failures.",
     ),
     "operator:repair": (
         "Repair Operator",
         "memory check",
-        "If the output says `No issues detected.`, no action is needed and you may stop. "
-        "Otherwise, repair only the reported Operator memory issues; do not initialize "
-        "uninitialized partitions. Rerun `operator-helper memory check` until it succeeds, "
-        "then read the applicable Operator memory before continuing.",
+        "If no issues are detected, stop. Otherwise, repair only the reported load "
+        "failures without initializing absent partitions. Rerun `operator-helper memory "
+        "check` to confirm the repair, then read the applicable Operator memory documents.",
     ),
 }
 
@@ -281,59 +279,21 @@ def _custom_command(_command: str, name: str) -> CustomCommandResult | None:
     if definition is None:
         return None
 
-    _, operation, instructions = definition
-    result = _run_helper(tuple(operation.split()))
-    output = _command_output(f"operator-helper {operation} 2>&1", result[1])
-    if result[2]:
-        diagnostic = (
-            "Operator Helper is unavailable. Help the user repair the missing "
-            "operator-helper command (npm: @aerovato/operator-helper). Validate the "
-            f"repair by rerunning `operator-helper version`. Once it succeeds, ask the "
-            f"user to rerun `/{name}`."
-        )
-        content = "\n\n".join(
-            (
-                output,
-                _tag("operator-diagnostic", diagnostic),
-            )
-        )
-        return CustomCommandResult(content)
-
+    description, operation, instructions = definition
     return CustomCommandResult(
-        "\n\n".join((output, _tag("operator-instructions", instructions)))
+        f"# {description}\n\n"
+        "1. Run `operator-helper version`. If an update is available, run "
+        "`operator-helper upgrade` before continuing.\n"
+        f"2. Run `operator-helper {operation}`. {instructions}\n\n"
+        "## Recovery\n\n"
+        "- If Helper cannot start, repair its installation and retry the failed command.\n"
+        "- If the version check or upgrade fails, diagnose the error and retry.\n"
+        f"- If `operator-helper {operation}` reports a failure, use its output to "
+        "resolve it and rerun it as needed.\n"
+        "- If you cannot resolve a problem, report the blocker.\n\n"
+        "Use Helper output as working context. Do not reproduce it wholesale or "
+        "reimplement Helper logic."
     )
-
-
-def _run_helper(arguments: tuple[str, ...]) -> tuple[int, str, bool]:
-    try:
-        result = subprocess.run(
-            ("operator-helper", *arguments),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            timeout=_COMMAND_TIMEOUT_SECONDS,
-            check=False,
-        )
-        return result.returncode, _remove_process_newline(result.stdout), False
-    except (FileNotFoundError, PermissionError) as error:
-        return 1, str(error), True
-    except (OSError, subprocess.TimeoutExpired) as error:
-        return 1, str(error), False
-
-
-def _command_output(command: str, output: str) -> str:
-    return (
-        "<operator-command>\n"
-        f"<command>{command}</command>\n"
-        "<output>\n"
-        f"{output}\n"
-        "</output>\n"
-        "</operator-command>"
-    )
-
-
-def _tag(name: str, content: str) -> str:
-    return f"<{name}>\n{content}\n</{name}>"
 
 
 def _custom_command_help() -> list[tuple[str, str]]:

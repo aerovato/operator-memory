@@ -37,8 +37,11 @@ test.each(skills)(
 
     expect(instructions).toContain(`name: ${name}`);
     expect(directory).toBe(name);
-    expect(instructions).not.toContain("operator-helper version");
+    expect(instructions).toContain("1. Run `operator-helper version`");
+    expect(instructions).toContain("run `operator-helper upgrade` before continuing");
     expect(instructions).toContain(command);
+    expect(instructions).toContain("repair its installation and retry the failed command");
+    expect(instructions).not.toContain("ask them to invoke");
     expect(instructions).not.toContain("operator-helper index status");
     expect(instructions).not.toContain("operator-helper user guide");
     expect(instructions).not.toContain("operator-helper project guide");

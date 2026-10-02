@@ -24,7 +24,7 @@ export const indexInit = Effect.fn("indexInit")((context: CliContext) =>
 ✗ Project Brain Missing
 ${renderTable([["Expected", ".operator/ and/or .operator-shared/"]])}
 
-For Users: Run \`/operator:project-init\` in your harness to initialize.
+For Users: Invoke the Operator Project Setup workflow in your harness to initialize.
 For Agents: Run \`operator-helper project init\` and follow the guide in its output.`,
       };
     }

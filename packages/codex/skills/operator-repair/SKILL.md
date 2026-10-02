@@ -5,8 +5,14 @@ description: Diagnose and repair Operator memory load failures.
 
 # Operator Memory Repair
 
-1. Run `operator-helper memory check` once. If Helper cannot start, help the user repair it, verify the repair, ask them to invoke `$operator-repair` again, and stop.
-2. If no issue is reported, stop. Otherwise, fix only the reported load failures without initializing absent partitions.
-3. Run `operator-helper memory check` again. Once it succeeds, report back to the user and ask them to start a new session.
+1. Run `operator-helper version`. If an update is available, run `operator-helper upgrade` before continuing.
+2. Run `operator-helper memory check`. If no issues are detected, stop. Otherwise, repair only the reported load failures without initializing absent partitions. Rerun `operator-helper memory check` to confirm the repair, then read the applicable Operator memory documents.
 
-Use Helper output as working context. Do not reproduce it for the user or reimplement Helper logic.
+## Recovery
+
+- If Helper cannot start, repair its installation and retry the failed command.
+- If the version check or upgrade fails, diagnose the error and retry.
+- If `operator-helper memory check` reports a failure, use its output to resolve it and rerun it as needed.
+- If you cannot resolve a problem, report the blocker.
+
+Use Helper output as working context. Do not reproduce it wholesale or reimplement Helper logic.
