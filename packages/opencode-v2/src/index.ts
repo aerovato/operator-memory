@@ -1,4 +1,3 @@
-import { spawn } from "node:child_process";
 import { homedir } from "node:os";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -16,8 +15,6 @@ import {
   type OperatorToast,
   type PartitionStatus,
 } from "./notifications.ts";
-
-let helperUpdateStarted = false;
 
 const OperatorPlugin = Plugin.define({
   id: pluginId,
@@ -39,7 +36,6 @@ const OperatorPlugin = Plugin.define({
       },
     });
     const showToast = (toast: OperatorToast) => notifications.events.emit("toast", toast);
-    startHelperUpdate();
     await registerCommands(context);
     await context.session.hook("context", async event => {
       const result = await loadPreamble({
@@ -96,24 +92,4 @@ function installationDetail(moduleUrl: string): string {
   )
     ? `v${packageJson.version}`
     : "Local Build";
-}
-
-function startHelperUpdate(): void {
-  if (helperUpdateStarted) return;
-  helperUpdateStarted = true;
-
-  const environment = { ...process.env };
-  delete environment.OPERATOR_HELPER_SKIP_UPDATE;
-  try {
-    const child = spawn("operator-helper", ["version"], {
-      detached: true,
-      env: environment,
-      stdio: "ignore",
-      windowsHide: true,
-    });
-    child.on("error", () => undefined);
-    child.unref();
-  } catch {
-    // The installed plugin remains usable when Helper is unavailable.
-  }
 }

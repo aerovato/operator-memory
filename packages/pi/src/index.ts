@@ -1,4 +1,3 @@
-import { spawn } from "node:child_process";
 import { homedir } from "node:os";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -17,7 +16,6 @@ export default function operatorPi(pi: ExtensionAPI): void {
   let failureNoticeShown = false;
   const detail = installationDetail(import.meta.url);
 
-  startHelperUpdate();
   registerCommands(pi);
 
   pi.on("context", async (event, context) => {
@@ -69,23 +67,6 @@ function installationDetail(moduleUrl: string): string {
   return packageDirectory.includes(`${separator}node_modules${separator}`)
     ? `v${packageJson.version}`
     : "Local Build";
-}
-
-function startHelperUpdate(): void {
-  const environment = { ...process.env };
-  delete environment.OPERATOR_HELPER_SKIP_UPDATE;
-  try {
-    const child = spawn("operator-helper", ["version"], {
-      detached: true,
-      env: environment,
-      stdio: "ignore",
-      windowsHide: true,
-    });
-    child.on("error", () => undefined);
-    child.unref();
-  } catch {
-    // The installed plugin remains usable when Helper is unavailable.
-  }
 }
 
 async function renderMessage(projectDirectory: string) {

@@ -1,13 +1,11 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { beforeEach, expect, test, vi } from "vitest";
 
-const childProcess = vi.hoisted(() => ({ spawn: vi.fn() }));
 const core = vi.hoisted(() => ({
   loadMemorySnapshot: vi.fn(),
   renderPreamble: vi.fn(),
 }));
 
-vi.mock("node:child_process", () => ({ spawn: childProcess.spawn }));
 vi.mock("@aerovato/operator-core/memory/load", () => ({
   loadMemorySnapshot: core.loadMemorySnapshot,
 }));
@@ -35,8 +33,6 @@ type ContextHandler = (
 type LifecycleHandler = (event: object, context: TestContext) => void;
 
 beforeEach(() => {
-  childProcess.spawn.mockReset();
-  childProcess.spawn.mockReturnValue({ on: vi.fn(), unref: vi.fn() });
   core.loadMemorySnapshot.mockReset();
   core.renderPreamble.mockReset();
 });
@@ -64,17 +60,6 @@ test("coalesces rendering and reuses the complete synthetic message", async () =
   const repeated = await extension.context({ messages: [] }, context);
   expect(repeated.messages[0]).toBe(first.messages[0]);
   expect(core.loadMemorySnapshot).toHaveBeenCalledOnce();
-});
-
-test("starts one detached Helper update check per extension runtime", () => {
-  createExtension();
-
-  expect(childProcess.spawn).toHaveBeenCalledOnce();
-  expect(childProcess.spawn).toHaveBeenCalledWith(
-    "operator-helper",
-    ["version"],
-    expect.objectContaining({ detached: true, stdio: "ignore" }),
-  );
 });
 
 test("sets and clears the local-build status with the session lifecycle", () => {

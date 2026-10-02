@@ -9,12 +9,11 @@ import { afterEach, beforeEach, expect, test } from "vitest";
 
 import { runCli } from "../src/cli.ts";
 import { GitRunner } from "../src/git.ts";
-import { NpmRegistry } from "../src/npm-registry.ts";
-import { autoUpdate, detectInstallationChannel } from "../src/update.ts";
+import { NpmRegistry, NpmRegistryError } from "../src/npm-registry.ts";
+import { detectInstallationChannel, upgradeHelper } from "../src/update.ts";
 import type { CliContext, CliResult } from "../src/utils.ts";
 
 const originalPath = process.env.PATH;
-const originalXdgCacheHome = process.env.XDG_CACHE_HOME;
 const originalCodexHome = process.env.CODEX_HOME;
 let directory: string;
 let context: CliContext;
@@ -26,7 +25,6 @@ beforeEach(() => {
   fs.mkdirSync(bin);
   record = join(directory, "record");
   process.env.PATH = `${bin}:${originalPath ?? ""}`;
-  process.env.XDG_CACHE_HOME = join(directory, ".cache");
   process.env.OPERATOR_TEST_RECORD = record;
   context = {
     cwd: directory,
@@ -38,11 +36,6 @@ beforeEach(() => {
 
 afterEach(() => {
   process.env.PATH = originalPath;
-  if (originalXdgCacheHome === undefined) {
-    delete process.env.XDG_CACHE_HOME;
-  } else {
-    process.env.XDG_CACHE_HOME = originalXdgCacheHome;
-  }
   if (originalCodexHome === undefined) {
     delete process.env.CODEX_HOME;
   } else {
@@ -571,7 +564,7 @@ test.runIf(process.platform !== "win32")(
 );
 
 test.runIf(process.platform !== "win32")(
-  "automatically updates through Bun with the minimum release age disabled",
+  "explicitly upgrades through Bun with the minimum release age disabled",
   async () => {
     executable(
       "bun",
@@ -592,7 +585,7 @@ test.runIf(process.platform !== "win32")(
 );
 
 test.runIf(process.platform !== "win32")(
-  "automatically updates through npm with the minimum release age disabled",
+  "explicitly upgrades through npm with the minimum release age disabled",
   async () => {
     executable("bun", "exit 1");
     executable(
@@ -627,7 +620,7 @@ test("does not inspect installation channels without a newer version", async () 
   expect(result).toEqual({ status: "current" });
 });
 
-test("reuses a recent update check", async () => {
+test("version checks the registry without installing or caching", async () => {
   let checks = 0;
   const child = NodeChildProcessSpawner.layer.pipe(
     Layer.provide(NodeFileSystem.layer),
@@ -638,47 +631,63 @@ test("reuses a recent update check", async () => {
     NpmRegistry.Service.of({
       latestVersion: () => {
         checks += 1;
-        return Effect.succeed("1.2.3");
+        return Effect.succeed("4.5.6");
       },
     }),
+  );
+  const git = Layer.succeed(
+    GitRunner.Service,
+    GitRunner.Service.of({ run: () => Effect.succeed("") }),
   );
   const run = () =>
     Effect.runPromise(
-      autoUpdate(context.version, context, false).pipe(
-        Effect.provide(Layer.mergeAll(child, registryLayer)),
+      runCli(["version"], context).pipe(
+        Effect.provide(
+          Layer.mergeAll(NodeFileSystem.layer, NodePath.layer, child, git, registryLayer),
+        ),
       ),
     );
 
-  await expect(run()).resolves.toEqual({ status: "current" });
-  await expect(run()).resolves.toEqual({ status: "current" });
-  expect(checks).toBe(1);
+  await expect(run()).resolves.toEqual({
+    exitCode: 0,
+    output: "Operator Helper 1.2.3\nUpdate available: 4.5.6. Run `operator-helper upgrade`.",
+  });
+  await expect(run()).resolves.toEqual({
+    exitCode: 0,
+    output: "Operator Helper 1.2.3\nUpdate available: 4.5.6. Run `operator-helper upgrade`.",
+  });
+  expect(checks).toBe(2);
+  expect(fs.existsSync(record)).toBe(false);
 });
 
-test("bypasses the update-check cache when forced", async () => {
-  let checks = 0;
+test("version reports current and registry errors", async () => {
+  expect(await execute(["version"], "1.2.3")).toEqual({
+    exitCode: 0,
+    output: "Operator Helper 1.2.3 is up to date.",
+  });
+
   const child = NodeChildProcessSpawner.layer.pipe(
     Layer.provide(NodeFileSystem.layer),
     Layer.provide(NodePath.layer),
   );
-  const registryLayer = Layer.succeed(
-    NpmRegistry.Service,
-    NpmRegistry.Service.of({
-      latestVersion: () => {
-        checks += 1;
-        return Effect.succeed("1.2.3");
-      },
-    }),
+  const layers = Layer.mergeAll(
+    NodeFileSystem.layer,
+    NodePath.layer,
+    child,
+    Layer.succeed(GitRunner.Service, GitRunner.Service.of({ run: () => Effect.succeed("") })),
+    Layer.succeed(
+      NpmRegistry.Service,
+      NpmRegistry.Service.of({
+        latestVersion: () => Effect.fail(new NpmRegistryError({ message: "Registry unavailable" })),
+      }),
+    ),
   );
-  const run = (bypassCache: boolean) =>
-    Effect.runPromise(
-      autoUpdate(context.version, context, bypassCache).pipe(
-        Effect.provide(Layer.mergeAll(child, registryLayer)),
-      ),
-    );
-
-  await expect(run(false)).resolves.toEqual({ status: "current" });
-  await expect(run(true)).resolves.toEqual({ status: "current" });
-  expect(checks).toBe(2);
+  expect(
+    await Effect.runPromise(runCli(["version"], context).pipe(Effect.provide(layers))),
+  ).toEqual({
+    exitCode: 1,
+    output: "Operator Helper 1.2.3\nRegistry unavailable",
+  });
 });
 
 test.runIf(process.platform !== "win32")("upgrade reports an up-to-date helper", async () => {
@@ -690,20 +699,20 @@ test.runIf(process.platform !== "win32")("upgrade reports an up-to-date helper",
   });
 });
 
-test.runIf(process.platform !== "win32")(
-  "silently retains the current version when automatic installation fails",
-  async () => {
-    executable(
-      "bun",
-      'if [ "$1 $2 $3" = "pm ls --global" ]; then printf "@aerovato/operator-helper@1.2.3"; exit 0; fi\nexit 1',
-    );
-    executable("npm", "exit 1");
+test.runIf(process.platform !== "win32")("reports failed explicit installation", async () => {
+  executable(
+    "bun",
+    'if [ "$1 $2 $3" = "pm ls --global" ]; then printf "@aerovato/operator-helper@1.2.3"; exit 0; fi\nexit 1',
+  );
+  executable("npm", "exit 1");
 
-    const result = await update("4.5.6");
+  const result = await update("4.5.6");
 
-    expect(result).toEqual({ status: "failed" });
-  },
-);
+  expect(result).toEqual({
+    status: "failed",
+    message: "Operator Helper update failed: exit code 1.",
+  });
+});
 
 test.runIf(process.platform !== "win32")(
   "resolves the channel from the running executable when both trees contain the package",
@@ -763,9 +772,7 @@ function update(latest: string) {
     Layer.provide(NodePath.layer),
   );
   return Effect.runPromise(
-    autoUpdate(context.version, context, false).pipe(
-      Effect.provide(Layer.mergeAll(child, registry(latest))),
-    ),
+    upgradeHelper(context).pipe(Effect.provide(Layer.mergeAll(child, registry(latest)))),
   );
 }
 

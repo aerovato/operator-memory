@@ -145,8 +145,6 @@ async def _get_preamble(conversation_key: str) -> str:
 
 
 async def _render_preamble(conversation_key: str) -> str:
-    environment = os.environ.copy()
-    environment["OPERATOR_HELPER_SKIP_UPDATE"] = "1"
     process: asyncio.subprocess.Process | None = None
     try:
         process = await asyncio.create_subprocess_exec(
@@ -154,7 +152,6 @@ async def _render_preamble(conversation_key: str) -> str:
             "preamble",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
-            env=environment,
         )
         stdout, stderr = await asyncio.wait_for(
             process.communicate(), timeout=_RENDER_TIMEOUT_SECONDS

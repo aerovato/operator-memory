@@ -17,6 +17,7 @@ import { userInit } from "./commands/user/init.ts";
 import { userStatus } from "./commands/user/status.ts";
 import { fileFailure } from "./commands/common.ts";
 import { upgrade } from "./commands/upgrade.ts";
+import { version } from "./commands/version.ts";
 import type { GitRunner } from "./git.ts";
 import type { NpmRegistry } from "./npm-registry.ts";
 import { renderTable } from "./output.ts";
@@ -28,30 +29,27 @@ USER COMMANDS
 
 ${renderTable([
   ["help", "Show help for operator-helper"],
-  ["version", "Show the installed version"],
+  ["version", "Show the installed version and check for updates"],
   ["upgrade", "Update Operator Helper to the latest release"],
-  ["operator-helper install codex", "Install or update the Codex plugin"],
-  ["operator-helper install opencode", "Install or update the OpenCode plugin"],
-  ["operator-helper install opencode-v2", "Install or update the OpenCode V2 plugin"],
-  ["operator-helper install deepseek", "Install or update the DeepSeek Harness plugin"],
-  ["operator-helper install pi", "Install or update the Pi plugin"],
-  ["operator-helper install code-puppy", "Install or update the Code Puppy plugin"],
+  ["install codex", "Install or update the Codex plugin"],
+  ["install opencode", "Install or update the OpenCode plugin"],
+  ["install opencode-v2", "Install or update the OpenCode V2 plugin"],
+  ["install deepseek", "Install or update the DeepSeek Harness plugin"],
+  ["install pi", "Install or update the Pi plugin"],
+  ["install code-puppy", "Install or update the Code Puppy plugin"],
 ])}
 
 AGENT COMMANDS
 
 ${renderTable([
-  ["operator-helper user status", "Show User Partition status"],
-  ["operator-helper user init", "Initialize User Partition and print the setup guide"],
-  [
-    "operator-helper project status",
-    "Show Project Private, Shared, Git ignore, and tracking status",
-  ],
-  ["operator-helper project init", "Initialize project partitions and print the setup guide"],
-  ["operator-helper index init", "Show Project Index status and print the setup guide"],
-  ["operator-helper index lint", "Check Project Index structure and frontmatter"],
-  ["operator-helper memory check", "Check that all Operator memory can be loaded"],
-  ["operator-helper preamble", "Render the Operator preamble"],
+  ["user status", "Show User Partition status"],
+  ["user init", "Initialize User Partition and print the setup guide"],
+  ["project status", "Show Project Private, Shared, Git ignore, and tracking status"],
+  ["project init", "Initialize project partitions and print the setup guide"],
+  ["index init", "Show Project Index status and print the setup guide"],
+  ["index lint", "Check Project Index structure and frontmatter"],
+  ["memory check", "Check that all Operator memory can be loaded"],
+  ["preamble", "Render the Operator preamble"],
 ])}`;
 
 export function runCli(
@@ -71,7 +69,7 @@ export function runCli(
       return { exitCode: 0, output: HELP };
     }
     if (arguments_.length === 1 && arguments_[0] === "version") {
-      return { exitCode: 0, output: context.version };
+      return yield* version(context);
     }
     if (arguments_.length === 1 && arguments_[0] === "preamble") {
       return yield* preamble(context);

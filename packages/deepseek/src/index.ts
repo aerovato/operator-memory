@@ -1,4 +1,3 @@
-import { spawn } from "node:child_process";
 import { homedir } from "node:os";
 
 import { loadMemorySnapshot } from "@aerovato/operator-core/memory/load";
@@ -16,7 +15,6 @@ export const inject = ["systemPrompt"];
 
 /** Start the Operator Host plugin for this DeepSeek Harness runtime. */
 export function apply(context: Context): void {
-  startHelperUpdate();
   context.inject(["commands"], registerCommands);
 
   const renders = new WeakMap<Agent, Promise<string>>();
@@ -38,21 +36,4 @@ async function renderAgentPreamble(agent: Agent): Promise<string> {
   const projectDirectory = agent.session.header.cwd ?? process.cwd();
   const memory = await loadMemorySnapshot(projectDirectory, homedir(), true);
   return renderPreamble(memory).content;
-}
-
-function startHelperUpdate(): void {
-  const environment = { ...process.env };
-  delete environment.OPERATOR_HELPER_SKIP_UPDATE;
-  try {
-    const child = spawn("operator-helper", ["version"], {
-      detached: true,
-      env: environment,
-      stdio: "ignore",
-      windowsHide: true,
-    });
-    child.on("error", () => undefined);
-    child.unref();
-  } catch {
-    // The installed plugin remains usable when Helper is unavailable.
-  }
 }

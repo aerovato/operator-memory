@@ -18,7 +18,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 
 ## Architecture
 
-- `@aerovato/operator-helper` is the published Node-compatible installer and coordinator for harness adapters, deterministic Operator setup, memory checks, status, guides, Git integration, automatic updates, and Project Index linting.
+- `@aerovato/operator-helper` is the published Node-compatible installer and coordinator for harness adapters, deterministic Operator setup, memory checks, status, guides, Git integration, explicit upgrades, and Project Index linting.
 - Services use a namespace containing `Interface`, `Service`, and `layer`; service identifiers follow `@aerovato/operator-helper/<service-name>`.
 
 ## `packages/helper/` Index
@@ -41,6 +41,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 - `lint.ts` — Effect Path/FileSystem recursive Project Index checks and safe structured lint findings
 - `templates.ts` — Typed in-package template registry used by init and guide commands
 - `utils.ts` — CLI context, output result, formatting, and generic utilities
+- `update.ts` — Explicit upgrade installation-channel detection, version comparison, and timeout behavior
 
 #### `packages/helper/src/templates/`
 
@@ -54,7 +55,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 ### `packages/helper/test/`
 
 - `cli.test.ts` — Temporary-filesystem command routing, memory check, guide, status, initialization, and lint integration coverage
-- `install-update.test.ts` — Codex, OpenCode V1/V2, Pi, DeepSeek Harness, and managed Code Puppy installation plus Bun/npm automatic update, release-age override, channel fallback, and failure coverage
+- `install-update.test.ts` — Adapter installation, Helper version checks and explicit Bun/npm upgrades, release-age override, channel fallback, and failure coverage
 - `npm-registry.test.ts` — Latest-version response decoding and typed registry failure coverage
 - `filesystem.test.ts` — Live temporary-filesystem path and symlink inspection, text I/O, non-overwriting writes, and recursive listing coverage
 - `git.test.ts` — Configured and fallback global ignore plus tracked Private file coverage
@@ -76,7 +77,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 - `deepseek.ts` — Independent native DeepSeek Web and Desktop profile installation and outcome reporting
 - `code-puppy.ts` — Marked, atomic Code Puppy user-plugin installation and update
 - `preamble.ts` — Canonical core-backed preamble rendering for harness adapters
-- `update.ts` — Cached per-invocation version checks, installation-channel detection, silent exact-version update, and timeout behavior
+- `upgrade.ts`, `version.ts` — Explicit Helper upgrade and read-only update check output
 
 ##### `commands/memory/`
 

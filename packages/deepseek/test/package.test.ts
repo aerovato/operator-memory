@@ -4,13 +4,11 @@ import { runInNewContext } from "node:vm";
 
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-const childProcess = vi.hoisted(() => ({ spawn: vi.fn() }));
 const core = vi.hoisted(() => ({
   loadMemorySnapshot: vi.fn(),
   renderPreamble: vi.fn(),
 }));
 
-vi.mock("node:child_process", () => ({ spawn: childProcess.spawn }));
 vi.mock("@aerovato/operator-core/memory/load", () => ({
   loadMemorySnapshot: core.loadMemorySnapshot,
 }));
@@ -23,8 +21,6 @@ import { apply, inject, name } from "../src/index.ts";
 const packageDirectory = resolve(import.meta.dirname, "..");
 
 beforeEach(() => {
-  childProcess.spawn.mockReset();
-  childProcess.spawn.mockReturnValue({ on: vi.fn(), unref: vi.fn() });
   core.loadMemorySnapshot.mockReset();
   core.renderPreamble.mockReset();
 });
@@ -149,7 +145,6 @@ describe("DeepSeek adapter package", () => {
     const firstPending = runtime.assemble(agent);
     const secondPending = runtime.assemble(agent);
 
-    expect(childProcess.spawn).toHaveBeenCalledOnce();
     expect(core.loadMemorySnapshot).toHaveBeenCalledOnce();
     expect(core.loadMemorySnapshot).toHaveBeenCalledWith("/project", expect.any(String), true);
     deferred.resolve({});

@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
-import { NodeFileSystem, NodePath } from "@effect/platform-node";
+import { NodeChildProcessSpawner, NodeFileSystem, NodePath } from "@effect/platform-node";
 import { Effect, Layer } from "effect";
 import { afterEach, beforeEach, expect, test } from "vitest";
 
@@ -11,6 +11,7 @@ import { renderPreamble } from "@aerovato/operator-core/preamble";
 
 import { runCli } from "../src/cli.ts";
 import { GitError } from "../src/git.ts";
+import { NpmRegistry } from "../src/npm-registry.ts";
 import { readTemplate, TemplatePath } from "../src/templates.ts";
 import type { CliContext, CliResult } from "../src/utils.ts";
 import { makeGitRunnerLayer } from "./mocks/git-runner.ts";
@@ -27,7 +28,15 @@ const gitLayer = makeGitRunnerLayer(arguments_ => {
   }
   return Effect.succeed(tracked.join("\n"));
 });
-const services = Layer.mergeAll(NodeFileSystem.layer, NodePath.layer, gitLayer);
+const child = NodeChildProcessSpawner.layer.pipe(
+  Layer.provide(NodeFileSystem.layer),
+  Layer.provide(NodePath.layer),
+);
+const registry = Layer.succeed(
+  NpmRegistry.Service,
+  NpmRegistry.Service.of({ latestVersion: () => Effect.succeed("1.2.3") }),
+);
+const services = Layer.mergeAll(NodeFileSystem.layer, NodePath.layer, child, gitLayer, registry);
 
 beforeEach(() => {
   directory = fs.mkdtempSync(join(tmpdir(), "operator-helper-cli-"));
@@ -47,24 +56,18 @@ afterEach(() => {
 
 test("routes help, version, and invalid commands", async () => {
   const help = await executeCli(["help"], context);
-  expect(help.output).toContain("operator-helper user status     Show User Partition status");
-  expect(help.output).toContain(
-    "operator-helper project init    Initialize project partitions and print",
-  );
-  expect(help.output).toContain(
-    "operator-helper index init      Show Project Index status and print",
-  );
-  expect(help.output).not.toContain("operator-helper index status");
-  expect(help.output).not.toContain("operator-helper user guide");
-  expect(help.output).toContain("operator-helper index lint      Check Project Index structure");
-  expect(help.output).toContain("operator-helper memory check    Check that all Operator memory");
-  expect(help.output).toContain("operator-helper preamble        Render the Operator preamble");
-  expect(help.output).toContain("operator-helper install codex");
-  expect(help.output).toContain("operator-helper install code-puppy");
-  expect(help.output).toContain("operator-helper install pi");
-  expect(help.output).not.toContain("operator-helper upgrade");
+  expect(help.output).toMatch(/^user status\s+Show User Partition status$/m);
+  expect(help.output).toMatch(/^project init\s+Initialize project partitions and print/m);
+  expect(help.output).toMatch(/^index init\s+Show Project Index status and print/m);
+  expect(help.output).not.toMatch(/^index status\s/m);
+  expect(help.output).not.toMatch(/^user guide\s/m);
+  expect(help.output).toMatch(/^index lint\s+Check Project Index structure/m);
+  expect(help.output).toMatch(/^memory check\s+Check that all Operator memory/m);
+  expect(help.output).toMatch(/^preamble\s+Render the Operator preamble/m);
+  expect(help.output).toMatch(/^install codex\s+Install or update the Codex plugin/m);
+  expect(help.output).toMatch(/^install code-puppy\s+Install or update the Code Puppy plugin/m);
+  expect(help.output).toMatch(/^install pi\s+Install or update the Pi plugin/m);
   expect(help.output).not.toContain("templates index");
-  expect((await executeCli(["version"], context)).output).toBe("1.2.3");
   expect((await executeCli(["--help"], context)).exitCode).toBe(2);
   expect((await executeCli(["-h"], context)).exitCode).toBe(2);
   expect((await executeCli(["--version"], context)).exitCode).toBe(2);
@@ -76,7 +79,7 @@ test("formats help as plaintext", async () => {
   const help = (await executeCli(["help"], context)).output;
   expect(help).toContain("Operator Helper");
   expect(help).toContain("COMMANDS\n\n");
-  expect(help).toContain("operator-helper user status     Show User Partition status");
+  expect(help).toMatch(/^user status\s+Show User Partition status$/m);
   expect(help).not.toContain("FLAGS");
   expect(help).not.toContain("\u001B");
 });

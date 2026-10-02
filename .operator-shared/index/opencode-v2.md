@@ -20,7 +20,7 @@ read_if: Working in packages/opencode-v2 or changing OpenCode V2 preamble inject
 
 ### `packages/opencode-v2/src/`
 
-- `index.ts` — V2 plugin definition, context-hook preamble injection, command wiring, and detached Helper update trigger
+- `index.ts` — V2 plugin definition, context-hook preamble injection, and command wiring
 - `server.ts` — Local-directory server entrypoint for the built preview package
 - `commands.ts` — V2 command transforms, platform-aware single-operation Helper execution, XML framing, and prompt admission
 - `notifications.ts` — Typed server-to-TUI status method and notification event contract

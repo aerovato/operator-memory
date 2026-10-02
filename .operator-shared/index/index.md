@@ -27,7 +27,7 @@ read_if: Working anywhere in the committed Operator Memory project
 - [`code-puppy/`](code-puppy.md) - Bundled Python user plugin for immutable model-boundary preamble injection and Operator commands.
 - [`codex/`](codex.md) - Codex plugin package with local marketplace installation infrastructure.
 - [`deepseek/`](deepseek.md) - Published DeepSeek Harness Host plugin and installable bundle package.
-- [`helper/`](helper.md) - Published harness installation, automatic update, setup, status, guide, Git, and Project Index lint CLI.
+- [`helper/`](helper.md) - Published harness installation, explicit upgrade, setup, status, guide, Git, and Project Index lint CLI.
 - [`opencode/`](opencode.md) - Published OpenCode server and TUI plugin adapter for immutable session preamble injection and memory status UI.
 - [`opencode-v2/`](opencode-v2.md) - Published OpenCode V2 server plugin adapter for context-hook preamble injection and Operator commands.
 - [`pi/`](pi.md) - Published Pi extension adapter package.

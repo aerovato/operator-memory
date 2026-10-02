@@ -1,8 +1,7 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { realpathSync } from "node:fs";
-import { dirname, join, sep } from "node:path";
+import { sep } from "node:path";
 
-import { Effect, Option, Schema, Stream } from "effect";
+import { Effect, Option, Stream } from "effect";
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process";
 
 import { NpmRegistry } from "./npm-registry.ts";
@@ -10,20 +9,6 @@ import type { CliContext } from "./utils.ts";
 
 const HELPER_PACKAGE = "@aerovato/operator-helper";
 const UPDATE_TIMEOUT = "60 seconds";
-const SUCCESS_COOLDOWN = 60 * 60 * 1_000;
-const FAILURE_COOLDOWN = 5 * 60 * 1_000;
-
-const UpdateCheck = Schema.Union([
-  Schema.Struct({ checkedAt: Schema.Number, status: Schema.Literal("current") }),
-  Schema.Struct({ checkedAt: Schema.Number, status: Schema.Literal("failed") }),
-  Schema.Struct({
-    checkedAt: Schema.Number,
-    status: Schema.Literal("unknown"),
-    latest: Schema.String,
-  }),
-]);
-type UpdateCheck = typeof UpdateCheck.Type;
-const decodeUpdateCheck = Schema.decodeUnknownSync(Schema.fromJsonString(UpdateCheck));
 
 type InstallationChannel = "bun" | "npm" | "unknown";
 
@@ -31,40 +16,21 @@ export type UpdateResult =
   | { readonly status: "current" }
   | { readonly status: "updated"; readonly latest: string }
   | { readonly status: "unknown"; readonly latest: string }
-  | { readonly status: "failed" };
+  | { readonly status: "failed"; readonly message: string };
 
-function updateCheckPath(context: CliContext): string {
-  const cache = process.env.XDG_CACHE_HOME || join(context.home, ".cache");
-  return join(cache, "operator", "helper-update.json");
-}
-
-export const autoUpdate = Effect.fn("autoUpdate")(function* (
-  currentVersion: string,
-  context: CliContext,
-  bypassCache: boolean,
-) {
-  const cached = bypassCache ? null : yield* Effect.promise(() => readUpdateCheck(context));
-  if (cached !== null && isFresh(cached)) {
-    if (cached.status === "unknown") {
-      return { status: "unknown", latest: cached.latest } satisfies UpdateResult;
-    }
-    return { status: cached.status } satisfies UpdateResult;
-  }
-
+export const checkForUpdate = Effect.fn("checkForUpdate")(function* (currentVersion: string) {
   const registry = yield* NpmRegistry.Service;
-  const latest = yield* registry.latestVersion(HELPER_PACKAGE).pipe(Effect.option);
-  if (Option.isNone(latest)) {
-    yield* Effect.promise(() =>
-      writeUpdateCheck(context, { checkedAt: Date.now(), status: "failed" }),
-    );
-    return { status: "failed" } satisfies UpdateResult;
-  }
-  if (!isNewerVersion(currentVersion, latest.value)) {
-    yield* Effect.promise(() =>
-      writeUpdateCheck(context, { checkedAt: Date.now(), status: "current" }),
-    );
-    return { status: "current" } satisfies UpdateResult;
-  }
+  const latest = yield* registry.latestVersion(HELPER_PACKAGE);
+  if (!isNewerVersion(currentVersion, latest)) return { status: "current" } as const;
+  return { status: "available", latest } as const;
+});
+
+export const upgradeHelper = Effect.fn("upgradeHelper")(function* (context: CliContext) {
+  const check = yield* checkForUpdate(context.version).pipe(
+    Effect.catch(error => Effect.succeed({ status: "failed" as const, message: error.message })),
+  );
+  if (check.status === "failed") return check satisfies UpdateResult;
+  if (check.status === "current") return check satisfies UpdateResult;
 
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
   const channel = yield* detectInstallationChannel(
@@ -73,24 +39,17 @@ export const autoUpdate = Effect.fn("autoUpdate")(function* (
     process.argv[1] ?? process.execPath,
   );
   if (channel === "unknown") {
-    yield* Effect.promise(() =>
-      writeUpdateCheck(context, {
-        checkedAt: Date.now(),
-        status: "unknown",
-        latest: latest.value,
-      }),
-    );
-    return { status: "unknown", latest: latest.value } satisfies UpdateResult;
+    return { status: "unknown", latest: check.latest } satisfies UpdateResult;
   }
 
   const command =
     channel === "bun"
       ? ChildProcess.make(
           "bun",
-          ["add", "--global", "--minimum-release-age", "0", `${HELPER_PACKAGE}@${latest.value}`],
+          ["add", "--global", "--minimum-release-age", "0", `${HELPER_PACKAGE}@${check.latest}`],
           { cwd: context.cwd },
         )
-      : ChildProcess.make("npm", ["install", "--global", `${HELPER_PACKAGE}@${latest.value}`], {
+      : ChildProcess.make("npm", ["install", "--global", `${HELPER_PACKAGE}@${check.latest}`], {
           cwd: context.cwd,
           env: { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
           extendEnv: true,
@@ -100,40 +59,18 @@ export const autoUpdate = Effect.fn("autoUpdate")(function* (
     Effect.option,
   );
   if (Option.isSome(execution) && execution.value.exitCode === 0) {
-    yield* Effect.promise(() =>
-      writeUpdateCheck(context, { checkedAt: Date.now(), status: "current" }),
-    );
-    return { status: "updated", latest: latest.value } satisfies UpdateResult;
+    return { status: "updated", latest: check.latest } satisfies UpdateResult;
   }
-  yield* Effect.promise(() =>
-    writeUpdateCheck(context, { checkedAt: Date.now(), status: "failed" }),
-  );
-  return { status: "failed" } satisfies UpdateResult;
+  const detail = Option.isSome(execution)
+    ? execution.value.stderr.trim()
+      || execution.value.stdout.trim()
+      || `exit code ${execution.value.exitCode}`
+    : "process failed or timed out";
+  return {
+    status: "failed",
+    message: `Operator Helper update failed: ${detail}.`,
+  } satisfies UpdateResult;
 });
-
-function isFresh(check: UpdateCheck): boolean {
-  const age = Date.now() - check.checkedAt;
-  const cooldown = check.status === "current" ? SUCCESS_COOLDOWN : FAILURE_COOLDOWN;
-  return age >= 0 && age < cooldown;
-}
-
-async function readUpdateCheck(context: CliContext): Promise<UpdateCheck | null> {
-  try {
-    return decodeUpdateCheck(await readFile(updateCheckPath(context), "utf8"));
-  } catch {
-    return null;
-  }
-}
-
-async function writeUpdateCheck(context: CliContext, check: UpdateCheck): Promise<void> {
-  const path = updateCheckPath(context);
-  try {
-    await mkdir(dirname(path), { recursive: true, mode: 0o700 });
-    await writeFile(path, JSON.stringify(check), { mode: 0o600 });
-  } catch {
-    // Update checks remain uncached when the cache is not writable.
-  }
-}
 
 export function detectInstallationChannel(
   spawner: ChildProcessSpawner.ChildProcessSpawner["Service"],

@@ -1,8 +1,7 @@
 import type { Context } from "@opencode/plugin/promise/plugin";
 import { expect, test, vi } from "vitest";
 
-const { child, emitToast, loadMemorySnapshot, loadPreamble, spawn } = vi.hoisted(() => ({
-  child: { on: vi.fn(), unref: vi.fn() },
+const { emitToast, loadMemorySnapshot, loadPreamble } = vi.hoisted(() => ({
   emitToast: vi.fn(() => Promise.resolve()),
   loadMemorySnapshot: vi.fn(() =>
     Promise.resolve({
@@ -14,17 +13,14 @@ const { child, emitToast, loadMemorySnapshot, loadPreamble, spawn } = vi.hoisted
   loadPreamble: vi.fn(() =>
     Promise.resolve({ ok: true as const, value: { content: "operator preamble", loaded: true } }),
   ),
-  spawn: vi.fn(),
 }));
 
-vi.mock("node:child_process", () => ({ spawn }));
 vi.mock("@aerovato/operator-core/memory/load", () => ({ loadMemorySnapshot }));
 vi.mock("../src/preamble.ts", () => ({ loadPreamble }));
 
 import OperatorPlugin from "../src/index.ts";
 
 test("registers commands and injects the preamble through the context hook", async () => {
-  spawn.mockReturnValue(child);
   const addCommand = vi.fn();
   const commandTransform = vi.fn(async callback => callback({ add: addCommand }));
   const sessionHook = vi.fn();
@@ -46,12 +42,6 @@ test("registers commands and injects the preamble through the context hook", asy
 
   await OperatorPlugin.setup(context);
 
-  expect(spawn).toHaveBeenCalledOnce();
-  expect(spawn).toHaveBeenCalledWith(
-    "operator-helper",
-    ["version"],
-    expect.objectContaining({ detached: true, stdio: "ignore", windowsHide: true }),
-  );
   expect(commandTransform).toHaveBeenCalledOnce();
   expect(addCommand.mock.calls.map(([command]) => command.name)).toEqual([
     "operator:user-init",
