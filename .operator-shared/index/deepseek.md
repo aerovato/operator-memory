@@ -27,7 +27,7 @@ read_if: Working in packages/deepseek or changing the DeepSeek Harness adapter
 - `index.ts` — Cordis Host plugin entrypoint, optional command binding, lazy Core preamble rendering, system-prompt assembly contribution, and detached Helper version check.
 - `client.js` — Web Client composer-dock availability indicator, registered through the browser module loader.
 - `client.css` — Composer-dock indicator styling aligned with the Harness's static statistics pills.
-- `commands.ts` — Hyphenated Operator commands, canonical Helper sequencing and framing, cancellation, and agent handoff.
+- `commands.ts` — Hyphenated Operator commands, single-operation Helper execution and framing, cancellation, and agent handoff.
 
 ### `scripts/`
 
@@ -36,4 +36,4 @@ read_if: Working in packages/deepseek or changing the DeepSeek Harness adapter
 ### `test/`
 
 - `package.test.ts` — Host export, bundle mount, Client indicator registration, per-agent rendering, diagnostic, and failure checks.
-- `commands.test.ts` — Command registration, Helper sequences, framing, unavailable behavior, and cancellation checks.
+- `commands.test.ts` — Command registration, single-operation framing, failure behavior, and cancellation checks.

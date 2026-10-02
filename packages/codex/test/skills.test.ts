@@ -5,17 +5,17 @@ import { expect, test } from "vitest";
 
 const skills = [
   {
-    command: "operator-helper user guide",
+    command: "operator-helper user init",
     directory: "operator-user-init",
     name: "operator-user-init",
   },
   {
-    command: "operator-helper project guide",
+    command: "operator-helper project init",
     directory: "operator-project-init",
     name: "operator-project-init",
   },
   {
-    command: "operator-helper index guide",
+    command: "operator-helper index init",
     directory: "operator-index",
     name: "operator-index",
   },
@@ -37,8 +37,12 @@ test.each(skills)(
 
     expect(instructions).toContain(`name: ${name}`);
     expect(directory).toBe(name);
-    expect(instructions).toContain("operator-helper version");
+    expect(instructions).not.toContain("operator-helper version");
     expect(instructions).toContain(command);
+    expect(instructions).not.toContain("operator-helper index status");
+    expect(instructions).not.toContain("operator-helper user guide");
+    expect(instructions).not.toContain("operator-helper project guide");
+    expect(instructions).not.toContain("operator-helper index guide");
     expect(instructions).not.toContain("<operator-command>");
     expect(metadata).toContain("allow_implicit_invocation: false");
   },

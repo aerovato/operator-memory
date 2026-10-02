@@ -407,42 +407,85 @@ async def test_session_end_awaits_cancelled_render(
     assert plugin._render_tasks == {}
 
 
+@pytest.mark.parametrize(
+    ("name", "arguments"),
+    [
+        ("operator:user-init", ("user", "init")),
+        ("operator:project-init", ("project", "init")),
+        ("operator:index", ("index", "init")),
+        ("operator:repair", ("memory", "check")),
+    ],
+)
 def test_commands_return_agent_input_and_preserve_unknown_commands(
-    plugin: Any, monkeypatch: pytest.MonkeyPatch
+    plugin: Any,
+    monkeypatch: pytest.MonkeyPatch,
+    name: str,
+    arguments: tuple[str, ...],
 ):
     calls: list[tuple[str, ...]] = []
 
-    def run(arguments: tuple[str, ...]) -> tuple[int, str]:
+    def run(arguments: tuple[str, ...]) -> tuple[int, str, bool]:
         calls.append(arguments)
-        return 0, "output"
+        return 0, "output", False
 
     monkeypatch.setattr(plugin, "_run_helper", run)
-    result = plugin._custom_command("/operator:user-init", "operator:user-init")
+    result = plugin._custom_command(f"/{name}", name)
 
     assert result.__class__.__name__ == "CustomCommandResult"
-    assert "<command>operator-helper user init 2>&1</command>" in result.content
-    assert "<command>operator-helper user guide 2>&1</command>" in result.content
+    assert (
+        f"<command>operator-helper {' '.join(arguments)} 2>&1</command>"
+        in result.content
+    )
     assert "<operator-instructions>" in result.content
-    assert calls == [("version",), ("user", "init"), ("user", "guide")]
+    assert calls == [arguments]
     assert plugin._custom_command("/unknown", "unknown") is None
 
 
-def test_command_helper_failure_skips_operations(
-    plugin: Any, monkeypatch: pytest.MonkeyPatch
-):
+def test_command_helper_unavailable(plugin: Any, monkeypatch: pytest.MonkeyPatch):
     calls: list[tuple[str, ...]] = []
 
-    def run(arguments: tuple[str, ...]) -> tuple[int, str]:
+    def run(arguments: tuple[str, ...]) -> tuple[int, str, bool]:
         calls.append(arguments)
-        return 1, "not found"
+        return 1, "not found", True
 
     monkeypatch.setattr(plugin, "_run_helper", run)
     result = plugin._custom_command("/operator:index", "operator:index")
 
     assert "<operator-diagnostic>" in result.content
-    assert "operator-helper version 2>&1" in result.content
-    assert "operator-helper index status" not in result.content
-    assert calls == [("version",)]
+    assert "<command>operator-helper index init 2>&1</command>" in result.content
+    assert "<operator-instructions>" not in result.content
+    assert calls == [("index", "init")]
+
+
+def test_nonzero_init_preserves_failure_and_guide(
+    plugin: Any, monkeypatch: pytest.MonkeyPatch
+):
+    monkeypatch.setattr(
+        plugin,
+        "_run_helper",
+        lambda _arguments: (1, "Initialization failed\n# Project Setup", False),
+    )
+
+    result = plugin._custom_command("/operator:project-init", "operator:project-init")
+
+    assert "Initialization failed\n# Project Setup" in result.content
+    assert "<operator-instructions>" in result.content
+    assert "<operator-diagnostic>" not in result.content
+
+
+def test_missing_helper_is_distinguished_from_nonzero_result(
+    plugin: Any, monkeypatch: pytest.MonkeyPatch
+):
+    def missing(*_args: Any, **_kwargs: Any) -> None:
+        raise FileNotFoundError("operator-helper not found")
+
+    monkeypatch.setattr(subprocess, "run", missing)
+
+    assert plugin._run_helper(("memory", "check")) == (
+        1,
+        "operator-helper not found",
+        True,
+    )
 
 
 def test_command_help_lists_canonical_commands(plugin: Any) -> None:

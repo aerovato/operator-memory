@@ -32,25 +32,25 @@ describe("DeepSeek Operator commands", () => {
   });
 
   test.each([
-    ["operator-user-init", [["version"], ["user", "init"], ["user", "guide"]]],
-    ["operator-project-init", [["version"], ["project", "init"], ["project", "guide"]]],
-    ["operator-index", [["version"], ["index", "status"], ["index", "guide"]]],
-    ["operator-repair", [["version"], ["memory", "check"]]],
-  ] as const)("runs the canonical Helper sequence for %s", async (name, operations) => {
-    for (const [index] of operations.entries()) queueRun({ stdout: `output-${index}`, code: 0 });
+    ["operator-user-init", ["user", "init"]],
+    ["operator-project-init", ["project", "init"]],
+    ["operator-index", ["index", "init"]],
+    ["operator-repair", ["memory", "check"]],
+  ] as const)("runs one Helper operation for %s", async (name, operation) => {
+    queueRun({ stdout: "output", code: 0 });
     const runtime = createRuntime();
     const invocation = createInvocation();
 
     await runtime.definitions.get(name)?.handler(invocation);
 
-    expect(childProcess.execFile.mock.calls.map(call => call[1])).toEqual(operations);
+    expect(childProcess.execFile.mock.calls.map(call => call[1])).toEqual([operation]);
     const text = invocation.agent.followup.mock.calls[0]?.[0].content[0].text as string;
     expect(text).toContain("<operator-command>");
     expect(text).toContain("<operator-instructions>");
   });
 
   test("hands Helper repair instructions to the active conversation when unavailable", async () => {
-    queueRun({ stderr: "not found", code: 1 });
+    queueRun({ stderr: "not found", code: "ENOENT" });
     const runtime = createRuntime();
     const invocation = createInvocation();
 
@@ -59,7 +59,23 @@ describe("DeepSeek Operator commands", () => {
     expect(childProcess.execFile).toHaveBeenCalledOnce();
     const text = invocation.agent.followup.mock.calls[0]?.[0].content[0].text as string;
     expect(text).toContain("<operator-diagnostic>");
+    expect(text).toContain("<command>operator-helper index init</command>");
     expect(text).toContain("/operator-index");
+  });
+
+  test("hands a failed inspection and its guide to the agent without calling Helper unavailable", async () => {
+    queueRun({ stdout: "Inspection failed\n# Project Index Setup", stderr: "details", code: 1 });
+    const runtime = createRuntime();
+    const invocation = createInvocation();
+
+    await runtime.definitions.get("operator-index")?.handler(invocation);
+
+    expect(childProcess.execFile).toHaveBeenCalledOnce();
+    const text = invocation.agent.followup.mock.calls[0]?.[0].content[0].text as string;
+    expect(text).toContain("Inspection failed\n# Project Index Setup");
+    expect(text).toContain("details");
+    expect(text).toContain("<operator-instructions>");
+    expect(text).not.toContain("<operator-diagnostic>");
   });
 
   test("does not hand off cancelled command work", async () => {
@@ -104,7 +120,7 @@ function createInvocation(signal = new AbortController().signal): Invocation {
 function queueRun(result: {
   readonly stdout?: string;
   readonly stderr?: string;
-  readonly code: number;
+  readonly code: number | "ENOENT";
 }): void {
   childProcess.execFile.mockImplementationOnce((_command, _arguments, _options, callback) => {
     queueMicrotask(() => {

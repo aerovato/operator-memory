@@ -13,7 +13,7 @@ read_if: Working in packages/codex or changing Codex plugin packaging, preamble 
 
 - `@aerovato/operator-codex` is a dependency-free legacy-format Codex plugin because current Codex clients load lifecycle hooks only from that format.
 - One strictly typed, dependency-free launcher compiles to Node-compatible JavaScript and renders current memory through Helper for new or cleared sessions, post-compaction context, and delegated subagents; resume and fork retain prior injected history.
-- Four explicitly invoked plugin skills bind Codex-native interaction to the canonical Helper setup, indexing, and repair workflows.
+- Four explicitly invoked plugin skills bind Codex-native interaction to one Helper operation for each setup, indexing, and repair workflow.
 - Local preview: `bun run build:codex && bun run preview:codex` registers the repository marketplace via `codex plugin marketplace add` and installs or refreshes `aerovato@operator-local` through `codex plugin add`.
 
 ## `packages/codex/` Index
@@ -25,4 +25,4 @@ read_if: Working in packages/codex or changing Codex plugin packaging, preamble 
 - `scripts/build.ts` - Clean minified Node ESM launcher build.
 - `skills/operator-user-init/`, `skills/operator-project-init/`, `skills/operator-index/`, `skills/operator-repair/` - Explicit-only Operator workflow skills and Codex invocation policy.
 - `test/hook.test.ts` - Session-source filtering, subagent injection, working-directory forwarding, unchanged output, and failure coverage.
-- `test/skills.test.ts` - Skill naming, Helper prerequisite, and explicit-invocation policy coverage.
+- `test/skills.test.ts` - Skill naming, single-operation contract, and explicit-invocation policy coverage.

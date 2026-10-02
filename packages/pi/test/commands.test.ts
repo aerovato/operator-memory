@@ -9,13 +9,13 @@ type CommandHandler = (
 ) => Promise<void>;
 
 const operationArguments = {
-  "operator:user-init": ["user init", "user guide"],
-  "operator:project-init": ["project init", "project guide"],
-  "operator:index": ["index status", "index guide"],
-  "operator:repair": ["memory check"],
+  "operator:user-init": "user init",
+  "operator:project-init": "project init",
+  "operator:index": "index init",
+  "operator:repair": "memory check",
 } as const;
 
-test.each(OPERATOR_COMMAND_NAMES)("runs %s Helper operations in order", async name => {
+test.each(OPERATOR_COMMAND_NAMES)("runs one %s Helper operation", async name => {
   const extension = createExtension();
   extension.exec.mockResolvedValue({ stdout: "output", stderr: "", code: 0, killed: false });
 
@@ -23,8 +23,7 @@ test.each(OPERATOR_COMMAND_NAMES)("runs %s Helper operations in order", async na
 
   expect(extension.context.waitForIdle).toHaveBeenCalledOnce();
   expect(extension.exec.mock.calls.map(([, arguments_]) => arguments_.join(" "))).toEqual([
-    "version",
-    ...operationArguments[name],
+    operationArguments[name],
   ]);
   expect(extension.sendUserMessage).toHaveBeenCalledWith(expect.any(String), {
     expandPromptTemplates: false,
@@ -33,14 +32,17 @@ test.each(OPERATOR_COMMAND_NAMES)("runs %s Helper operations in order", async na
 
 test("frames stdout, stderr, and exit code without a shell", async () => {
   const extension = createExtension();
-  extension.exec
-    .mockResolvedValueOnce({ stdout: "version", stderr: "", code: 0, killed: false })
-    .mockResolvedValueOnce({ stdout: "created\n", stderr: "warning\n", code: 1, killed: false })
-    .mockResolvedValueOnce({ stdout: "guide", stderr: "", code: 0, killed: false });
+  extension.exec.mockResolvedValue({
+    stdout: "created\n# User Setup\n",
+    stderr: "warning\n",
+    code: 1,
+    killed: false,
+  });
 
   await extension.commands.get("operator:user-init")?.("", extension.context);
 
-  expect(extension.exec).toHaveBeenNthCalledWith(2, "operator-helper", ["user", "init"], {
+  expect(extension.exec).toHaveBeenCalledOnce();
+  expect(extension.exec).toHaveBeenCalledWith("operator-helper", ["user", "init"], {
     cwd: "/project",
   });
   const prompt = extension.sendUserMessage.mock.calls[0]?.[0];
@@ -50,7 +52,7 @@ test("frames stdout, stderr, and exit code without a shell", async () => {
       "<command>operator-helper user init</command>",
       "<output>",
       "<stdout>",
-      "created",
+      "created\n# User Setup",
       "</stdout>",
       "<stderr>",
       "warning",
@@ -60,8 +62,8 @@ test("frames stdout, stderr, and exit code without a shell", async () => {
       "</operator-command>",
     ].join("\n"),
   );
-  expect(prompt).toContain("<command>operator-helper user guide</command>");
   expect(prompt).toContain("<operator-instructions>");
+  expect(prompt).not.toContain("<operator-diagnostic>");
 });
 
 test("reports Helper unavailability and skips normal operations", async () => {
@@ -76,10 +78,30 @@ test("reports Helper unavailability and skips normal operations", async () => {
   await extension.commands.get("operator:index")?.("", extension.context);
 
   expect(extension.exec).toHaveBeenCalledOnce();
+  expect(extension.sendUserMessage.mock.calls[0]?.[0]).toContain(
+    "<command>operator-helper index init</command>",
+  );
   expect(extension.sendUserMessage).toHaveBeenCalledWith(
     expect.stringContaining("ask the user to rerun `/operator:index`"),
     { expandPromptTemplates: false },
   );
+});
+
+test("keeps a failed memory check as a repair result", async () => {
+  const extension = createExtension();
+  extension.exec.mockResolvedValue({
+    stdout: "Private: Error",
+    stderr: "",
+    code: 1,
+    killed: false,
+  });
+
+  await extension.commands.get("operator:repair")?.("", extension.context);
+
+  const prompt = extension.sendUserMessage.mock.calls[0]?.[0];
+  expect(prompt).toContain("Private: Error");
+  expect(prompt).toContain("<operator-instructions>");
+  expect(prompt).not.toContain("<operator-diagnostic>");
 });
 
 test("registers exact names and leaves duplicate renaming to Pi", () => {

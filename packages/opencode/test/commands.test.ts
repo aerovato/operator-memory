@@ -1,3 +1,8 @@
+import { spawnSync } from "node:child_process";
+import { chmodSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
 import type { Config } from "@opencode-ai/plugin";
 import { expect, test } from "vitest";
 
@@ -46,61 +51,89 @@ test("registers a focused memory repair command", () => {
   registerCommands(config);
 
   const template = config.command?.["operator:repair"]?.template ?? "";
-  const [successBranch, failureBranch] = template.split("\nelse\n");
-
-  expect(successBranch).toContain('operator_command_output="$(operator-helper memory check 2>&1)"');
-  expect(successBranch).toContain("<command>operator-helper memory check 2>&1</command>");
-  expect(successBranch).toContain("<operator-instructions>");
-  expect(successBranch).toContain("\\140No issues detected.\\140");
-  expect(successBranch).toContain("do not initialize uninitialized partitions");
-  expect(failureBranch).not.toContain("operator-helper memory check");
+  expect(template).toContain('operator_command_output="$(operator-helper memory check 2>&1)"');
+  expect(template).toContain("<command>operator-helper memory check 2>&1</command>");
+  expect(template).toContain("<operator-instructions>");
+  expect(template).toContain("\\140No issues detected.\\140");
+  expect(template).toContain("do not initialize uninitialized partitions");
 });
 
-test("runs setup operations sequentially with explicit command output boundaries", () => {
+test("runs exactly one setup operation with explicit command output boundaries", () => {
   const config = {} as Config;
   registerCommands(config);
 
-  expectSetupCommands(config, "operator:user-init", "user init", "user guide");
-  expectSetupCommands(config, "operator:project-init", "project init", "project guide");
-  expectSetupCommands(config, "operator:index", "index status", "index guide");
+  expectSetupCommand(config, "operator:user-init", "user init");
+  expectSetupCommand(config, "operator:project-init", "project init");
+  expectSetupCommand(config, "operator:index", "index init");
 });
 
-test("silently checks helper availability and renders only failed checks", () => {
+test("distinguishes a missing Helper from non-zero setup and repair results", () => {
   const config = {} as Config;
   registerCommands(config);
 
   for (const name of OPERATOR_COMMAND_NAMES) {
     const template = config.command?.[name]?.template ?? "";
-    const [successBranch, failureBranch] = template.split("\nelse\n");
+    const [missingBranch, operationBranch] = template.split("\nelse\n");
 
     expect(template.match(/!`/g)).toHaveLength(1);
     expect(template.match(/`/g)).toHaveLength(2);
-    expect(template).toContain('operator_helper_version_output="$(operator-helper version 2>&1)"');
-    expect(successBranch).not.toContain("<command>operator-helper version 2>&1</command>");
-    expect(failureBranch).toContain("<command>operator-helper version 2>&1</command>");
-    expect(failureBranch).toContain("<operator-diagnostic>");
-    expect(failureBranch).toContain(
+    expect(template).not.toContain("operator-helper version 2>&1");
+    expect(template).toContain('if [ "$operator_command_status" -eq 127 ]; then');
+    expect(missingBranch).toContain("<operator-diagnostic>");
+    expect(missingBranch).toContain(
       "Validate the repair by rerunning \\140operator-helper version\\140",
     );
-    expect(failureBranch).toContain(`ask the user to rerun \\140/${name}\\140`);
+    expect(missingBranch).toContain(`ask the user to rerun \\140/${name}\\140`);
+    expect(operationBranch).toContain("<operator-instructions>");
   }
 });
 
-function expectSetupCommands(config: Config, name: string, operation: string, guide: string): void {
-  const template = config.command?.[name]?.template ?? "";
-  const [successBranch, failureBranch] = template.split("\nelse\n");
-  const operationCommand = `operator-helper ${operation} 2>&1`;
-  const guideCommand = `operator-helper ${guide} 2>&1`;
+test.runIf(process.platform !== "win32")(
+  "hands off a failed setup guide but diagnoses a missing Helper",
+  () => {
+    const config = {} as Config;
+    registerCommands(config);
+    const template = config.command?.["operator:user-init"]?.template ?? "";
+    const script = template.slice(2, -1);
+    const directory = mkdtempSync(join(tmpdir(), "operator-command-"));
 
-  expect(successBranch).toContain(`operator_command_output="$(${operationCommand})"`);
-  expect(successBranch).toContain(`<command>${operationCommand}</command>`);
-  expect(successBranch).toContain(`operator_command_output="$(${guideCommand})"`);
-  expect(successBranch).toContain(`<command>${guideCommand}</command>`);
-  expect(successBranch).toContain("<operator-instructions>");
-  expect(successBranch).toContain("Follow the instructions in the guide output above.");
-  expect(successBranch?.indexOf(operationCommand)).toBeLessThan(
-    successBranch?.indexOf(guideCommand) ?? -1,
-  );
-  expect(failureBranch).not.toContain(operationCommand);
-  expect(failureBranch).not.toContain(guideCommand);
+    try {
+      const helper = join(directory, "operator-helper");
+      writeFileSync(
+        helper,
+        "#!/bin/sh\nprintf '%s\\n' 'Initialization failed' '# User Setup'\nexit 1\n",
+      );
+      chmodSync(helper, 0o755);
+      const run = (path: string) =>
+        spawnSync("/bin/sh", ["-c", script], {
+          encoding: "utf8",
+          env: { ...process.env, PATH: path },
+        });
+
+      const failed = run(directory);
+      expect(failed.status).toBe(0);
+      expect(failed.stdout).toContain("Initialization failed\n# User Setup");
+      expect(failed.stdout).toContain("<operator-instructions>");
+      expect(failed.stdout).not.toContain("<operator-diagnostic>");
+
+      const missing = run(join(directory, "missing"));
+      expect(missing.status).toBe(0);
+      expect(missing.stdout).toContain("<operator-diagnostic>");
+      expect(missing.stdout).not.toContain("<operator-instructions>");
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  },
+);
+
+function expectSetupCommand(config: Config, name: string, operation: string): void {
+  const template = config.command?.[name]?.template ?? "";
+  const operationCommand = `operator-helper ${operation} 2>&1`;
+
+  expect(template).toContain(`operator_command_output="$(${operationCommand})"`);
+  expect(template).toContain(`<command>${operationCommand}</command>`);
+  expect(template).not.toContain("operator-helper user guide");
+  expect(template).not.toContain("operator-helper project guide");
+  expect(template).not.toContain("operator-helper index status");
+  expect(template).not.toContain("operator-helper index guide");
 }

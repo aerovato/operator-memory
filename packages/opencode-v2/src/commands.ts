@@ -14,31 +14,22 @@ type OperatorCommandName = (typeof OPERATOR_COMMAND_NAMES)[number];
 const commands = {
   "operator:user-init": {
     description: "Initialize Operator User Instructions",
-    operations: [
-      ["user", "init"],
-      ["user", "guide"],
-    ],
+    operation: ["user", "init"],
     instructions: "Follow the instructions in the guide output above.",
   },
   "operator:project-init": {
     description: "Initialize Operator Project",
-    operations: [
-      ["project", "init"],
-      ["project", "guide"],
-    ],
+    operation: ["project", "init"],
     instructions: "Follow the instructions in the guide output above.",
   },
   "operator:index": {
     description: "Build or refresh the Operator Project Index",
-    operations: [
-      ["index", "status"],
-      ["index", "guide"],
-    ],
+    operation: ["index", "init"],
     instructions: "Follow the instructions in the guide output above.",
   },
   "operator:repair": {
     description: "Repair Operator",
-    operations: [["memory", "check"]],
+    operation: ["memory", "check"],
     instructions:
       "If the output says `No issues detected.`, no action is needed and you may stop. Otherwise, repair only the reported Operator memory issues; do not initialize uninitialized partitions. Rerun `operator-helper memory check` until it succeeds, then read the applicable Operator memory before continuing.",
   },
@@ -67,23 +58,19 @@ export async function registerCommands(context: Context): Promise<void> {
 }
 
 async function commandOutput(name: OperatorCommandName, cwd: string): Promise<string> {
-  const version = await runHelper(["version"], cwd);
-  if (version.exitCode !== 0) {
+  const arguments_ = commands[name].operation;
+  const result = await runHelper(arguments_, cwd);
+  if (result.unavailable) {
     return [
-      wrapCommand(["version"], version.output),
+      wrapCommand(arguments_, result.output),
       "",
       "<operator-diagnostic>",
       `Operator Helper is unavailable. Help the user repair the missing operator-helper command (npm: @aerovato/operator-helper). Validate the repair by rerunning \`operator-helper version\`. Once it succeeds, ask the user to rerun \`/${name}\`.`,
       "</operator-diagnostic>",
     ].join("\n");
   }
-
-  const outputs: string[] = [];
-  for (const arguments_ of commands[name].operations) {
-    outputs.push(wrapCommand(arguments_, (await runHelper(arguments_, cwd)).output));
-  }
   return [
-    ...outputs.flatMap((output, index) => (index === 0 ? [output] : ["", output])),
+    wrapCommand(arguments_, result.output),
     "",
     "<operator-instructions>",
     commands[name].instructions,
@@ -94,18 +81,22 @@ async function commandOutput(name: OperatorCommandName, cwd: string): Promise<st
 function runHelper(
   arguments_: ReadonlyArray<string>,
   cwd: string,
-): Promise<{ exitCode: number; output: string }> {
+): Promise<{ output: string; unavailable: boolean }> {
   return new Promise(resolve => {
-    const child = spawn(`operator-helper ${arguments_.join(" ")} 2>&1`, {
+    const child = spawn("operator-helper", [...arguments_], {
       cwd,
-      shell: true,
+      shell: process.platform === "win32",
       windowsHide: true,
     });
     const output: Buffer[] = [];
     child.stdout.on("data", chunk => output.push(Buffer.from(chunk)));
-    child.on("error", error => resolve({ exitCode: 1, output: error.message }));
+    child.stderr.on("data", chunk => output.push(Buffer.from(chunk)));
+    child.on("error", error => resolve({ output: error.message, unavailable: true }));
     child.on("close", code =>
-      resolve({ exitCode: code ?? 1, output: Buffer.concat(output).toString().trim() }),
+      resolve({
+        output: Buffer.concat(output).toString().trim(),
+        unavailable: process.platform === "win32" && code === 9009,
+      }),
     );
   });
 }
@@ -113,7 +104,7 @@ function runHelper(
 function wrapCommand(arguments_: ReadonlyArray<string>, output: string): string {
   return [
     "<operator-command>",
-    `<command>operator-helper ${arguments_.join(" ")} 2>&1</command>`,
+    `<command>operator-helper ${arguments_.join(" ")}</command>`,
     "<output>",
     output,
     "</output>",

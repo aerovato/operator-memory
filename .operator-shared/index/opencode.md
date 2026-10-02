@@ -30,7 +30,7 @@ read_if: Working in packages/opencode or changing OpenCode preamble injection
 - `index.ts` — OpenCode plugin entrypoint, detached Helper update trigger, hook wiring, fatal error handling, and deduplicated recovery notices
 - `tui.tsx` — Installation-aware home readiness indicator, sidebar partition status, per-project caching, and completed-turn refresh
 - `client.ts` — V1 plugin-client to V2 SDK client bridge
-- `commands.ts` — Non-overwriting inline setup and memory-repair command registration
+- `commands.ts` — Non-overwriting inline commands with one Helper operation and shell-status availability handling
 - `preamble.ts` — Result-bearing preamble loading, rendering, and immutable normal or diagnostic per-session caching
 - `update.ts` — Nonblocking npm version check and direct stable `@latest` wrapper update with restart notification
 - `utils.ts` — Generic result type and success/failure constructors
@@ -39,7 +39,7 @@ read_if: Working in packages/opencode or changing OpenCode preamble injection
 
 - `index.test.ts` — Plugin startup coverage for detached, deduplicated Helper update checks
 - `tui.test.ts` — TUI slot registration and completed-turn refresh coverage
-- `commands.test.ts` — Command sequencing, user-command preservation, configuration, and repair-instruction coverage
+- `commands.test.ts` — Single-operation shell execution, failure handoff, user-command preservation, and repair-instruction coverage
 - `preamble.test.ts` — Normal and recovery-diagnostic session immutability coverage
 - `update.test.ts` — Wrapper validation, semantic-version comparison, update, and no-op coverage
 

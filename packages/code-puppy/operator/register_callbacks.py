@@ -50,22 +50,22 @@ _update_launched = False
 _COMMANDS = {
     "operator:user-init": (
         "Initialize Operator User Instructions",
-        ("user init", "user guide"),
+        "user init",
         "Follow the instructions in the guide output above.",
     ),
     "operator:project-init": (
         "Initialize Operator Project",
-        ("project init", "project guide"),
+        "project init",
         "Follow the instructions in the guide output above.",
     ),
     "operator:index": (
         "Build or refresh the Operator Project Index",
-        ("index status", "index guide"),
+        "index init",
         "Follow the instructions in the guide output above.",
     ),
     "operator:repair": (
         "Repair Operator",
-        ("memory check",),
+        "memory check",
         "If the output says `No issues detected.`, no action is needed and you may stop. "
         "Otherwise, repair only the reported Operator memory issues; do not initialize "
         "uninitialized partitions. Rerun `operator-helper memory check` until it succeeds, "
@@ -284,8 +284,10 @@ def _custom_command(_command: str, name: str) -> CustomCommandResult | None:
     if definition is None:
         return None
 
-    version = _run_helper(("version",))
-    if version[0] != 0:
+    _, operation, instructions = definition
+    result = _run_helper(tuple(operation.split()))
+    output = _command_output(f"operator-helper {operation} 2>&1", result[1])
+    if result[2]:
         diagnostic = (
             "Operator Helper is unavailable. Help the user repair the missing "
             "operator-helper command (npm: @aerovato/operator-helper). Validate the "
@@ -294,23 +296,18 @@ def _custom_command(_command: str, name: str) -> CustomCommandResult | None:
         )
         content = "\n\n".join(
             (
-                _command_output("operator-helper version 2>&1", version[1]),
+                output,
                 _tag("operator-diagnostic", diagnostic),
             )
         )
         return CustomCommandResult(content)
 
-    _, operations, instructions = definition
-    outputs = []
-    for operation in operations:
-        arguments = tuple(operation.split())
-        result = _run_helper(arguments)
-        outputs.append(_command_output(f"operator-helper {operation} 2>&1", result[1]))
-    outputs.append(_tag("operator-instructions", instructions))
-    return CustomCommandResult("\n\n".join(outputs))
+    return CustomCommandResult(
+        "\n\n".join((output, _tag("operator-instructions", instructions)))
+    )
 
 
-def _run_helper(arguments: tuple[str, ...]) -> tuple[int, str]:
+def _run_helper(arguments: tuple[str, ...]) -> tuple[int, str, bool]:
     try:
         result = subprocess.run(
             ("operator-helper", *arguments),
@@ -320,9 +317,11 @@ def _run_helper(arguments: tuple[str, ...]) -> tuple[int, str]:
             timeout=_COMMAND_TIMEOUT_SECONDS,
             check=False,
         )
-        return result.returncode, _remove_process_newline(result.stdout)
+        return result.returncode, _remove_process_newline(result.stdout), False
+    except (FileNotFoundError, PermissionError) as error:
+        return 1, str(error), True
     except (OSError, subprocess.TimeoutExpired) as error:
-        return 1, str(error)
+        return 1, str(error), False
 
 
 def _command_output(command: str, output: str) -> str:

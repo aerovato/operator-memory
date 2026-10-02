@@ -21,7 +21,7 @@ read_if: Working in packages/code-puppy or changing Code Puppy preamble injectio
 
 ### `operator/`
 
-- `register_callbacks.py` — Model wrapper, conversation cache, diagnostics, commands, callback registration, and non-blocking automatic update trigger
+- `register_callbacks.py` — Model wrapper, conversation cache, diagnostics, single-operation commands, callback registration, and non-blocking automatic update trigger
 
 ### `tests/`
 
