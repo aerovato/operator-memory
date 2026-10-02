@@ -7,7 +7,7 @@ import { USER_ROOT } from "./common.ts";
 
 const INIT_HINT = [
   "For Users: Run `/operator:user-init` in your harness to initialize.",
-  "For Agents: Run `operator-helper user init`, then `operator-helper user guide`, and follow the guide.",
+  "For Agents: Run `operator-helper user init` and follow the guide in its output.",
 ];
 
 export const userStatus = Effect.fn("userStatus")(function* (context: CliContext) {

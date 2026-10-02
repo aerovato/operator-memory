@@ -1,9 +1,8 @@
 import { Effect, type FileSystem, type Path } from "effect";
 import type { ChildProcessSpawner } from "effect/unstable/process";
 
-import { indexGuide } from "./commands/index/guide.ts";
+import { indexInit } from "./commands/index/init.ts";
 import { indexLint } from "./commands/index/lint.ts";
-import { indexStatus } from "./commands/index/status.ts";
 import { installCodePuppy } from "./commands/install/code-puppy.ts";
 import { installCodex } from "./commands/install/codex.ts";
 import { installDeepSeek } from "./commands/install/deepseek.ts";
@@ -12,10 +11,8 @@ import { installOpenCodeV2 } from "./commands/install/opencode-v2.ts";
 import { installPi } from "./commands/install/pi.ts";
 import { memoryCheck } from "./commands/memory/check.ts";
 import { preamble } from "./commands/preamble.ts";
-import { projectGuide } from "./commands/project/guide.ts";
 import { projectInit } from "./commands/project/init.ts";
 import { projectStatus } from "./commands/project/status.ts";
-import { userGuide } from "./commands/user/guide.ts";
 import { userInit } from "./commands/user/init.ts";
 import { userStatus } from "./commands/user/status.ts";
 import { fileFailure } from "./commands/common.ts";
@@ -45,16 +42,13 @@ AGENT COMMANDS
 
 ${renderTable([
   ["operator-helper user status", "Show User Partition status"],
-  ["operator-helper user init", "Initialize User Partition core files without overwriting content"],
-  ["operator-helper user guide", "Print the agent guide for completing User Setup"],
+  ["operator-helper user init", "Initialize User Partition and print the setup guide"],
   [
     "operator-helper project status",
     "Show Project Private, Shared, Git ignore, and tracking status",
   ],
-  ["operator-helper project init", "Initialize project partitions and global Git ignore"],
-  ["operator-helper project guide", "Print the agent guide for completing Project Setup"],
-  ["operator-helper index status", "Show Private and Shared main Project Index status"],
-  ["operator-helper index guide", "Print the agent guide for building or refreshing indexes"],
+  ["operator-helper project init", "Initialize project partitions and print the setup guide"],
+  ["operator-helper index init", "Show Project Index status and print the setup guide"],
   ["operator-helper index lint", "Check Project Index structure and frontmatter"],
   ["operator-helper memory check", "Check that all Operator memory can be loaded"],
   ["operator-helper preamble", "Render the Operator preamble"],
@@ -95,18 +89,13 @@ export function runCli(
         return yield* userStatus(context);
       case "user init":
         return yield* userInit(context);
-      case "user guide":
-        return yield* userGuide();
       case "project status":
         return yield* projectStatus(context);
       case "project init":
         return yield* projectInit(context);
-      case "project guide":
-        return yield* projectGuide();
+      case "index init":
       case "index status":
-        return yield* indexStatus(context);
-      case "index guide":
-        return yield* indexGuide();
+        return yield* indexInit(context);
       case "index lint":
         return yield* indexLint(context);
       case "memory check":
@@ -123,6 +112,10 @@ export function runCli(
         return yield* installPi(context);
       case "install code-puppy":
         return yield* installCodePuppy(context);
+      case "user guide":
+      case "project guide":
+      case "index guide":
+        return { exitCode: 0, output: "" };
       default:
         return {
           exitCode: 2,

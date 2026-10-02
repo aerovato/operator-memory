@@ -38,7 +38,7 @@ export const projectStatus = Effect.fn("projectStatus")(function* (context: CliC
       "✗ Project Brain Missing",
       "",
       "For Users: Run `/operator:project-init` in your harness to initialize.",
-      "For Agents: Run `operator-helper project init`, then `operator-helper project guide`, and follow the guide.",
+      "For Agents: Run `operator-helper project init` and follow the guide in its output.",
     );
   }
 

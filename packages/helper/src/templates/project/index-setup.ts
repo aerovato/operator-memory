@@ -2,7 +2,7 @@ export const PROJECT_INDEX_SETUP_TEMPLATE = `# Project Index Setup
 
 You are helping the user build or refresh the Operator Project Index — the living map of **codebase** structure and intent under \`.operator/index/\` and/or \`.operator-shared/index/\`.
 
-Only populate or update the **main project code** index. Do not put brain layout, doctrine, specs, plans, or setup metadata in the index. You may re-run \`operator-helper index status\` and \`operator-helper index lint\` as needed.
+Only populate or update the **main project code** index. Do not put brain layout, doctrine, specs, plans, or setup metadata in the index. You may re-run \`operator-helper index init\` and \`operator-helper index lint\` as needed.
 
 **Document syntax:** Main-index and subindex structure, entry syntax, and examples are defined in the fixed preamble (Project Index section). **You must follow that preamble document syntax** when creating or filling every index file. Do not invent layouts. Write files directly from the preamble shapes (init may already have seeded a main index with canonical syntax).
 
@@ -23,7 +23,7 @@ Only populate or update the **main project code** index. Do not put brain layout
 
 Read when present:
 
-- Status listings from \`operator-helper index status\`
+- Status listings from \`operator-helper index init\`
 - \`.operator/operator.md\` and \`.operator-shared/operator.md\` (placement / share policy)
 - All existing files under \`.operator/index/\` and \`.operator-shared/index/\`
 

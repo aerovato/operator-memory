@@ -33,7 +33,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 ### `packages/helper/src/`
 
 - `index.ts` — Effect Node runtime entrypoint, production layers, process context capture, output, and exit status
-- `cli.ts` — Injectable CLI Effect with subcommand validation, descriptive help, failure rendering, and operational-command routing
+- `cli.ts` — Injectable CLI Effect with subcommand validation, descriptive help, legacy guide no-ops, and operational-command routing
 - `npm-registry.ts` — Small npm registry service for resolving concrete latest package versions
 - `output.ts` — Shared borderless plaintext table rendering
 - `filesystem.ts` — Effect filesystem operations, private-directory enforcement, symlink-safe listing, and typed failures
@@ -86,18 +86,15 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 
 - `common.ts` — Shared User Instructions display path
 - `status.ts` — User Instructions presence and size status
-- `init.ts` — User Instructions non-overwriting initialization from the in-package seed
-- `guide.ts` — User Setup guide output with embedded seed
+- `init.ts` — User Instructions non-overwriting initialization and User Setup guide output with embedded seeds
 
 ##### `commands/project/`
 
 - `common.ts` — Shared project partition roots and core file paths
 - `status.ts` — Project partition, non-index freeform content, Git ignore, and tracking status
-- `init.ts` — Private initialization from in-package templates, existing-Shared README seeding and inspection, and Git ignore configuration
-- `guide.ts` — Project Setup guide output with embedded seeds
+- `init.ts` — Private initialization, existing-Shared README inspection, Git ignore configuration, and Project Setup guide output
 
 ##### `commands/index/`
 
-- `status.ts` — Private and Shared main Project Index presence status
+- `init.ts` — Private and Shared main Project Index presence and setup guide output
 - `lint.ts` — Structured lint finding rendering and exit-code policy
-- `guide.ts` — Project Index guide output

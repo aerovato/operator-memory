@@ -71,7 +71,7 @@ const main = Effect.gen(function* () {
     xdgConfigHome: environment.xdgConfigHome,
     version: environment.version,
   });
-  yield* Console.log(result.output);
+  if (result.output !== "") yield* Console.log(result.output);
   process.exitCode = result.exitCode;
 }).pipe(Effect.provide(LiveLayers));
 

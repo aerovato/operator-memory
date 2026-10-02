@@ -151,7 +151,7 @@ After the user has confirmed Project Setup: Notice that the index has not been p
 
 Offer the user two choices:
 
-1. Index now, in this conversation. You run \`operator-helper index status\` and \`operator-helper index guide\` yourself and follow the Project Index Setup guide immediately. Helper output is working context; do not reproduce it for the user.
+1. Index now, in this conversation. You run \`operator-helper index init\` yourself and follow the Project Index Setup guide in its output immediately. Helper output is working context; do not reproduce it for the user.
 2. Start a new conversation and run \`/operator:index\` in their harness to build or refresh the Project Index.
 
 Recommendation: for a small or medium codebase, including greenfield, recommend indexing now — it is fast and the setup context is still loaded. For a large codebase, recommend a new conversation so the indexing agent starts with clean context, while still offering to index here.
