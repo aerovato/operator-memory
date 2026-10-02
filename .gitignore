@@ -11,6 +11,7 @@ __pycache__/
 .ruff_cache/
 
 # Build and package output
+packages/claude-code/hooks/register.js
 dist/
 coverage/
 *.lcov

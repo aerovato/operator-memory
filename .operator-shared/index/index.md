@@ -23,6 +23,7 @@ read_if: Working anywhere in the committed Operator Memory project
 
 ### `packages/` - Workspace packages
 
+- [`claude-code/`](claude-code.md) - Claude Code adapter scaffolding with an ESM mod build entrypoint.
 - [`core/`](core.md) - Private harness-agnostic runtime for memory loading, shared models, and preamble generation.
 - [`code-puppy/`](code-puppy.md) - Bundled Python user plugin for immutable model-boundary preamble injection and Operator commands.
 - [`codex/`](codex.md) - Codex plugin package with local marketplace installation infrastructure.

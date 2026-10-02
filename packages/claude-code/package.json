@@ -1,0 +1,39 @@
+{
+  "name": "@aerovato/operator-claude-code",
+  "version": "0.1.0",
+  "description": "Operator Memory adapter for Claude Code.",
+  "license": "BSD-3-Clause",
+  "author": "Aerovato Research",
+  "homepage": "https://github.com/aerovato/operator-memory#readme",
+  "bugs": {
+    "url": "https://github.com/aerovato/operator-memory/issues"
+  },
+  "files": [
+    ".claude-plugin",
+    "hooks",
+    "dist",
+    "skills"
+  ],
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "memory",
+    "plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aerovato/operator-memory.git",
+    "directory": "packages/claude-code"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "bun build ./src/register.ts --target browser --format esm --outfile ./hooks/register.js",
+    "prepack": "bun run build"
+  },
+  "type": "module"
+}

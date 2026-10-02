@@ -1,0 +1,4 @@
+{
+  "description": "Operator Memory preamble injection",
+  "modules": ["./register.js"]
+}
