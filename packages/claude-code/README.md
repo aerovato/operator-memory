@@ -1,14 +1,18 @@
 # Operator Memory for Claude Code
 
-Claude Code adapter for Operator Memory. Injects the preamble into the main system prompt and subagent task prompts.
+Operator Memory gives Claude Code durable project and user context maintained by agents as readable Markdown.
 
-Requires Claude Code `v2.1.287` or newer.
+## Install
 
-Requires `operator-helper` on `PATH`. The preamble is rendered once per process; restart Claude Code to reload memory.
+Requires Claude Code `v2.1.287` or newer and Operator Helper on `PATH`.
 
-Build with `bun run build` from this package directory.
+```sh
+operator-helper install claude-code
+```
 
-Install or update with `operator-helper install claude-code`, then start a new Claude Code session. For local development, run `bun run preview:claude-code` from the workspace root.
+Start a new Claude Code process after installation. Run `claude plugin list` to confirm `operator@operator-memory` is enabled, then ask the agent whether Operator Memory guidance is available.
+
+The plugin injects the preamble into the main system prompt and subagent task prompts. It renders memory once per process; restart Claude Code to reload memory. `/clear` does not refresh the cached preamble.
 
 ## Commands
 
@@ -16,3 +20,9 @@ Install or update with `operator-helper install claude-code`, then start a new C
 - `/operator:project-init` — Configure the Project Brain.
 - `/operator:index` — Build or refresh the Project Index.
 - `/operator:repair` — Diagnose and repair memory load failures.
+
+## Update
+
+Rerun `operator-helper install claude-code` or use `claude plugin update operator@operator-memory`, then restart Claude Code.
+
+See the [Claude Code guide](https://github.com/aerovato/operator-memory/blob/main/docs/harnesses/claude-code.md) for verification, updates, and troubleshooting. For local development, run `bun run preview:claude-code` from the workspace root.

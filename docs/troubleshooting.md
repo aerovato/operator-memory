@@ -14,6 +14,7 @@ Run `operator-helper install <id>` for your harness — see the [harness docs](h
 - [OpenCode 1 (legacy)](harnesses/opencode.md)
 - [Pi](harnesses/pi.md)
 - [Codex](harnesses/codex.md)
+- [Claude Code](harnesses/claude-code.md)
 - [DeepSeek Harness](harnesses/deepseek.md)
 - [Code Puppy](harnesses/code-puppy.md)
 
@@ -21,7 +22,7 @@ Restart the harness after installation or repair. Until the harness reloads the 
 
 ### Helper Updates
 
-Operator Helper automatically checks for and installs updates when commands run. If it cannot determine whether Bun or npm owns the global installation, it asks for a manual update using the original installation method. Registry and installation failures do not block the requested command.
+Run `operator-helper version` to check for updates and `operator-helper upgrade` to install them. Setup and repair workflows check the version before continuing. If Helper cannot determine whether Bun or npm owns the global installation, update it using the original installation method.
 
 Adapter updates are harness-specific; see the [harness docs](harnesses/).
 

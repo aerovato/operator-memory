@@ -69,6 +69,9 @@ operator-helper install pi
 # Codex
 operator-helper install codex
 
+# Claude Code
+operator-helper install claude-code
+
 # DeepSeek Harness
 operator-helper install deepseek
 

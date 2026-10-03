@@ -17,7 +17,7 @@ read_if: Working anywhere in the committed Operator Memory project
 
 - Operator Memory is a Bun and TypeScript monorepo for durable context and agent-driven development on coding-agent harnesses.
 - The read-only core runtime supplies shared models and preamble rendering, the helper CLI owns harness installation plus deterministic setup and validation, and thin OpenCode and Code Puppy adapters bind those capabilities to each harness.
-- The workspace, core runtime, preamble renderer, helper CLI, OpenCode V1 and V2 integrations, Pi integration, bundled Code Puppy plugin, initial Codex plugin packaging, and DeepSeek Harness adapter are implemented.
+- The workspace, core runtime, preamble renderer, helper CLI, OpenCode V1 and V2 integrations, Pi integration, bundled Code Puppy plugin, Codex plugin packaging, DeepSeek Harness adapter, and Claude Code adapter are implemented.
 
 ## Project Index
 
@@ -42,7 +42,7 @@ read_if: Working anywhere in the committed Operator Memory project
 - `README.md` - Product positioning, installation, agent-assisted setup, everyday workflow, command reference, and documentation entrypoint.
 - `README.zh-CN.md` - Simplified Chinese README for the Chinese-speaking DeepSeek Harness audience; cross-linked with the English README.
 - `docs/workflow.md` - User guide to continuous documentation, Brain maintenance, partition placement, review, and session boundaries.
-- `docs/harnesses/` - Per-harness guides (OpenCode 2, OpenCode 1, Pi, Codex, DeepSeek Harness, Code Puppy): install command, verification, commands, updates, and harness-specific troubleshooting.
+- `docs/harnesses/` - Per-harness guides (OpenCode 2, OpenCode 1, Pi, Codex, Claude Code, DeepSeek Harness, Code Puppy): install command, verification, commands, updates, and harness-specific troubleshooting.
 - `docs/architecture.md` - User-facing Brain, partition, catalog, Project Index, deterministic loading, failure, and OpenCode architecture.
 - `docs/troubleshooting.md` - User-facing installation, status, lint, memory-check, repair, Git, Shared, harness update, and support guidance.
 - `docs/assets/banner.jpeg` - Operator Memory README banner.
