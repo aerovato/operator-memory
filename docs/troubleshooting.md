@@ -1,41 +1,41 @@
 # Troubleshooting
 
-## Helper And Plugin Installation
+### Helper And Plugin Installation
 
-### Requirements
+#### Requirements
 
 Operator Helper requires Node.js 20 or newer.
 
-### Install Or Reinstall The Adapter
+#### Install Or Reinstall The Adapter
 
 Run `operator-helper install <id>` for your harness — see the [harness docs](harnesses/) for the exact command, verification, and update behavior:
 
-- [OpenCode 2](harnesses/opencode-v2.md)
-- [OpenCode 1 (legacy)](harnesses/opencode.md)
-- [Pi](harnesses/pi.md)
-- [Codex](harnesses/codex.md)
 - [Claude Code](harnesses/claude-code.md)
+- [Codex](harnesses/codex.md)
+- [OpenCode V2](harnesses/opencode-v2.md)
+- [OpenCode V1 (legacy)](harnesses/opencode.md)
+- [Pi](harnesses/pi.md)
 - [DeepSeek Harness](harnesses/deepseek.md)
 
 Restart the harness after installation or repair. Until the harness reloads the adapter, setup commands and preamble injection will not behave as expected.
 
-### Helper Updates
+#### Helper Updates
 
 Run `operator-helper version` to check for updates and `operator-helper upgrade` to install them. Setup and repair workflows check the version before continuing. If Helper cannot determine whether Bun or npm owns the global installation, update it using the original installation method.
 
 Adapter updates are harness-specific; see the [harness docs](harnesses/).
 
-## Partition And Memory Repair
+### Partition And Memory Repair
 
 Partition and memory repair is agent driven.
 
-### Automatic Repair via Preamble
+#### Automatic Repair via Preamble
 
 If any partition fails to load, Operator does not inject a partial Brain. The session preamble becomes a recovery diagnostic instead: it lists partition results and directs repair before ordinary work continues. That diagnostic stays fixed for the session; after a successful fix, the agent can still read the recovered documents into the active conversation without waiting for a new preamble.
 
 The same repair workflow is available on demand through `/operator:repair`.
 
-### Repair Command
+#### Repair Command
 
 Use `/operator:repair` when the preamble reports a load failure, setup looks incomplete, or expected knowledge never appears. A new conversation is useful for focus, but not required—repair can continue in the session that already shows the diagnostic.
 
@@ -55,6 +55,6 @@ Frequent load failures:
 - Project Index frontmatter is malformed.
 - A partition exists but its expected structure is invalid.
 
-### Private Files Appear In Git
+#### Private Files Appear In Git
 
 Run `/operator:repair`. Helper ensures the exact `.operator/` entry is in the global Git ignore, but it does not untrack files that were already committed or staged. Repair can identify those paths and guide removal from repository tracking.

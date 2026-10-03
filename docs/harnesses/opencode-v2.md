@@ -1,8 +1,8 @@
-# OpenCode 2
+# OpenCode V2
 
-## Install
+### Install
 
-Requires Node.js 20 or newer (for Operator Helper) and the [Helper](../../README.md#install-operator) installed.
+Requires Node.js 20 or newer (for Operator Helper) and the [Helper](../../README.md#installation) installed.
 
 ```sh
 operator-helper install opencode-v2
@@ -10,7 +10,7 @@ operator-helper install opencode-v2
 
 Restart OpenCode after installation. Until OpenCode reloads the plugin, commands and preamble injection will not work.
 
-## Verify
+### Verify
 
 In a new conversation, ask:
 
@@ -22,7 +22,7 @@ The agent should confirm the guidance is loaded and outline the brain, partition
 
 Secondary signals: the home footer shows `Operator Ready (vX.Y.Z)` and the session sidebar shows partition states. `Operator Connecting` means the TUI is still verifying the server plugin; `Operator Unavailable` means the status query failed.
 
-## Commands
+### Commands
 
 - `/operator:user-init`
 - `/operator:project-init`
@@ -31,9 +31,9 @@ Secondary signals: the home footer shows `Operator Ready (vX.Y.Z)` and the sessi
 
 Run each in a new conversation. See [Workflow](../workflow.md#commands) for what each command does.
 
-## Update
+### Update
 
-OpenCode 2 owns plugin updates:
+OpenCode V2 owns plugin updates:
 
 ```sh
 opencode plugin check
@@ -42,8 +42,8 @@ opencode plugin update
 
 Restart OpenCode after updating.
 
-## Troubleshooting
+### Troubleshooting
 
 - `Operator Connecting` persists: the server plugin is not active. Rerun `operator-helper install opencode-v2` and restart OpenCode.
 - `Operator Unavailable` or sidebar `Error`: run `/operator:repair` in a new conversation. See [Troubleshooting](../troubleshooting.md).
-- Duplicate plugin failures after installing both the global package and a local dev build: OpenCode 2 cannot dedupe package identity. Remove one source with `opencode plugin remove`.
+- Duplicate plugin failures after installing both the global package and a local dev build: OpenCode V2 cannot dedupe package identity. Remove one source with `opencode plugin remove`.

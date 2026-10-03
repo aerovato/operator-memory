@@ -1,10 +1,10 @@
-# OpenCode 1 (legacy)
+# OpenCode V1 (legacy)
 
-OpenCode 1 is deprecated. Prefer the [OpenCode 2 adapter](opencode-v2.md) on current OpenCode.
+OpenCode V1 is deprecated. Prefer the [OpenCode V2 adapter](opencode-v2.md) on current OpenCode.
 
-## Install
+### Install
 
-Requires Node.js 20 or newer (for Operator Helper) and the [Helper](../../README.md#install-operator) installed.
+Requires Node.js 20 or newer (for Operator Helper) and the [Helper](../../README.md#installation) installed.
 
 ```sh
 operator-helper install opencode
@@ -12,7 +12,7 @@ operator-helper install opencode
 
 Restart OpenCode after installation. Until OpenCode reloads the plugin, commands and preamble injection will not work.
 
-## Verify
+### Verify
 
 In a new conversation, ask:
 
@@ -24,7 +24,7 @@ The agent should confirm the guidance is loaded and outline the brain, partition
 
 Secondary signal: the optional TUI status indicator shows `Operator Ready (vX.Y.Z)`; local installs show `(Local Build)`.
 
-## Commands
+### Commands
 
 - `/operator:user-init`
 - `/operator:project-init`
@@ -33,11 +33,11 @@ Secondary signal: the optional TUI status indicator shows `Operator Ready (vX.Y.
 
 Run each in a new conversation. See [Workflow](../workflow.md#commands) for what each command does.
 
-## Update
+### Update
 
 The plugin updates itself after a restart when a newer npm release exists. On success OpenCode shows `Operator Updated`; on a failed update it shows `Operator Update Failed` or `Operator Update Queued`.
 
-## Troubleshooting
+### Troubleshooting
 
 - Any update or load failure: rerun `operator-helper install opencode` and restart OpenCode. This is also the recovery path for a damaged plugin cache.
 - A container launch that rebuilds the plugin cache can reject a freshly published version because of npm release-age policy. The install command sets `NPM_CONFIG_MIN_RELEASE_AGE=0` itself; other cache rebuilds need the same environment override or a persisted cache.

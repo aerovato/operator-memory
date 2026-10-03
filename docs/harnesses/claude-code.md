@@ -1,8 +1,8 @@
 # Claude Code
 
-## Install
+### Install
 
-Requires Claude Code `v2.1.287` or newer, Node.js 20 or newer, and the [Helper](../../README.md#install-operator) installed on `PATH`.
+Requires Claude Code `v2.1.287` or newer, Node.js 20 or newer, and the [Helper](../../README.md#installation) installed on `PATH`.
 
 ```sh
 operator-helper install claude-code
@@ -10,7 +10,7 @@ operator-helper install claude-code
 
 Helper registers the marketplace from `aerovato/operator-memory`, installs `operator@operator-memory` from npm through Claude's native installer, and verifies it is enabled. Claude owns the package download and cache. Start a new Claude Code process after installation.
 
-## Verify
+### Verify
 
 Run `claude plugin list` and confirm `operator@operator-memory` is enabled. In a fresh Claude Code process, ask:
 
@@ -20,7 +20,7 @@ Is Operator Memory guidance available to you? Give a brief outline of what it sa
 
 The agent should describe the Brain, partitions, and memory-aware workflow. Operator has no status UI in Claude Code.
 
-## Commands
+### Commands
 
 - `/operator:user-init` — Configure the User Partition.
 - `/operator:project-init` — Configure the Project Brain.
@@ -29,7 +29,7 @@ The agent should describe the Brain, partitions, and memory-aware workflow. Oper
 
 These are explicitly invoked skills. The agent runs Helper and follows its output in the current conversation, using your existing tool permissions. See [Workflow](../workflow.md#commands).
 
-## Memory And Updates
+### Memory And Updates
 
 Operator renders memory once per Claude Code process. It appends that preamble to the main system prompt and prepends the same text to delegated subagents' task prompts. Compaction keeps the cached preamble. `/clear`, `/resume`, and `/branch` do not refresh it; restart Claude Code to load changed memory.
 
@@ -47,7 +47,7 @@ claude plugin update operator@operator-memory
 
 Then restart Claude Code. Third-party marketplace auto-update is off by default; enable it in Claude's `/plugin` marketplace settings if wanted.
 
-## Troubleshooting
+### Troubleshooting
 
 - No injection: check the Claude Code version, confirm the plugin is enabled, and ensure `operator-helper` is on `PATH`.
 - Hooks disabled: `disableAllHooks`, `--bare`, and `--safe-mode` prevent Operator's mod injection. Organization policies such as `allowManagedHooksOnly` and `allowManagedModsOnly` can restrict installed hooks or mods; check the applicable policy with your administrator.
