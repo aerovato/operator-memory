@@ -47,6 +47,8 @@ Runtime code uses portable Node APIs. Bun owns workspace management, dependency 
 
 ## Documentation Style
 
+- Use H3 headings or below in public documents; H2 headings are disallowed.
+
 - Use backticks for code formatting.
 - Use bold only for important keywords or requirements, not list labels or headers.
 - Do not use Markdown tables or box-drawing diagrams.
