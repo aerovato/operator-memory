@@ -1,0 +1,16 @@
+{
+  "name": "operator-memory",
+  "description": "Operator Memory for Claude Code.",
+  "owner": {
+    "name": "Aerovato Research"
+  },
+  "plugins": [
+    {
+      "name": "operator",
+      "source": {
+        "source": "npm",
+        "package": "@aerovato/operator-claude-code"
+      }
+    }
+  ]
+}

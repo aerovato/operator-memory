@@ -1,8 +1,10 @@
 import { Effect, type FileSystem, type Path } from "effect";
 import type { ChildProcessSpawner } from "effect/unstable/process";
 
+import { fileFailure } from "./commands/common.ts";
 import { indexInit } from "./commands/index/init.ts";
 import { indexLint } from "./commands/index/lint.ts";
+import { installClaudeCode } from "./commands/install/claude-code.ts";
 import { installCodePuppy } from "./commands/install/code-puppy.ts";
 import { installCodex } from "./commands/install/codex.ts";
 import { installDeepSeek } from "./commands/install/deepseek.ts";
@@ -13,10 +15,9 @@ import { memoryCheck } from "./commands/memory/check.ts";
 import { preamble } from "./commands/preamble.ts";
 import { projectInit } from "./commands/project/init.ts";
 import { projectStatus } from "./commands/project/status.ts";
+import { upgrade } from "./commands/upgrade.ts";
 import { userInit } from "./commands/user/init.ts";
 import { userStatus } from "./commands/user/status.ts";
-import { fileFailure } from "./commands/common.ts";
-import { upgrade } from "./commands/upgrade.ts";
 import { version } from "./commands/version.ts";
 import type { GitRunner } from "./git.ts";
 import type { NpmRegistry } from "./npm-registry.ts";
@@ -36,6 +37,7 @@ ${renderTable([
   ["install opencode-v2", "Install or update the OpenCode V2 plugin"],
   ["install deepseek", "Install or update the DeepSeek Harness plugin"],
   ["install pi", "Install or update the Pi plugin"],
+  ["install claude-code", "Install or update the Claude Code plugin"],
   ["install code-puppy", "Install or update the Code Puppy plugin"],
 ])}
 
@@ -100,6 +102,8 @@ export function runCli(
         return yield* memoryCheck(context);
       case "install codex":
         return yield* installCodex(context);
+      case "install claude-code":
+        return yield* installClaudeCode(context);
       case "install opencode":
         return yield* installOpenCode(context);
       case "install opencode-v2":

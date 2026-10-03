@@ -3,8 +3,8 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
 import { NodeChildProcessSpawner, NodeFileSystem, NodePath } from "@effect/platform-node";
-import { ChildProcessSpawner } from "effect/unstable/process";
 import { Effect, Layer } from "effect";
+import { ChildProcessSpawner } from "effect/unstable/process";
 import { afterEach, beforeEach, expect, test } from "vitest";
 
 import { runCli } from "../src/cli.ts";
@@ -120,6 +120,90 @@ test("preserves an unmanaged Codex marketplace", async () => {
   });
   expect(fs.readFileSync(join(marketplaceRoot, "user-file"), "utf8")).toBe("user owned");
 });
+
+test.runIf(process.platform !== "win32")(
+  "delegates Claude Code npm installation and updates to the repository marketplace",
+  async () => {
+    claudeExecutables('[{"id":"operator@operator-memory","enabled":true}]');
+    const result = await execute(["install", "claude-code"], "4.5.6");
+    expect(result).toEqual({
+      exitCode: 0,
+      output: "✓ Claude Code plugin installed and enabled\nStart a new Claude Code session.",
+    });
+    expect(fs.readFileSync(record, "utf8")).toBe(
+      "helper|help\n"
+        + "claude|plugin marketplace add aerovato/operator-memory\n"
+        + "claude|plugin install operator@operator-memory\n"
+        + "claude|plugin update operator@operator-memory\n"
+        + "claude|plugin list --json\n",
+    );
+    expect(await execute(["install", "claude-code"], "4.5.6")).toEqual(result);
+    expect(fs.existsSync(join(directory, ".operator-helper"))).toBe(false);
+  },
+);
+
+test("the repository marketplace points at the Claude Code npm package", () => {
+  const manifest = JSON.parse(
+    fs.readFileSync(join(import.meta.dirname, "../../../.claude-plugin/marketplace.json"), "utf8"),
+  );
+  expect(manifest.name).toBe("operator-memory");
+  expect(manifest.plugins).toEqual([
+    { name: "operator", source: { source: "npm", package: "@aerovato/operator-claude-code" } },
+  ]);
+});
+
+test.runIf(process.platform !== "win32")(
+  "rejects a Claude Code plugin that is not enabled",
+  async () => {
+    claudeExecutables('[{"id":"operator@operator-memory","enabled":false}]');
+    expect(await execute(["install", "claude-code"], "4.5.6")).toEqual({
+      exitCode: 1,
+      output:
+        "✗ Claude Code plugin installation finished but the plugin is not installed and enabled",
+    });
+  },
+);
+
+test.runIf(process.platform !== "win32")(
+  "requires Operator Helper on PATH before installing the Claude Code package",
+  async () => {
+    claudeExecutables("[]");
+    executable("operator-helper", "exit 1");
+    expect(await execute(["install", "claude-code"], "4.5.6")).toEqual({
+      exitCode: 1,
+      output: "Operator Helper must be available on PATH",
+    });
+    expect(fs.existsSync(record)).toBe(false);
+  },
+);
+
+test.runIf(process.platform !== "win32")(
+  "reports native Claude Code installation failures",
+  async () => {
+    claudeExecutables("[]");
+    executable(
+      "claude",
+      'if [ "$1 $2" = "plugin install" ]; then printf "Registry unavailable"; exit 1; fi',
+    );
+    expect(await execute(["install", "claude-code"], "4.5.6")).toEqual({
+      exitCode: 1,
+      output: "Registry unavailable",
+    });
+    expect(fs.readFileSync(record, "utf8")).toBe("helper|help\n");
+  },
+);
+
+test.runIf(process.platform !== "win32")(
+  "reports Claude Code CLI failures without claiming installation succeeded",
+  async () => {
+    claudeExecutables("[]");
+    executable("claude", "printf 'Claude unavailable'; exit 1");
+    expect(await execute(["install", "claude-code"], "4.5.6")).toEqual({
+      exitCode: 1,
+      output: "Claude unavailable",
+    });
+  },
+);
 
 test("registers the marketplace in config.toml when the Codex CLI is unavailable", async () => {
   const codexHome = join(directory, "codex-home");
@@ -751,6 +835,16 @@ test.runIf(process.platform !== "win32")(
 function executable(name: string, body: string): void {
   const path = join(directory, "bin", name);
   fs.writeFileSync(path, `#!/bin/sh\n${body}\n`, { mode: 0o755 });
+}
+
+function claudeExecutables(status: string): void {
+  executable("operator-helper", 'printf "helper|%s\\n" "$*" >> "$OPERATOR_TEST_RECORD"');
+  executable("npm", 'printf "unexpected npm call\\n" >> "$OPERATOR_TEST_RECORD"; exit 1');
+  executable(
+    "claude",
+    `printf 'claude|%s\\n' "$*" >> "$OPERATOR_TEST_RECORD"
+if [ "$1 $2" = "plugin list" ]; then printf '%s' '${status}'; fi`,
+  );
 }
 
 function execute(arguments_: ReadonlyArray<string>, latest: string): Promise<CliResult> {

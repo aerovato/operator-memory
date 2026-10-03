@@ -71,6 +71,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 ##### `commands/install/`
 
 - `codex.ts` — Helper-managed npm marketplace, Codex CLI installation, and installed/enabled verification
+- `claude-code.ts` — Registers the repository marketplace and delegates npm plugin installation, refresh, and enabled-state verification to Claude
 - `opencode.ts` — OpenCode CLI installation and stable-cache recovery
 - `opencode-v2.ts` — OpenCode V2 CLI package installation
 - `pi.ts` — Pi CLI package installation through its unversioned npm package spec
