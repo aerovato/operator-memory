@@ -122,7 +122,7 @@ RAG agents recall. Operator understands.
 
 ## Roadmap
 
-**Operator Memory is under active development.** More features are on the way, including support for other harnesses.
+**Operator Memory is under active development.** More features are on the way.
 
 #### Brain Improvements
 
@@ -133,10 +133,6 @@ RAG agents recall. Operator understands.
 
 - **Cache-Aware Context Management** — Automatically refresh preamble and apply tool call pruning when cache expires.
 - **Lossless Context Compression** — Losslessly extend context via lossless context compression.
-
-#### Additional Harnesses
-
-- **Claude Code** — Pending research
 
 ## Learn More
 
