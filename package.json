@@ -35,6 +35,7 @@
     "publish:opencode-v2": "sh scripts/publish-opencode-v2.sh",
     "publish:pi": "sh scripts/publish-pi.sh",
     "publish:codex": "sh scripts/publish-codex.sh",
+    "publish:claude-code": "sh scripts/publish-claude-code.sh",
     "publish:deepseek": "sh scripts/publish-deepseek.sh"
   },
   "repository": {
