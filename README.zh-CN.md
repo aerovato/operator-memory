@@ -74,9 +74,6 @@ operator-helper install claude-code
 
 # DeepSeek Harness
 operator-helper install deepseek
-
-# Code Puppy
-operator-helper install code-puppy
 ```
 
 各 harness 的验证、命令、更新和故障排除，请参阅 [harness 文档](docs/harnesses/)（英文）。

@@ -16,8 +16,8 @@ read_if: Working anywhere in the committed Operator Memory project
 ## Architecture
 
 - Operator Memory is a Bun and TypeScript monorepo for durable context and agent-driven development on coding-agent harnesses.
-- The read-only core runtime supplies shared models and preamble rendering, the helper CLI owns harness installation plus deterministic setup and validation, and thin OpenCode and Code Puppy adapters bind those capabilities to each harness.
-- The workspace, core runtime, preamble renderer, helper CLI, OpenCode V1 and V2 integrations, Pi integration, bundled Code Puppy plugin, Codex plugin packaging, DeepSeek Harness adapter, and Claude Code adapter are implemented.
+- The read-only core runtime supplies shared models and preamble rendering, the helper CLI owns harness installation plus deterministic setup and validation, and thin OpenCode and Pi adapters bind those capabilities to each harness.
+- The workspace, core runtime, preamble renderer, helper CLI, OpenCode V1 and V2 integrations, Pi integration, Codex plugin packaging, DeepSeek Harness adapter, and Claude Code adapter are implemented.
 
 ## Project Index
 
@@ -25,7 +25,6 @@ read_if: Working anywhere in the committed Operator Memory project
 
 - [`claude-code/`](claude-code.md) - Claude Code mod adapter with Helper-rendered main-agent and subagent preamble injection.
 - [`core/`](core.md) - Private harness-agnostic runtime for memory loading, shared models, and preamble generation.
-- [`code-puppy/`](code-puppy.md) - Bundled Python user plugin for immutable model-boundary preamble injection and Operator commands.
 - [`codex/`](codex.md) - Codex plugin package with local marketplace installation infrastructure.
 - [`deepseek/`](deepseek.md) - Published DeepSeek Harness Host plugin and installable bundle package.
 - [`helper/`](helper.md) - Published harness installation, explicit upgrade, setup, status, guide, Git, and Project Index lint CLI.
@@ -42,17 +41,17 @@ read_if: Working anywhere in the committed Operator Memory project
 - `README.md` - Product positioning, installation, agent-assisted setup, everyday workflow, command reference, and documentation entrypoint.
 - `README.zh-CN.md` - Simplified Chinese README for the Chinese-speaking DeepSeek Harness audience; cross-linked with the English README.
 - `docs/workflow.md` - User guide to continuous documentation, Brain maintenance, partition placement, review, and session boundaries.
-- `docs/harnesses/` - Per-harness guides (OpenCode 2, OpenCode 1, Pi, Codex, Claude Code, DeepSeek Harness, Code Puppy): install command, verification, commands, updates, and harness-specific troubleshooting.
+- `docs/harnesses/` - Per-harness guides (OpenCode 2, OpenCode 1, Pi, Codex, Claude Code, DeepSeek Harness): install command, verification, commands, updates, and harness-specific troubleshooting.
 - `docs/architecture.md` - User-facing Brain, partition, catalog, Project Index, deterministic loading, failure, and OpenCode architecture.
 - `docs/troubleshooting.md` - User-facing installation, status, lint, memory-check, repair, Git, Shared, harness update, and support guidance.
 - `docs/assets/banner.jpeg` - Operator Memory README banner.
 - `docs/assets/change-the-loop.png` - README agent-loop promo graphic.
 - `LICENSE` - BSD 3-Clause repository license.
-- `.github/workflows/ci.yml` - Frozen-install workspace quality checks and Code Puppy `uv` provisioning.
+- `.github/workflows/ci.yml` - Frozen-install workspace quality checks.
 - `.github/workflows/publish-helper.yml`, `.github/workflows/publish-opencode.yml`, `.github/workflows/publish-opencode-v2.yml`, `.github/workflows/publish-pi.yml`, `.github/workflows/publish-codex.yml`, `.github/workflows/publish-claude-code.yml`, `.github/workflows/publish-deepseek.yml` - Independent tag-driven npm provenance publishing and GitHub releases.
 - `.githooks/pre-commit` - Repository hook that reports quality checks and fixes formatting failures.
 - `.githooks/commit-msg` - Commit-message hook requiring an area for `feat` commits.
-- `scripts/check.sh` - Full-workspace or package-scoped validation runner, including Code Puppy Ruff and pytest checks.
+- `scripts/check.sh` - Full-workspace or package-scoped validation runner.
 - `scripts/install-opencode.ts` - Globally registers the built local OpenCode package through a package-qualified absolute file spec.
 - `scripts/install-pi.ts` - Persistently registers the built local Pi package through its absolute package-root path.
 - `scripts/preview-opencode.ts` - Self-contained local V2 preview: builds and links Helper (`install:helper`), builds the dev-ID plugin bundle, then generates project-local V2 server configuration shadowing any global registration of the same plugin.

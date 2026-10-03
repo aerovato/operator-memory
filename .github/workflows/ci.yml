@@ -22,11 +22,6 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v10.0.1
-        with:
-          enable-cache: true
-
       - name: Install dependencies
         run: bun install --frozen-lockfile
 

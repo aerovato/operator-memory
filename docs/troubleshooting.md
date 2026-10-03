@@ -16,7 +16,6 @@ Run `operator-helper install <id>` for your harness — see the [harness docs](h
 - [Codex](harnesses/codex.md)
 - [Claude Code](harnesses/claude-code.md)
 - [DeepSeek Harness](harnesses/deepseek.md)
-- [Code Puppy](harnesses/code-puppy.md)
 
 Restart the harness after installation or repair. Until the harness reloads the adapter, setup commands and preamble injection will not behave as expected.
 

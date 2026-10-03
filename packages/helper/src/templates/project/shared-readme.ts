@@ -31,8 +31,5 @@ operator-helper install pi
 
 # Install DeepSeek Harness plugin
 operator-helper install deepseek
-
-# Install Code Puppy plugin
-operator-helper install code-puppy
 \`\`\`
 `;

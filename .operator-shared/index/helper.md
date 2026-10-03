@@ -28,7 +28,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 
 ### `packages/helper/scripts/`
 
-- `build.ts` — Clean bundled Node CLI build with external source map and bundled Code Puppy adapter asset
+- `build.ts` — Clean bundled Node CLI build with external source map
 
 ### `packages/helper/src/`
 
@@ -76,7 +76,6 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 - `opencode-v2.ts` — OpenCode V2 CLI package installation
 - `pi.ts` — Pi CLI package installation through its unversioned npm package spec
 - `deepseek.ts` — Independent native DeepSeek Web and Desktop profile installation and outcome reporting
-- `code-puppy.ts` — Marked, atomic Code Puppy user-plugin installation and update
 - `preamble.ts` — Canonical core-backed preamble rendering for harness adapters
 - `upgrade.ts`, `version.ts` — Explicit Helper upgrade and read-only update check output
 

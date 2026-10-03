@@ -32,9 +32,6 @@ operator-helper install pi
 
 # DeepSeek Harness
 operator-helper install deepseek
-
-# Code Puppy
-operator-helper install code-puppy
 ```
 
 Restart the harness, then run `/operator:user-init` in a new conversation to begin setup.
@@ -52,7 +49,6 @@ operator-helper install opencode
 operator-helper install opencode-v2
 operator-helper install pi
 operator-helper install deepseek
-operator-helper install code-puppy
 ```
 
 Operator Helper automatically checks for and installs updates when commands run. If it cannot determine whether Bun or npm owns the global installation, it asks for a manual update using the original installation method.

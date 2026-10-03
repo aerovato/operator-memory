@@ -5,7 +5,6 @@ import { fileFailure } from "./commands/common.ts";
 import { indexInit } from "./commands/index/init.ts";
 import { indexLint } from "./commands/index/lint.ts";
 import { installClaudeCode } from "./commands/install/claude-code.ts";
-import { installCodePuppy } from "./commands/install/code-puppy.ts";
 import { installCodex } from "./commands/install/codex.ts";
 import { installDeepSeek } from "./commands/install/deepseek.ts";
 import { installOpenCode } from "./commands/install/opencode.ts";
@@ -38,7 +37,6 @@ ${renderTable([
   ["install deepseek", "Install or update the DeepSeek Harness plugin"],
   ["install pi", "Install or update the Pi plugin"],
   ["install claude-code", "Install or update the Claude Code plugin"],
-  ["install code-puppy", "Install or update the Code Puppy plugin"],
 ])}
 
 AGENT COMMANDS
@@ -112,8 +110,6 @@ export function runCli(
         return yield* installDeepSeek(context);
       case "install pi":
         return yield* installPi(context);
-      case "install code-puppy":
-        return yield* installCodePuppy(context);
       case "user guide":
       case "project guide":
       case "index guide":

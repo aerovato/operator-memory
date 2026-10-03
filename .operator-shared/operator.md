@@ -2,7 +2,7 @@
 
 ## Overview
 
-You are working directly on the Operator Memory project. Operator turns agent work into lasting project knowledge. The MVP supports OpenCode, Pi, and Code Puppy and injects durable project and user context from markdown files agents own and maintain.
+You are working directly on the Operator Memory project. Operator turns agent work into lasting project knowledge. The MVP supports OpenCode and Pi and injects durable project and user context from markdown files agents own and maintain.
 
 The Bun/TypeScript monorepo has six TypeScript adapter/runtime packages plus the JavaScript Codex package:
 
@@ -12,8 +12,6 @@ The Bun/TypeScript monorepo has six TypeScript adapter/runtime packages plus the
 - `@aerovato/operator-opencode-v2` — published OpenCode V2 server, RPC, and TUI plugin adapter
 - `@aerovato/operator-pi` — published Pi extension adapter
 - `@aerovato/operator-deepseek` — published DeepSeek Harness Host plugin and bundle adapter
-
-The repository also contains the helper-bundled Python adapter source under `packages/code-puppy`.
 
 Runtime code uses portable Node APIs. Bun owns workspace management, dependency installation, building, and tests.
 
