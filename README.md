@@ -2,45 +2,25 @@
   <img src="docs/assets/banner.jpeg" alt="Operator Memory, the self-improving context engine for coding agents">
 </p>
 
-**English** | [简体中文](README.zh-CN.md)
-
-# Operator Memory
-
-### The self-improving context engine for coding agents.
-
-Agents excel in a session but forget everything the moment it ends. Future sessions waste tokens re-gathering an incomplete context: re-exploring the codebase, re-learning the architecture, re-teaching decisions and corrections.
-
-Operator Memory gives the agent a brain for documenting all their work. As the agent works, it automatically documents within this brain — specs, decisions, standards, research, lessons. Every new session starts from those files.
-
-## What You Get
-
-- **A Complete Context Engine** — Operator Memory provides memory, documentation, codebase indexes, and skills within a single integrated system.
-- **Automatic Documentation** — Specs, decisions, research, and lessons are automatically documented by the agent during normal work. No capture step. No background tasks.
-- **Transparent Memory** — Memory is stored as documents you can read, update, and delete.
-- **Sharable Knowledge** — Every document is optionally shareable. Track documents with Git and share knowledge with your team.
-- **Zero Infrastructure** — No embeddings, no vector database, no background pipelines, no model configuration.
-
-## How It Works
-
-Operator gives the agent a durable workspace of Markdown, kept in three places:
-
-- `.operator/` — private project knowledge, stays on your machine
-- `.operator-shared/` — project knowledge published with the repository
-- `~/.operator/user/` — your personal rules and knowledge, used across projects
-
-Every session runs the same loop:
-
-1. **Consult** — the agent starts from your Brain: instructions, codebase index, specs, guides.
-2. **Build** — the agent does normal development work, informed by that knowledge.
-3. **Update** — the agent records what changed: new specs, decisions, standards, lessons.
-
-<p>
-  <img src="docs/assets/change-the-loop.png" alt="The memory-aware agentic loop: consult the brain, build, update the brain">
+<p align="center">
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a>
 </p>
 
-When project truth changes, the agent updates the canonical file instead of adding a RAG database record. For more details, see [Architecture](docs/architecture.md).
+---
 
-## Install Operator
+### Operator Memory: The self-improving context engine for coding agents.
+
+Operator Memory gives your agent a brain for documenting all their work. As the agent works, it automatically documents within this brain — specs, decisions, standards, research, lessons. Every new session starts knowing everything the last one learned.
+
+#### Features
+
+- **Complete Context Engine** — Documentation, memory, indexes, and skills within a single integrated system.
+- **Automatic Documentation** — Specs, decisions, research, and more are automatically documented by the agent.
+- **Transparent Memory** — Memory is stored as Markdown documents you can read, update, and delete.
+- **Sharable Knowledge** — Track documents with Git and share knowledge with your team.
+- **Zero Infrastructure** — No background agents, no embeddings, no vector database, no model configuration.
+
+### Installation
 
 Operator is managed via the Operator Helper. Install the Helper with npm:
 
@@ -54,31 +34,16 @@ Or Bun:
 bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest
 ```
 
-Then install the Operator adapter for your harness:
+Then install the Operator adapter for your harness. Click each link for harness-specific information.
 
-```sh
-# OpenCode 2
-operator-helper install opencode-v2
-
-# OpenCode 1 (legacy)
-operator-helper install opencode
-
-# Pi
-operator-helper install pi
-
-# Codex
-operator-helper install codex
-
-# Claude Code
-operator-helper install claude-code
-
-# DeepSeek Harness
-operator-helper install deepseek
-```
-
-For harness-specific verification, commands, updates, and troubleshooting, see the [harness docs](docs/harnesses/).
-
-## Setup Operator
+| Harness | Status | Install |
+| --- | --- | --- |
+| [Claude Code](docs/harnesses/claude-code.md) | 🟢 Fully Supported | `operator-helper install claude-code` |
+| [Codex](docs/harnesses/codex.md) | 🟢 Fully Supported | `operator-helper install codex` |
+| [OpenCode V2](docs/harnesses/opencode-v2.md) | 🟢 Fully Supported | `operator-helper install opencode-v2` |
+| [OpenCode V1](docs/harnesses/opencode.md) | 🟡 Supported, Legacy | `operator-helper install opencode` |
+| [Pi](docs/harnesses/pi.md) | 🟢 Fully Supported | `operator-helper install pi` |
+| [DeepSeek Harness](docs/harnesses/deepseek.md) | 🟢 Fully Supported | `operator-helper install deepseek` |
 
 Setup is a conversation with your agent. Run each command in a new conversation.
 
@@ -88,7 +53,29 @@ Setup is a conversation with your agent. Run each command in a new conversation.
 
 When starting cold on an existing project, it's recommended to ask the agent to create their first specs for specific features, modules, or systems that you will work on. Once those documents exist, later sessions will automatically maintain them.
 
-## Everyday Workflow
+### How Operator Works
+
+Agents excel in a single session but forget everything the moment it ends. Future sessions waste tokens re-gathering an incomplete context: re-exploring the codebase, re-learning the architecture, re-teaching decisions and corrections.
+
+Operator gives the agent a durable workspace of Markdown, kept in three places:
+
+- `.operator/` — private project knowledge, stays on your machine
+- `.operator-shared/` — project knowledge published with the repository
+- `~/.operator/user/` — your personal rules and knowledge, used across projects
+
+Every session runs the same loop:
+
+1. **Consult** — the agent starts from your Brain: instructions, codebase index, specs, guides.
+2. **Build** — the agent does normal development work, informed by that knowledge.
+3. **Update** — the agent records what changed: new specs, decisions, standards, lessons.
+
+When project truth changes, the agent updates the canonical file instead of adding a RAG database record. For more details, see [Architecture](docs/architecture.md).
+
+<p>
+  <img src="docs/assets/change-the-loop.png" alt="The memory-aware agentic loop: consult the brain, build, update the brain">
+</p>
+
+### Everyday Workflow
 
 1. Give the agent normal development work.
 2. The agent automatically consults existing knowledge: index for navigating code, specs for module contracts, guides for third-party integration details.
@@ -103,21 +90,7 @@ Sometimes agents hesitate to create, consolidate, or split documents. In that ca
 - "This document is too large. Split it."
 - "Promote this spec to Shared so the team receives it."
 
-## VS Other Memory Plugins
-
-Other memory plugins treat forgetting as the problem. They think the solution is to replay past context to agents; either by capture fragments and retrieving via RAG, or compress one giant session along forever without documenting anything. Both approaches fall short.
-
-- **Snippets are not knowledge.** Other plugins record snippets as memory — incomplete, lacking context, and stale on arrival.
-- **Retrieval is a lottery.** RAG plugins accumulate thousands of chunks and only return a lossy top-k slice. There's no way to know what was lost.
-- **Memory fails silently.** The store is a black box: you cannot see what was remembered, what was forgotten, or why — failures surface later as bad answers.
-- **Compression is not documentation.** Context compression keeps the context window alive, but persists zero sharable, inspectable project truth.
-- **You pay to maintain garbage.** Every background dreamer, curator, and analyst is a token furnace that burns quota, never producing a document you can read or trust.
-
-Operator Memory does not try to recall the past. It writes down the present so the future does not need to guess. What the agent knows is a file you can open. Not 13 rows in a RAG database.
-
-RAG agents recall. Operator understands.
-
-## Roadmap
+### Roadmap
 
 **Operator Memory is under active development.** More features are on the way.
 
@@ -131,14 +104,17 @@ RAG agents recall. Operator understands.
 - **Cache-Aware Context Management** — Automatically refresh preamble and apply tool call pruning when cache expires.
 - **Lossless Context Compression** — Losslessly extend context via lossless context compression.
 
-## Learn More
+### VS Other Memory Plugins
+
+Snippet capture, RAG retrieval, and context compression all fail the same way: [read the comparison](docs/comparison.md).
+
+### Learn More
 
 - [Workflow](docs/workflow.md) - how to direct continuous documentation and maintain a useful Brain. Includes the command reference.
 - [Architecture](docs/architecture.md) - how partitions, catalogs, indexes, and deterministic context loading work.
 - [Harness docs](docs/harnesses/) - per-harness installation, verification, commands, updates, and troubleshooting.
 - [Troubleshooting](docs/troubleshooting.md) - validation, repair, and update recovery.
-- [Demo](https://github.com/aerovato/operator-demo-terra-js) - a Minecraft-like web app built agent-driven with Operator. The [recorded conversation](https://opncd.ai/share/2F8fjjEp) shows the brain being used and maintained throughout.
 
-## License
+### License
 
 BSD 3-Clause. See [`LICENSE`](LICENSE).
