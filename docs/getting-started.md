@@ -1,3 +1,5 @@
+![Operator Memory: The self-improving context engine for coding agents.](assets/getting-started.jpeg)
+
 # Getting Started With Operator
 
 Operator Memory turns agent work into lasting project knowledge. You assign normal development tasks; agents record, update, and shape durable documents as they work. There is no memory administration for you to perform. Your job is to direct the agent's structural decisions; the agent owns day-to-day recording.

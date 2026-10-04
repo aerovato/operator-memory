@@ -46,6 +46,7 @@ read_if: Working anywhere in the committed Operator Memory project
 - `docs/architecture.md` - User-facing Brain, partition, catalog, Project Index, deterministic loading, failure, and OpenCode architecture.
 - `docs/troubleshooting.md` - User-facing installation, status, lint, memory-check, repair, Git, Shared, harness update, and support guidance.
 - `docs/assets/banner.jpeg` - Operator Memory README banner.
+- `docs/assets/getting-started.jpeg` - Text-only Operator Memory banner for the onboarding guide.
 - `docs/assets/change-the-loop.png` - README agent-loop promo graphic.
 - `LICENSE` - BSD 3-Clause repository license.
 - `.github/workflows/ci.yml` - Frozen-install workspace quality checks.
