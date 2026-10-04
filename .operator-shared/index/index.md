@@ -17,7 +17,7 @@ read_if: Working anywhere in the committed Operator Memory project
 
 - Operator Memory is a Bun and TypeScript monorepo for durable context and agent-driven development on coding-agent harnesses.
 - The read-only core runtime supplies shared models and preamble rendering, the helper CLI owns harness installation plus deterministic setup and validation, and thin OpenCode and Pi adapters bind those capabilities to each harness.
-- The workspace, core runtime, preamble renderer, helper CLI, OpenCode V1 and V2 integrations, Pi integration, Codex plugin packaging, DeepSeek Harness adapter, and Claude Code adapter are implemented.
+- The workspace, core runtime, preamble renderer, helper CLI, OpenCode V1 and V2 integrations, Pi integration, Codex plugin packaging, DeepSeek Harness adapter, Claude Code adapter, and Helper-managed Kiro installation are implemented.
 
 ## Project Index
 
@@ -43,7 +43,7 @@ read_if: Working anywhere in the committed Operator Memory project
 - `docs/getting-started.zh-CN.md` - Simplified Chinese version of the onboarding guide; the only doc besides the README with a Chinese version.
 - `docs/getting-started.md` - New-user onboarding and usage guide: mechanisms, setup, daily use, directing the agent, and Brain review.
 - `docs/comparison.md` - Public comparison of Operator against snippet-capture, RAG, CRUD-tool, and compression memory plugins.
-- `docs/harnesses/` - Per-harness guides (OpenCode 2, OpenCode 1, Pi, Codex, Claude Code, DeepSeek Harness): install command, verification, commands, updates, and harness-specific troubleshooting.
+- `docs/harnesses/` - Per-harness guides (OpenCode 2, OpenCode 1, Pi, Codex, Claude Code, DeepSeek Harness, Kiro): install command, verification, commands, updates, and harness-specific troubleshooting.
 - `docs/architecture.md` - User-facing Brain, partition, catalog, Project Index, deterministic loading, failure, and OpenCode architecture.
 - `docs/troubleshooting.md` - User-facing installation, status, lint, memory-check, repair, Git, Shared, harness update, and support guidance.
 - `docs/assets/banner.jpeg` - Operator Memory README banner.
