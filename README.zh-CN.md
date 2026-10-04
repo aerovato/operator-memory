@@ -51,7 +51,9 @@ bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest
 2. 在每个新项目中：`/operator:project-init` —— 搭建 Operator、迁移已有文档并为仓库建立索引。
 3. 开启新会话，正常工作即可。
 
-在现有项目上冷启动时，建议让智能体为你即将开发的具体功能、模块或系统创建第一批规格。这些文档建立后，后续会话会自动维护它们。
+在现有项目上冷启动时，一开始大脑会比较空缺；让智能体为你负责的模块编写第一批规格。这些文档建立后，后续会话会将其作为日常工作的一部分自动维护。
+
+<p align="center"><big><strong>初次使用 Operator？请先阅读<a href="docs/getting-started.zh-CN.md">入门指南</a>。</strong></big></p>
 
 ### Operator 的工作原理
 
@@ -110,7 +112,7 @@ Operator 给智能体一个持久的 Markdown 工作区，保存在三个位置�
 
 ### 了解更多
 
-- [入门指南](docs/getting-started.md)（英文）- Operator 的工作机制、安装、日常使用、引导与审查。含命令参考。
+- [入门指南](docs/getting-started.zh-CN.md)- Operator 的工作机制、安装、日常使用、引导与审查。含命令参考。
 - [架构](docs/architecture.md)（英文）- 分区、目录、索引和确定性上下文加载的工作原理。
 - [Harness 文档](docs/harnesses/)（英文）- 各 harness 的安装、验证、命令、更新和故障排除。
 - [故障排除](docs/troubleshooting.md)（英文）- 验证、修复和更新恢复。

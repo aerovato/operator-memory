@@ -47,6 +47,9 @@ Runtime code uses portable Node APIs. Bun owns workspace management, dependency 
 
 ## Documentation Style
 
+- Mirror user-facing `README.md` changes into `README.zh-CN.md` in the same change; never update one without the other.
+- `docs/getting-started.md` is the only document with a Chinese version (`docs/getting-started.zh-CN.md`); all other docs stay English-only for now.
+
 - Use H3 headings or below in public documents; H2 headings are disallowed.
 
 - Use backticks for code formatting.

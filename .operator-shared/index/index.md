@@ -40,6 +40,7 @@ read_if: Working anywhere in the committed Operator Memory project
 
 - `README.md` - Product positioning, installation, agent-assisted setup, everyday workflow, command reference, and documentation entrypoint.
 - `README.zh-CN.md` - Simplified Chinese README for the Chinese-speaking DeepSeek Harness audience; cross-linked with the English README.
+- `docs/getting-started.zh-CN.md` - Simplified Chinese version of the onboarding guide; the only doc besides the README with a Chinese version.
 - `docs/getting-started.md` - New-user onboarding and usage guide: mechanisms, setup, daily use, directing the agent, and Brain review.
 - `docs/comparison.md` - Public comparison of Operator against snippet-capture, RAG, CRUD-tool, and compression memory plugins.
 - `docs/harnesses/` - Per-harness guides (OpenCode 2, OpenCode 1, Pi, Codex, Claude Code, DeepSeek Harness): install command, verification, commands, updates, and harness-specific troubleshooting.
