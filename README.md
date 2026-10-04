@@ -51,7 +51,9 @@ Setup is a conversation with your agent. Run each command in a new conversation.
 2. In each new project: `/operator:project-init` — scaffold Operator, migrate existing documents, and index the repo.
 3. Start a new conversation and do normal work.
 
-When starting cold on an existing project, it's recommended to ask the agent to create their first specs for specific features, modules, or systems that you will work on. Once those documents exist, later sessions will automatically maintain them.
+When starting cold on an existing project, expect a sparse brain at first; ask the agent to write the first specifications for the modules you work on. Once those documents exist, later sessions maintain them as part of ordinary work.
+
+<p align="center"><big><strong>New to Operator? Read the <a href="docs/getting-started.md">Getting Started guide</a>.</strong></big></p>
 
 ### How Operator Works
 
