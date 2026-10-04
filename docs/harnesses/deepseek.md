@@ -37,7 +37,7 @@ DeepSeek command names use hyphens:
 - `/operator-index`
 - `/operator-repair`
 
-Run each in a new conversation. See [Workflow](../workflow.md#commands) for what each command does. Profiles without DeepSeek's interactive command service still receive the Operator preamble but do not expose these commands.
+Run each in a new conversation. See [Getting Started](../getting-started.md#appendix-commands) for what each command does. Profiles without DeepSeek's interactive command service still receive the Operator preamble but do not expose these commands.
 
 ### Update
 

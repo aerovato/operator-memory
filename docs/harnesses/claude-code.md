@@ -27,7 +27,7 @@ The agent should describe the Brain, partitions, and memory-aware workflow. Oper
 - `/operator:index` — Build or refresh the Project Index.
 - `/operator:repair` — Diagnose and repair memory load failures.
 
-These are explicitly invoked skills. The agent runs Helper and follows its output in the current conversation, using your existing tool permissions. See [Workflow](../workflow.md#commands).
+These are explicitly invoked skills. The agent runs Helper and follows its output in the current conversation, using your existing tool permissions. See [Getting Started](../getting-started.md#appendix-commands).
 
 ### Memory And Updates
 

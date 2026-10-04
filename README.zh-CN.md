@@ -110,7 +110,7 @@ Operator 给智能体一个持久的 Markdown 工作区，保存在三个位置�
 
 ### 了解更多
 
-- [工作流](docs/workflow.md)（英文）- 如何引导持续文档化并维护一个有用的大脑。含命令参考。
+- [入门指南](docs/getting-started.md)（英文）- Operator 的工作机制、安装、日常使用、引导与审查。含命令参考。
 - [架构](docs/architecture.md)（英文）- 分区、目录、索引和确定性上下文加载的工作原理。
 - [Harness 文档](docs/harnesses/)（英文）- 各 harness 的安装、验证、命令、更新和故障排除。
 - [故障排除](docs/troubleshooting.md)（英文）- 验证、修复和更新恢复。

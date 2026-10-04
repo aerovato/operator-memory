@@ -31,7 +31,7 @@ Codex plugins cannot register slash commands. The Operator workflows are plugin 
 - `$operator-index`
 - `$operator-repair`
 
-See [Workflow](../workflow.md#commands) for what each workflow does.
+See [Getting Started](../getting-started.md#appendix-commands) for what each workflow does.
 
 ### Update
 

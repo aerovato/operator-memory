@@ -29,7 +29,7 @@ Secondary signals: the home footer shows `Operator Ready (vX.Y.Z)` and the sessi
 - `/operator:index`
 - `/operator:repair`
 
-Run each in a new conversation. See [Workflow](../workflow.md#commands) for what each command does.
+Run each in a new conversation. See [Getting Started](../getting-started.md#appendix-commands) for what each command does.
 
 ### Update
 

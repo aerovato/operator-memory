@@ -31,7 +31,7 @@ Secondary signal: the optional TUI status indicator shows `Operator Ready (vX.Y.
 - `/operator:index`
 - `/operator:repair`
 
-Run each in a new conversation. See [Workflow](../workflow.md#commands) for what each command does.
+Run each in a new conversation. See [Getting Started](../getting-started.md#appendix-commands) for what each command does.
 
 ### Update
 

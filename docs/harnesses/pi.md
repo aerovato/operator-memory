@@ -29,7 +29,7 @@ Secondary signal: the footer shows `· Operator Active (vX.Y.Z)`; local builds s
 - `/operator:index`
 - `/operator:repair`
 
-Run each in a new conversation. See [Workflow](../workflow.md#commands) for what each command does.
+Run each in a new conversation. See [Getting Started](../getting-started.md#appendix-commands) for what each command does.
 
 ### Update
 

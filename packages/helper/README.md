@@ -56,7 +56,7 @@ Operator Helper automatically checks for and installs updates when commands run.
 ## Documentation
 
 - [Overview and setup](https://github.com/aerovato/operator-memory#readme)
-- [Workflow](https://github.com/aerovato/operator-memory/blob/main/docs/workflow.md)
+- [Getting Started](https://github.com/aerovato/operator-memory/blob/main/docs/getting-started.md)
 - [Architecture](https://github.com/aerovato/operator-memory/blob/main/docs/architecture.md)
 - [Troubleshooting](https://github.com/aerovato/operator-memory/blob/main/docs/troubleshooting.md)
 

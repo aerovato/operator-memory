@@ -22,7 +22,7 @@ Operator Memory gives your agent a brain for documenting all their work. As the 
 
 ### Installation
 
-Operator is managed via the Operator Helper. Install the Helper with npm:
+Operator is managed via the Operator Helper, which also provides setup and agent instructions. Install the Helper with npm:
 
 ```sh
 npm install --global @aerovato/operator-helper
@@ -38,8 +38,8 @@ Then install the Operator adapter for your harness. Click each link for harness-
 
 | Harness | Status | Install |
 | --- | --- | --- |
-| [Claude Code](docs/harnesses/claude-code.md) | 🟢 Fully Supported | `operator-helper install claude-code` |
-| [Codex](docs/harnesses/codex.md) | 🟢 Fully Supported | `operator-helper install codex` |
+| [Claude Code (CLI + Desktop)](docs/harnesses/claude-code.md) | 🟢 Fully Supported | `operator-helper install claude-code` |
+| [Codex (CLI + Desktop)](docs/harnesses/codex.md) | 🟢 Fully Supported | `operator-helper install codex` |
 | [OpenCode V2](docs/harnesses/opencode-v2.md) | 🟢 Fully Supported | `operator-helper install opencode-v2` |
 | [OpenCode V1](docs/harnesses/opencode.md) | 🟡 Supported, Legacy | `operator-helper install opencode` |
 | [Pi](docs/harnesses/pi.md) | 🟢 Fully Supported | `operator-helper install pi` |
@@ -92,7 +92,7 @@ Sometimes agents hesitate to create, consolidate, or split documents. In that ca
 
 ### Roadmap
 
-**Operator Memory is under active development.** More features are on the way.
+**Operator Memory is under active development.** More features are on the way. Each will come with an explicit on/off switch in case you prefer the vanilla Operator experience.
 
 #### Brain Improvements
 
@@ -101,16 +101,20 @@ Sometimes agents hesitate to create, consolidate, or split documents. In that ca
 
 #### Context Management
 
-- **Cache-Aware Context Management** — Automatically refresh preamble and apply tool call pruning when cache expires.
+- **Cache-Aware Preamble Rendering** — Automatically refresh preamble when cache expires.
+- **Context Management** — Custom strategies for compaction, pruning, and context management.
 - **Lossless Context Compression** — Losslessly extend context via lossless context compression.
 
 ### VS Other Memory Plugins
 
-Snippet capture, RAG retrieval, and context compression all fail the same way: [read the comparison](docs/comparison.md).
+Snippet capture, RAG retrieval, and context compression all fail the same way.
+
+- [Read the comparison.](docs/comparison.md)
+- [Read the blog post.](https://liao.gg/blog/agents-dont-need-memory)
 
 ### Learn More
 
-- [Workflow](docs/workflow.md) - how to direct continuous documentation and maintain a useful Brain. Includes the command reference.
+- [Getting Started](docs/getting-started.md) - onboarding and usage guide: how Operator works, setup, daily use, directing the agent, and reviewing the Brain. Includes the command reference.
 - [Architecture](docs/architecture.md) - how partitions, catalogs, indexes, and deterministic context loading work.
 - [Harness docs](docs/harnesses/) - per-harness installation, verification, commands, updates, and troubleshooting.
 - [Troubleshooting](docs/troubleshooting.md) - validation, repair, and update recovery.
