@@ -6,13 +6,6 @@ Operator Memory turns agent work into lasting project knowledge. You assign norm
 
 ### How Operator Works
 
-Operator loads guidance and minimal context at the start of every conversation through a short preamble:
-
-- Operator Guidance — Fixed framework rules: the memory-aware workflow, partition placement and authority, etc.
-- Operator Instructions — Your user-global rules plus project-level rules, merged by authority.
-- Partition Catalogs — Compact maps of what each partition's Brain contains and when to open each document.
-- Main Project Index — The repository's main structural map, so the agent can navigate code without rediscovering the layout.
-
 That knowledge lives in the Brain, a human-readable set of Markdown files split into three partitions:
 
 - `~/.operator/user/` — User/global partition. Project-agnostic memory: your communication preferences, engineering standards, and reusable prompts and skills.
@@ -21,10 +14,12 @@ That knowledge lives in the Brain, a human-readable set of Markdown files split 
 
 Inside each partition, four kinds of content cooperate:
 
-- Operator Instructions (`operator.md`) carry standing rules for how the agent works in that scope. When instructions conflict, the hierarchy is: Private > User > Shared.
+- Operator Instructions (`operator.md`) carry standing rules for how the agent works in that scope — `AGENTS.md`, but more powerful. When instructions conflict, the hierarchy is: Private > User > Shared.
 - Partition Catalogs (`catalog.md`) map that partition's knowledge: what each document covers and when to open it.
 - Project Indexes (`index/`) map the codebase itself so the agent can navigate source without rediscovering the layout. Catalogs map Brain knowledge; indexes map code.
 - Freeform documents are everything else — specifications, plans, research, guides — read on demand through catalog guidance.
+
+At the start of every conversation, Operator loads a short preamble: Operator Guidance (fixed framework rules), Operator Instructions merged by authority, Partition Catalogs, and the Main Project Index. Everything deeper stays on disk, read only when the task calls for it.
 
 **The brain is NOT a summary of the code.** The brain is designed to store context, contracts, requirements, conventions, decisions, and other meta-information that the code cannot own.
 
