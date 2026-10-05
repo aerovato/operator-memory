@@ -114,6 +114,7 @@ Snippet capture, RAG retrieval, and context compression all fail the same way.
 
 - [Read the comparison.](docs/comparison.md)
 - [Read the blog post.](https://liao.gg/blog/agents-dont-need-memory)
+- [Looking for benchmarks?](https://github.com/aerovato/operator-memory/issues/48#issuecomment-5979061413)
 
 ### Learn More
 
