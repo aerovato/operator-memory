@@ -1,14 +1,21 @@
 import { homedir } from "node:os";
-import { dirname } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { loadMemorySnapshot, type MemoryStatusSnapshot } from "@aerovato/operator-core/memory/load";
+import type { TriggerKind } from "@aerovato/operator-core/context/triggers";
 import { Plugin } from "@opencode/plugin";
 import { pluginId } from "./id.ts";
 
 import packageJson from "../package.json" with { type: "json" };
 import { registerCommands } from "./commands.ts";
+import { DEFAULT_BRAIN_PATHS, registerCompactionHook } from "./compaction.ts";
+import { registerContextHook } from "./context.ts";
+import { parseContextManagementConfig } from "./context-config.ts";
+import { registerCompletionTrigger, requestSessionCompaction } from "./events.ts";
 import { loadPreamble } from "./preamble.ts";
+import { createContextRuntime } from "./runtime.ts";
+import { registerReadOmittedTool } from "./tool.ts";
 import {
   OperatorNotifications,
   type OperatorStatus,
@@ -37,6 +44,9 @@ const OperatorPlugin = Plugin.define({
     });
     const showToast = (toast: OperatorToast) => notifications.events.emit("toast", toast);
     await registerCommands(context);
+    // Brain availability per session, from preamble loads. Context management
+    // gates on it: the feature stays off without the Brain.
+    const brainAvailable = new Map<string, boolean>();
     await context.session.hook("context", async event => {
       const result = await loadPreamble({
         sessionID: event.sessionID,
@@ -44,6 +54,10 @@ const OperatorPlugin = Plugin.define({
         homeDirectory: homedir(),
         cache,
       });
+      brainAvailable.set(
+        event.sessionID,
+        result.ok ? result.value.loaded && result.value.initialized : false,
+      );
       if (!result.ok) {
         const cause = result.error.cause instanceof Error ? ` ${result.error.cause.message}` : "";
         await showToast({
@@ -63,6 +77,44 @@ const OperatorPlugin = Plugin.define({
       }
       event.system.push({ type: "text", text: result.value.content });
     });
+
+    // Context management is opt-in and off by default; vanilla Operator
+    // behavior is unchanged when disabled.
+    const parsed = parseContextManagementConfig(context.options);
+    if (!parsed.ok) {
+      await showToast({
+        title: "Operator Error",
+        message: parsed.error.message,
+        variant: "error",
+      }).catch(() => undefined);
+    } else if (parsed.value.enabled) {
+      const config = parsed.value;
+      const stateDirectory = join(homedir(), ".operator", "state");
+      const runtime = createContextRuntime();
+      // The preamble hook above must stay registered first: it populates
+      // brainAvailable, which these hooks read through isBrainAvailable.
+      // Unknown sessions default to unavailable (fail closed).
+      const isBrainAvailable = (sessionID: string) => brainAvailable.get(sessionID) === true;
+      const requestCompaction = (sessionID: string, cause: TriggerKind) => {
+        requestSessionCompaction(context, runtime, sessionID, cause);
+      };
+      registerContextHook(
+        context,
+        { config, stateDirectory, requestCompaction, isBrainAvailable },
+        runtime,
+      );
+      registerCompactionHook(
+        context,
+        { config, stateDirectory, brainPaths: DEFAULT_BRAIN_PATHS, isBrainAvailable },
+        runtime,
+      );
+      registerCompletionTrigger(
+        context,
+        { config, stateDirectory, requestCompaction, isBrainAvailable },
+        runtime,
+      );
+      await registerReadOmittedTool(context, { stateDirectory });
+    }
   },
 });
 
