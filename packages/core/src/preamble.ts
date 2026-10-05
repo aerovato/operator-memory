@@ -12,6 +12,9 @@ const USER_CATALOG_PATH = "~/.operator/user/catalog.md";
 export type RenderedPreamble = {
   readonly content: string;
   readonly loaded: boolean;
+  // At least one Brain partition exists. Distinct from loaded: loads can
+  // succeed with nothing initialized.
+  readonly initialized: boolean;
 };
 
 type LoadedMemorySnapshot = {
@@ -25,6 +28,7 @@ export function renderPreamble(memory: MemorySnapshot): RenderedPreamble {
     return {
       content: `${PREAMBLE_PROMPT}\n\n${renderLoadDiagnostic(memory)}`,
       loaded: false,
+      initialized: false,
     };
   }
 
@@ -94,7 +98,11 @@ Neither .operator/index/index.md nor .operator-shared/index/index.md exists. If 
     sections.push(warning);
   }
 
-  return { content: sections.join("\n\n"), loaded: true };
+  return {
+    content: sections.join("\n\n"),
+    loaded: true,
+    initialized: loaded.shared.exists || loaded.user.exists || loaded.private.exists,
+  };
 }
 
 function hasMainIndex(memory: LoadedMemorySnapshot): boolean {

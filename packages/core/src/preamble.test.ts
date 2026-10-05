@@ -321,3 +321,22 @@ function renderPreamble(memory: LoadedMemorySnapshot): string {
   };
   return renderMemoryPreamble(snapshot).content;
 }
+
+test("reports initialization separately from load success", () => {
+  const absent: MemorySnapshot = {
+    shared: success({ exists: false, operatorInstructions: null, catalog: null, indexes: [] }),
+    user: success({ exists: false, operatorInstructions: null, catalog: null }),
+    private: success({ exists: false, operatorInstructions: null, catalog: null, indexes: [] }),
+  };
+  const empty = renderMemoryPreamble(absent);
+  expect(empty.loaded).toBe(true);
+  expect(empty.initialized).toBe(false);
+
+  const userOnly: MemorySnapshot = {
+    ...absent,
+    user: success({ exists: true, operatorInstructions: null, catalog: null }),
+  };
+  const initialized = renderMemoryPreamble(userOnly);
+  expect(initialized.loaded).toBe(true);
+  expect(initialized.initialized).toBe(true);
+});
