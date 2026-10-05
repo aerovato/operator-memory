@@ -44,6 +44,7 @@ bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest
 | [OpenCode V1](docs/harnesses/opencode.md) | 🟡 支持（旧版） | `operator-helper install opencode` |
 | [Pi](docs/harnesses/pi.md) | 🟢 完全支持 | `operator-helper install pi` |
 | [DeepSeek Harness](docs/harnesses/deepseek.md) | 🟢 完全支持 | `operator-helper install deepseek` |
+| [Kiro](docs/harnesses/kiro.md) | 🟡 支持 | `operator-helper install kiro` |
 
 设置就是与智能体的一场对话。在新的会话中逐个运行以下命令。
 

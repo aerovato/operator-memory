@@ -66,6 +66,7 @@ test("routes help, version, and invalid commands", async () => {
   expect(help.output).toMatch(/^preamble\s+Render the Operator preamble/m);
   expect(help.output).toMatch(/^install codex\s+Install or update the Codex plugin/m);
   expect(help.output).toMatch(/^install pi\s+Install or update the Pi plugin/m);
+  expect(help.output).toMatch(/^install kiro\s+Install or update the Kiro adapter/m);
   expect(help.output).not.toContain("templates index");
   expect((await executeCli(["--help"], context)).exitCode).toBe(2);
   expect((await executeCli(["-h"], context)).exitCode).toBe(2);

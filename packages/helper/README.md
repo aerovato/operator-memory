@@ -32,6 +32,9 @@ operator-helper install pi
 
 # DeepSeek Harness
 operator-helper install deepseek
+
+# Kiro
+operator-helper install kiro
 ```
 
 Restart the harness, then run `/operator:user-init` in a new conversation to begin setup.
@@ -49,6 +52,7 @@ operator-helper install opencode
 operator-helper install opencode-v2
 operator-helper install pi
 operator-helper install deepseek
+operator-helper install kiro
 ```
 
 Operator Helper automatically checks for and installs updates when commands run. If it cannot determine whether Bun or npm owns the global installation, it asks for a manual update using the original installation method.

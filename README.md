@@ -44,6 +44,7 @@ Then install the Operator adapter for your harness. Click each link for harness-
 | [OpenCode V1](docs/harnesses/opencode.md) | 🟡 Supported, Legacy | `operator-helper install opencode` |
 | [Pi](docs/harnesses/pi.md) | 🟢 Fully Supported | `operator-helper install pi` |
 | [DeepSeek Harness](docs/harnesses/deepseek.md) | 🟢 Fully Supported | `operator-helper install deepseek` |
+| [Kiro](docs/harnesses/kiro.md) | 🟡 Supported | `operator-helper install kiro` |
 
 Setup is a conversation with your agent. Run each command in a new conversation.
 
