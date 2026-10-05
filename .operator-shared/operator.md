@@ -59,6 +59,20 @@ Runtime code uses portable Node APIs. Bun owns workspace management, dependency 
 - Keep brain documents short and concise; split long documents with explicit links when useful.
 - Keep specifications focused primarily on expected behavior and current scope.
 
+## Harness Adapters
+
+Follow this workflow in order when implementing a harness adapter:
+
+1. Research the harness. If source code is available, clone it to `reference/<repo-name>` (Git-ignored) and add subindexes for the clone to the Shared Project Index under `index/harnesses/`.
+2. Create guides under `.operator-shared/guides/<harness>/` based on the official documentation and, when available, the cloned source code. Cite real file paths from a clone as `<reference>/<repo-name>/...`.
+3. Read the adapter contract in `.operator-shared/specs/reference/implementation.md` and the other harnesses' `implementation.md` documents, then determine the implementation pathway for the target harness.
+4. Implement the adapter, recording the binding and any deviations in `.operator-shared/specs/<harness>/implementation.md`.
+5. Use `.operator-shared/specs/reference/release.md` as the checklist for package shape, Helper integration, and documentation.
+
+After implementing or changing adapter behavior, update the relevant shared `implementation.md` and guide documents, including their `Last Updated` dates.
+
 ## Shared Policy
 
 - Publish repository-wide instructions and the main project index in this partition.
+- Publish open source harness reference code indexes in this partition.
+- Publish publicly available harness guides in this partition.
