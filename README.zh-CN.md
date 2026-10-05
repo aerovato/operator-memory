@@ -111,6 +111,8 @@ Operator 给智能体一个持久的 Markdown 工作区，保存在三个位置�
 
 片段捕获、RAG 检索和上下文压缩以同样的方式失败：[阅读对比文章](docs/comparison.md)（英文）。
 
+[寻找基准测试？](https://github.com/aerovato/operator-memory/issues/48#issuecomment-5979061413)（英文）
+
 ### 了解更多
 
 - [入门指南](docs/getting-started.zh-CN.md)- Operator 的工作机制、安装、日常使用、引导与审查。含命令参考。
