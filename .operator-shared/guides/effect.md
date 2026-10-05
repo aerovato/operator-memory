@@ -1,5 +1,7 @@
 # Effect
 
+Last Updated: August 16, 2026
+
 This codebase uses Effect for typed, composable TypeScript services, schemas, and workflows.
 
 ## Source Of Truth
