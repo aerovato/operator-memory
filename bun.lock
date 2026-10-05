@@ -62,7 +62,7 @@
     },
     "packages/helper": {
       "name": "@aerovato/operator-helper",
-      "version": "1.7.1",
+      "version": "1.8.0",
       "bin": {
         "operator-helper": "dist/index.js",
       },
