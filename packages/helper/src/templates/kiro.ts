@@ -26,9 +26,7 @@ inclusion: always
 
 # Operator Memory
 
-Operator Memory is installed for Kiro. At the start of each session, the Operator SessionStart hook injects the Operator preamble, which begins with \`<operator-guidance>\`. If the preamble is already in this conversation, follow it and ignore the rest of this file.
-
-If the preamble is missing, the hook did not run. Before any other work, run \`operator-helper preamble\` once from the workspace root and treat its full output as the Operator preamble. Do not run it again in this session. If the command fails, tell the user to run \`/operator-repair\`, then continue with their request.
+Operator Memory is installed for Kiro. If you do not see Operator's preamble guidance above wrapped within \`<operator-guidance>\`, manually run the \`operator-helper preamble\` command once from the workspace root and follow all instructions from the command output. If the command fails, report to the user and stop. Do not run if the preamble is already available.
 `;
 
 const RECOVERY = (command: string) => `## Recovery

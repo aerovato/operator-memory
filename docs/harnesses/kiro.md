@@ -45,9 +45,14 @@ Kiro runs the hook at the start of every session, so a new session loads changed
 operator-helper install kiro
 ```
 
+### Known Bugs and Limitations
+
+- `KIRO_HOME` is ignored in V3: hooks, steering, and skills still load from ordinary `~/.kiro`. Operator installs there accordingly. Verified with CLI binary `2.27.1`, the V3 engine (`--v3`), and KAS `0.66.22`.
+- No automatic subagent injection: Kiro has no subagent start hook. Subagents must follow the inherited Operator steering instructions and run `operator-helper preamble` themselves.
+- Hook failures do not block the session: a failed `SessionStart` command shows a warning to the user. The agent must follow the steering instructions to load Operator manually; if that command fails, it reports the failure and stops.
+
 ### Troubleshooting
 
 - The agent runs `operator-helper preamble` at the start of a session: the hook did not fire and the steering fallback loaded the preamble instead. Confirm `~/.kiro/hooks/operator-memory.json` exists and is enabled in Kiro's hooks panel, or rerun the install command.
-- Helper failure: Kiro reports the hook's error output to the agent. Repair Helper's global installation and start a new session.
-- Subagents do not receive the preamble: Kiro has no subagent start hook.
+- Helper failure: Kiro shows the hook's error output to the user as a warning. Repair Helper's global installation and start a new session.
 - Missing memory or load failures: run `/operator-repair` in a new session. See [Troubleshooting](../troubleshooting.md).

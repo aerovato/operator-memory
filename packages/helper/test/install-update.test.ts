@@ -235,8 +235,8 @@ test.runIf(process.platform !== "win32")(
         },
       ],
     });
-    expect(fs.readFileSync(join(kiroHome, "steering", "operator-memory.md"), "utf8")).toMatch(
-      /^---\ninclusion: always\n---\n/,
+    expect(fs.readFileSync(join(kiroHome, "steering", "operator-memory.md"), "utf8")).toBe(
+      "---\ninclusion: always\n---\n\n# Operator Memory\n\nOperator Memory is installed for Kiro. If you do not see Operator's preamble guidance above wrapped within `<operator-guidance>`, manually run the `operator-helper preamble` command once from the workspace root and follow all instructions from the command output. If the command fails, report to the user and stop. Do not run if the preamble is already available.\n",
     );
     for (const name of [
       "operator-user-init",
