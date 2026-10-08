@@ -249,3 +249,39 @@ test("trims only when the Brain is initialized", async () => {
   const refused = await drive(false);
   expect(resultValue(refused)).toBe(big);
 });
+
+test("teardown marks the old setup stale and the new setup still enforces", async () => {
+  loadPreamble.mockResolvedValue({
+    ok: true as const,
+    value: { content: "operator preamble", loaded: true, initialized: true },
+  });
+
+  const first = enabledContext({ enabled: true });
+  const cleanup = (await OperatorPlugin.setup(first.context)) as unknown as
+    | (() => void)
+    | undefined;
+  expect(typeof cleanup).toBe("function");
+
+  const second = enabledContext({ enabled: true });
+  await OperatorPlugin.setup(second.context);
+
+  // Old preamble hook is stale: it must not inject a second preamble.
+  const oldPreamble = first.sessionHook.mock.calls[0]?.[1] as (event: {
+    sessionID: string;
+    system: unknown[];
+  }) => Promise<void>;
+  const staleEvent = { sessionID: "ses-stale-probe", system: [] as unknown[] };
+  await oldPreamble(staleEvent);
+  expect(staleEvent.system).toEqual([]);
+
+  // New preamble hook is live.
+  const livePreamble = second.sessionHook.mock.calls[0]?.[1] as (event: {
+    sessionID: string;
+    system: unknown[];
+  }) => Promise<void>;
+  const liveEvent = { sessionID: "ses-stale-probe", system: [] as unknown[] };
+  await livePreamble(liveEvent);
+  expect(liveEvent.system).toEqual([{ type: "text", text: "operator preamble" }]);
+
+  (cleanup as () => void)?.();
+});

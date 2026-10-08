@@ -14,6 +14,7 @@ import { toTriggerConfig } from "./context-config.ts";
 import {
   ensureRefusalReceipt,
   ensureSessionHydrated,
+  isContextStale,
   resolveWindowTokens,
   sessionRuntime,
   type ContextManagementDeps,
@@ -32,6 +33,9 @@ export function registerContextHook(
   runtime: ContextRuntime,
 ): void {
   context.session.hook("context", async event => {
+    if (isContextStale(deps)) {
+      return;
+    }
     const sessionID = event.sessionID;
     const config = deps.config;
 
@@ -60,6 +64,12 @@ export function registerContextHook(
       if (message !== undefined) {
         (message.content as unknown[])[replacement.partIndex] = replacement.part;
       }
+    }
+
+    // A reload may have landed during the awaits above: re-check before
+    // recording dedup state or writing receipts in the shared runtime.
+    if (isContextStale(deps)) {
+      return;
     }
 
     const decision = evaluateTrigger(

@@ -6,6 +6,7 @@ import { toTriggerConfig } from "./context-config.ts";
 import {
   ensureRefusalReceipt,
   ensureSessionHydrated,
+  isContextStale,
   sessionRuntime,
   type ContextManagementDeps,
   type ContextRuntime,
@@ -21,22 +22,35 @@ const EXECUTION_SUCCEEDED = "session.execution.succeeded";
 const STEP_ENDED = "session.step.ended";
 
 // Runs as a background loop; a dead or failed stream must not take the
-// plugin down with it.
+// plugin down with it. The caller passes an AbortSignal tied to plugin
+// teardown: the stream is created with that signal so the host closes it on
+// unload, and the loop also exits when a superseding setup marks this
+// generation stale (a reload without disposal would otherwise leave two
+// loops consuming the same stream with separate dedup state, firing every
+// task-complete compaction twice — the double-compact loop).
 export function registerCompletionTrigger(
   context: Context,
   deps: ContextManagementDeps,
   runtime: ContextRuntime,
+  options?: { readonly signal?: AbortSignal },
 ): void {
-  void consume(context.event.subscribe(), deps, runtime);
+  const stream = context.event.subscribe(
+    options?.signal !== undefined ? { signal: options.signal } : undefined,
+  );
+  void consume(stream, deps, runtime, options?.signal);
 }
 
 async function consume(
   stream: AsyncIterable<unknown>,
   deps: ContextManagementDeps,
   runtime: ContextRuntime,
+  signal?: AbortSignal,
 ): Promise<void> {
   try {
     for await (const raw of stream) {
+      if (signal?.aborted === true || isContextStale(deps)) {
+        return;
+      }
       await dispatchEvent(raw, deps, runtime).catch(() => undefined);
     }
   } catch {
@@ -51,6 +65,9 @@ export async function dispatchEvent(
   deps: ContextManagementDeps,
   runtime: ContextRuntime,
 ): Promise<void> {
+  if (isContextStale(deps)) {
+    return;
+  }
   const event = asHostEvent(raw);
   if (event === null) {
     return;
@@ -62,6 +79,11 @@ export async function dispatchEvent(
   if (event.type === EXECUTION_SUCCEEDED) {
     if (event.sessionID !== undefined) {
       await ensureSessionHydrated(deps.stateDirectory, runtime, event.sessionID);
+      // A reload may have landed during hydration: re-check before the
+      // trigger evaluation records anything in the shared runtime.
+      if (isContextStale(deps)) {
+        return;
+      }
     }
     await handleExecutionSucceeded(event.sessionID, deps, runtime);
   } else if (event.type === STEP_ENDED) {
