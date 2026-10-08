@@ -32,6 +32,9 @@ export function registerContextHook(
   runtime: ContextRuntime,
 ): void {
   context.session.hook("context", async event => {
+    if (deps.isCurrent !== undefined && !deps.isCurrent()) {
+      return;
+    }
     const sessionID = event.sessionID;
     const config = deps.config;
 

@@ -165,3 +165,20 @@ test("a later success resets the failure count", async () => {
   expect(await resolveWindowTokens(context, session, MODEL_A)).toBe(200000);
   expect(session.windowFailures).toBe(0);
 });
+
+test("shared runtime preserves fired state across reloads", async () => {
+  const { sharedContextRuntime } = await import("../src/runtime.ts");
+  const first = sharedContextRuntime();
+  const second = sharedContextRuntime();
+  expect(second).toBe(first);
+
+  const session = sessionRuntime(first, "ses_reload_probe");
+  session.triggerState = { fired: { "task-complete": 100000 } };
+  // A reloaded setup gets the same instance: the next terminal signal with
+  // the same estimate dedups instead of firing a second compaction.
+  expect(sessionRuntime(second, "ses_reload_probe").triggerState).toEqual({
+    fired: { "task-complete": 100000 },
+  });
+  // Clean up so later tests in this worker see a fresh probe entry.
+  session.triggerState = { fired: {} };
+});

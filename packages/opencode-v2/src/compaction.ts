@@ -32,6 +32,9 @@ export function registerCompactionHook(
   runtime: ContextRuntime,
 ): void {
   context.session.hook("compaction", async event => {
+    if (deps.isCurrent !== undefined && !deps.isCurrent()) {
+      return;
+    }
     const sessionID = event.sessionID;
     await ensureSessionHydrated(deps.stateDirectory, runtime, sessionID);
     if (!deps.isBrainAvailable(sessionID)) {

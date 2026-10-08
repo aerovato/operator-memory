@@ -267,3 +267,49 @@ test("refuses the completion trigger when the Brain is unavailable", async () =>
     reason: "brain-unavailable",
   });
 });
+
+test("ignores events once the setup is stale (reload without disposal)", async () => {
+  const runtime = createContextRuntime();
+  observe(runtime, 100000);
+  const requestCompaction = vi.fn();
+  const deps = {
+    config: CONFIG,
+    stateDirectory: STATE,
+    isBrainAvailable: () => true,
+    requestCompaction,
+    isCurrent: () => false,
+  };
+
+  await dispatchEvent(succeededEvent(SESSION), deps, runtime);
+  await dispatchEvent(stepEvent(SESSION), deps, runtime);
+
+  // Regression: a superseded setup's loop must no-op instead of firing with
+  // empty dedup state — this was the task-complete double-compact loop.
+  expect(requestCompaction).not.toHaveBeenCalled();
+  expect(sessionRuntime(runtime, SESSION).triggerState).toEqual({ fired: {} });
+});
+
+test("stops consuming once the teardown signal aborts", async () => {
+  async function* stream() {
+    yield succeededEvent(SESSION);
+    yield succeededEvent(SESSION);
+  }
+  const subscribe = vi.fn(() => stream());
+  const context = { event: { subscribe } } as never;
+  const runtime = createContextRuntime();
+  observe(runtime, 100000);
+  const requestCompaction = vi.fn();
+  const controller = new AbortController();
+  controller.abort();
+
+  registerCompletionTrigger(
+    context,
+    { config: CONFIG, stateDirectory: STATE, isBrainAvailable: () => true, requestCompaction },
+    runtime,
+    { signal: controller.signal },
+  );
+
+  expect(subscribe).toHaveBeenCalledWith({ signal: controller.signal });
+  await new Promise(resolve => setTimeout(resolve, 50));
+  expect(requestCompaction).not.toHaveBeenCalled();
+});

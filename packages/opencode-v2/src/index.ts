@@ -14,7 +14,7 @@ import { registerContextHook } from "./context.ts";
 import { parseContextManagementConfig } from "./context-config.ts";
 import { registerCompletionTrigger, requestSessionCompaction } from "./events.ts";
 import { loadPreamble } from "./preamble.ts";
-import { createContextRuntime } from "./runtime.ts";
+import { sharedContextRuntime } from "./runtime.ts";
 import { registerReadOmittedTool } from "./tool.ts";
 import {
   OperatorNotifications,
@@ -23,9 +23,18 @@ import {
   type PartitionStatus,
 } from "./notifications.ts";
 
+// Live setup generation. A teardown/reload without disposal leaves the old
+// event loop and old hook closures alive; they capture their own generation
+// and no-op once superseded, so only the current setup enforces. The runtime
+// itself is shared across generations (see sharedContextRuntime) so dedup
+// survives reloads.
+let setupGeneration = 0;
+
 const OperatorPlugin = Plugin.define({
   id: pluginId,
   async setup(context) {
+    const generation = ++setupGeneration;
+    const isCurrent = () => generation === setupGeneration;
     const cache = new Map<string, ReturnType<typeof loadPreamble>>();
     const recoveryNotices = new Set<string>();
     let status: Promise<OperatorStatus> | null = null;
@@ -48,6 +57,9 @@ const OperatorPlugin = Plugin.define({
     // gates on it: the feature stays off without the Brain.
     const brainAvailable = new Map<string, boolean>();
     await context.session.hook("context", async event => {
+      if (!isCurrent()) {
+        return;
+      }
       const result = await loadPreamble({
         sessionID: event.sessionID,
         projectDirectory: context.location.directory,
@@ -90,30 +102,39 @@ const OperatorPlugin = Plugin.define({
     } else if (parsed.value.enabled) {
       const config = parsed.value;
       const stateDirectory = join(homedir(), ".operator", "state");
-      const runtime = createContextRuntime();
+      // Shared across reloads so trigger dedup survives a teardown/setup
+      // cycle; a requested-but-not-yet-executed compaction must still
+      // suppress the next terminal signal after reload.
+      const runtime = sharedContextRuntime();
       // The preamble hook above must stay registered first: it populates
       // brainAvailable, which these hooks read through isBrainAvailable.
       // Unknown sessions default to unavailable (fail closed).
       const isBrainAvailable = (sessionID: string) => brainAvailable.get(sessionID) === true;
       const requestCompaction = (sessionID: string, cause: TriggerKind) => {
+        if (!isCurrent()) {
+          return;
+        }
         requestSessionCompaction(context, runtime, sessionID, cause);
       };
-      registerContextHook(
-        context,
-        { config, stateDirectory, requestCompaction, isBrainAvailable },
-        runtime,
-      );
+      const deps = { config, stateDirectory, requestCompaction, isBrainAvailable, isCurrent };
+      registerContextHook(context, deps, runtime);
       registerCompactionHook(
         context,
-        { config, stateDirectory, brainPaths: DEFAULT_BRAIN_PATHS, isBrainAvailable },
+        { config, stateDirectory, brainPaths: DEFAULT_BRAIN_PATHS, isBrainAvailable, isCurrent },
         runtime,
       );
-      registerCompletionTrigger(
-        context,
-        { config, stateDirectory, requestCompaction, isBrainAvailable },
-        runtime,
-      );
+      const controller = new AbortController();
+      registerCompletionTrigger(context, deps, runtime, { signal: controller.signal });
       await registerReadOmittedTool(context, { stateDirectory });
+      // Tearing down stops the event loop and marks this generation stale so
+      // surviving closures no-op. Only bump the generation when still
+      // current: a newer setup may already have superseded this one.
+      return () => {
+        controller.abort();
+        if (isCurrent()) {
+          setupGeneration++;
+        }
+      };
     }
   },
 });

@@ -249,3 +249,61 @@ test("trims only when the Brain is initialized", async () => {
   const refused = await drive(false);
   expect(resultValue(refused)).toBe(big);
 });
+
+test("teardown marks the old setup stale and the new setup still enforces", async () => {
+  loadPreamble.mockResolvedValue({
+    ok: true as const,
+    value: { content: "operator preamble", loaded: true, initialized: true },
+  });
+  const hookFake = () => {
+    const sessionHook = vi.fn();
+    async function* emptyStream(): AsyncGenerator<never> {
+      // No events.
+    }
+    const context = {
+      location: { directory: "/project" },
+      options: { operator: { contextManagement: { enabled: true } } },
+      command: {
+        list: () => Promise.resolve({ data: [], location: { directory: "/project" } }),
+        transform: vi.fn(),
+      },
+      rpc: { register: vi.fn(() => Promise.resolve({ events: { emit: emitToast } })) },
+      session: { hook: sessionHook },
+      event: { subscribe: vi.fn(() => emptyStream()) },
+      model: { list: vi.fn(async () => ({ data: [] })) },
+      tool: {
+        transform: vi.fn(async callback => callback({ namespace: vi.fn(), add: vi.fn() })),
+      },
+    } as unknown as Context;
+    return { context, sessionHook };
+  };
+
+  const first = hookFake();
+  const cleanup = (await OperatorPlugin.setup(first.context)) as unknown as
+    | (() => void)
+    | undefined;
+  expect(typeof cleanup).toBe("function");
+
+  const second = hookFake();
+  await OperatorPlugin.setup(second.context);
+
+  // Old preamble hook is stale: it must not inject a second preamble.
+  const oldPreamble = first.sessionHook.mock.calls[0]?.[1] as (event: {
+    sessionID: string;
+    system: unknown[];
+  }) => Promise<void>;
+  const staleEvent = { sessionID: "ses-stale-probe", system: [] as unknown[] };
+  await oldPreamble(staleEvent);
+  expect(staleEvent.system).toEqual([]);
+
+  // New preamble hook is live.
+  const livePreamble = second.sessionHook.mock.calls[0]?.[1] as (event: {
+    sessionID: string;
+    system: unknown[];
+  }) => Promise<void>;
+  const liveEvent = { sessionID: "ses-stale-probe", system: [] as unknown[] };
+  await livePreamble(liveEvent);
+  expect(liveEvent.system).toEqual([{ type: "text", text: "operator preamble" }]);
+
+  (cleanup as () => void)?.();
+});

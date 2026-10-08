@@ -59,6 +59,10 @@ export type ContextManagementDeps = {
   // Brain availability per session, tracked by setup from preamble loads.
   // The feature stays off without the Brain.
   readonly isBrainAvailable: (sessionID: string) => boolean;
+  // True while the registering setup is still the live generation. Stale
+  // setups (teardown/reload without disposal) no-op instead of enforcing
+  // with empty dedup state and double-firing triggers.
+  readonly isCurrent?: () => boolean;
 };
 
 export function createContextRuntime(): ContextRuntime {
@@ -68,6 +72,21 @@ export function createContextRuntime(): ContextRuntime {
     hydrated: new Set(),
     pendingCauses: new Map(),
   };
+}
+
+// Process-wide runtime shared across plugin reloads. A fresh runtime per
+// setup loses in-memory dedup on every reload; the seeding from disk only
+// covers executed compactions, so a requested-but-not-yet-executed
+// compaction followed by a reload would fire a second time on the next
+// terminal signal. Sharing keeps the fired entries (and the refusal record)
+// alive across generations within the process.
+let sharedRuntime: ContextRuntime | null = null;
+
+export function sharedContextRuntime(): ContextRuntime {
+  if (sharedRuntime === null) {
+    sharedRuntime = createContextRuntime();
+  }
+  return sharedRuntime;
 }
 
 export function sessionRuntime(runtime: ContextRuntime, sessionID: string): SessionRuntime {

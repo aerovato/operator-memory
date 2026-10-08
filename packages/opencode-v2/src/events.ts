@@ -21,22 +21,35 @@ const EXECUTION_SUCCEEDED = "session.execution.succeeded";
 const STEP_ENDED = "session.step.ended";
 
 // Runs as a background loop; a dead or failed stream must not take the
-// plugin down with it.
+// plugin down with it. The caller passes an AbortSignal tied to plugin
+// teardown: the stream is created with that signal so the host closes it on
+// unload, and the loop also exits when a superseding setup marks this
+// generation stale (a reload without disposal would otherwise leave two
+// loops consuming the same stream with separate dedup state, firing every
+// task-complete compaction twice — the double-compact loop).
 export function registerCompletionTrigger(
   context: Context,
   deps: ContextManagementDeps,
   runtime: ContextRuntime,
+  options?: { readonly signal?: AbortSignal },
 ): void {
-  void consume(context.event.subscribe(), deps, runtime);
+  const stream = context.event.subscribe(
+    options?.signal !== undefined ? { signal: options.signal } : undefined,
+  );
+  void consume(stream, deps, runtime, options?.signal);
 }
 
 async function consume(
   stream: AsyncIterable<unknown>,
   deps: ContextManagementDeps,
   runtime: ContextRuntime,
+  signal?: AbortSignal,
 ): Promise<void> {
   try {
     for await (const raw of stream) {
+      if (signal?.aborted === true || isStale(deps)) {
+        return;
+      }
       await dispatchEvent(raw, deps, runtime).catch(() => undefined);
     }
   } catch {
@@ -51,6 +64,9 @@ export async function dispatchEvent(
   deps: ContextManagementDeps,
   runtime: ContextRuntime,
 ): Promise<void> {
+  if (isStale(deps)) {
+    return;
+  }
   const event = asHostEvent(raw);
   if (event === null) {
     return;
@@ -155,6 +171,13 @@ type HostEvent = {
   readonly sessionID: string | undefined;
   readonly tokens: StepTokenCounts | undefined;
 };
+
+// A superseded setup's handlers must no-op: after a teardown/reload without
+// disposal, the old event loop and old hooks would otherwise enforce with
+// stale (empty) dedup state and double-fire every trigger.
+function isStale(deps: ContextManagementDeps): boolean {
+  return deps.isCurrent !== undefined && !deps.isCurrent();
+}
 
 function asHostEvent(raw: unknown): HostEvent | null {
   if (typeof raw !== "object" || raw === null || !("type" in raw)) {
