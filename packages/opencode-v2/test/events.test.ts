@@ -289,6 +289,31 @@ test("ignores events once the setup is stale (reload without disposal)", async (
   expect(sessionRuntime(runtime, SESSION).triggerState).toEqual({ fired: {} });
 });
 
+test("drops the trigger when a reload lands mid-hydration", async () => {
+  const runtime = createContextRuntime();
+  observe(runtime, 100000);
+  const requestCompaction = vi.fn();
+  let live = true;
+  const deps = {
+    config: CONFIG,
+    stateDirectory: STATE,
+    isBrainAvailable: () => true,
+    requestCompaction,
+    isCurrent: () => live,
+  };
+
+  const dispatch = dispatchEvent(succeededEvent(SESSION), deps, runtime);
+  live = false; // teardown/reload lands inside the hydration await
+  await dispatch;
+
+  // Regression: the entry check alone is not enough — recording the fired
+  // trigger without dispatching the compaction would leave a phantom dedup
+  // entry (with no receipt anywhere) that silently drops the next reload's
+  // legitimate compaction.
+  expect(requestCompaction).not.toHaveBeenCalled();
+  expect(sessionRuntime(runtime, SESSION).triggerState).toEqual({ fired: {} });
+});
+
 test("stops consuming once the teardown signal aborts", async () => {
   async function* stream() {
     yield succeededEvent(SESSION);
@@ -310,6 +335,7 @@ test("stops consuming once the teardown signal aborts", async () => {
   );
 
   expect(subscribe).toHaveBeenCalledWith({ signal: controller.signal });
-  await new Promise(resolve => setTimeout(resolve, 50));
-  expect(requestCompaction).not.toHaveBeenCalled();
+  // The aborted stream ends without dispatching: poll for the quiet state
+  // with the file's vi.waitFor idiom instead of a wall-clock sleep.
+  await vi.waitFor(() => expect(requestCompaction).not.toHaveBeenCalled());
 });

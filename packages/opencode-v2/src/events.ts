@@ -6,6 +6,7 @@ import { toTriggerConfig } from "./context-config.ts";
 import {
   ensureRefusalReceipt,
   ensureSessionHydrated,
+  isContextStale,
   sessionRuntime,
   type ContextManagementDeps,
   type ContextRuntime,
@@ -47,7 +48,7 @@ async function consume(
 ): Promise<void> {
   try {
     for await (const raw of stream) {
-      if (signal?.aborted === true || isStale(deps)) {
+      if (signal?.aborted === true || isContextStale(deps)) {
         return;
       }
       await dispatchEvent(raw, deps, runtime).catch(() => undefined);
@@ -64,7 +65,7 @@ export async function dispatchEvent(
   deps: ContextManagementDeps,
   runtime: ContextRuntime,
 ): Promise<void> {
-  if (isStale(deps)) {
+  if (isContextStale(deps)) {
     return;
   }
   const event = asHostEvent(raw);
@@ -78,6 +79,11 @@ export async function dispatchEvent(
   if (event.type === EXECUTION_SUCCEEDED) {
     if (event.sessionID !== undefined) {
       await ensureSessionHydrated(deps.stateDirectory, runtime, event.sessionID);
+      // A reload may have landed during hydration: re-check before the
+      // trigger evaluation records anything in the shared runtime.
+      if (isContextStale(deps)) {
+        return;
+      }
     }
     await handleExecutionSucceeded(event.sessionID, deps, runtime);
   } else if (event.type === STEP_ENDED) {
@@ -171,13 +177,6 @@ type HostEvent = {
   readonly sessionID: string | undefined;
   readonly tokens: StepTokenCounts | undefined;
 };
-
-// A superseded setup's handlers must no-op: after a teardown/reload without
-// disposal, the old event loop and old hooks would otherwise enforce with
-// stale (empty) dedup state and double-fire every trigger.
-function isStale(deps: ContextManagementDeps): boolean {
-  return deps.isCurrent !== undefined && !deps.isCurrent();
-}
 
 function asHostEvent(raw: unknown): HostEvent | null {
   if (typeof raw !== "object" || raw === null || !("type" in raw)) {

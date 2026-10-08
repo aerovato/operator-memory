@@ -65,6 +65,14 @@ export type ContextManagementDeps = {
   readonly isCurrent?: () => boolean;
 };
 
+// True once a superseding setup has taken over. Checked at handler entry
+// and again after awaits: a reload landing mid-await must not let the old
+// generation mutate the shared runtime (a recorded-but-never-dispatched
+// trigger would leave a phantom dedup entry with no receipt anywhere).
+export function isContextStale(deps: Pick<ContextManagementDeps, "isCurrent">): boolean {
+  return deps.isCurrent !== undefined && !deps.isCurrent();
+}
+
 export function createContextRuntime(): ContextRuntime {
   return {
     sessions: new Map(),

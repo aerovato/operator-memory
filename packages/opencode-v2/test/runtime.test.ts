@@ -8,6 +8,7 @@ import {
   MAX_WINDOW_LOOKUP_ATTEMPTS,
   resolveWindowTokens,
   sessionRuntime,
+  sharedContextRuntime,
 } from "../src/runtime.ts";
 
 vi.mock("node:fs/promises", async () => {
@@ -167,7 +168,6 @@ test("a later success resets the failure count", async () => {
 });
 
 test("shared runtime preserves fired state across reloads", async () => {
-  const { sharedContextRuntime } = await import("../src/runtime.ts");
   const first = sharedContextRuntime();
   const second = sharedContextRuntime();
   expect(second).toBe(first);

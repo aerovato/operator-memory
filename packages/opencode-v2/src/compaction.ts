@@ -7,6 +7,7 @@ import { join } from "node:path";
 import {
   ensureRefusalReceipt,
   ensureSessionHydrated,
+  isContextStale,
   sessionRuntime,
   type ContextManagementDeps,
   type ContextRuntime,
@@ -32,11 +33,16 @@ export function registerCompactionHook(
   runtime: ContextRuntime,
 ): void {
   context.session.hook("compaction", async event => {
-    if (deps.isCurrent !== undefined && !deps.isCurrent()) {
+    if (isContextStale(deps)) {
       return;
     }
     const sessionID = event.sessionID;
     await ensureSessionHydrated(deps.stateDirectory, runtime, sessionID);
+    // A reload may have landed during hydration: re-check before consuming
+    // the pending cause or writing the receipt.
+    if (isContextStale(deps)) {
+      return;
+    }
     if (!deps.isBrainAvailable(sessionID)) {
       await ensureRefusalReceipt(deps.stateDirectory, runtime, sessionID);
       return;
