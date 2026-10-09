@@ -51,6 +51,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 - `project/setup.ts` — Project Brain setup guide variable
 - `project/index-setup.ts` — Project Index setup and refresh guide variable
 - `project/shared-readme.ts` — Introductory Project Shared README variable
+- `kiro.ts` — Kiro adapter files: `SessionStart` preamble hook, always-included steering fallback, and Operator skills
 
 ### `packages/helper/test/`
 
@@ -76,6 +77,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 - `opencode-v2.ts` — OpenCode V2 CLI package installation
 - `pi.ts` — Pi CLI package installation through its unversioned npm package spec
 - `deepseek.ts` — Independent native DeepSeek Web and Desktop profile installation and outcome reporting
+- `kiro.ts` — Helper-on-PATH check and direct `~/.kiro` writes of the Kiro adapter files
 - `preamble.ts` — Canonical core-backed preamble rendering for harness adapters
 - `upgrade.ts`, `version.ts` — Explicit Helper upgrade and read-only update check output
 

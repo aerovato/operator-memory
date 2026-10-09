@@ -34,5 +34,8 @@ operator-helper install pi
 
 # Install DeepSeek Harness plugin
 operator-helper install deepseek
+
+# Install Kiro adapter
+operator-helper install kiro
 \`\`\`
 `;

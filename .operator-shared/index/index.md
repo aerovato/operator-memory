@@ -17,7 +17,7 @@ read_if: Working anywhere in the committed Operator Memory project
 
 - Operator Memory is a Bun and TypeScript monorepo for durable context and agent-driven development on coding-agent harnesses.
 - The read-only core runtime supplies shared models and preamble rendering, the helper CLI owns harness installation plus deterministic setup and validation, and thin OpenCode and Pi adapters bind those capabilities to each harness.
-- The workspace, core runtime, preamble renderer, helper CLI, OpenCode V1 and V2 integrations, Pi integration, Codex plugin packaging, DeepSeek Harness adapter, and Claude Code adapter are implemented.
+- The workspace, core runtime, preamble renderer, helper CLI, OpenCode V1 and V2 integrations, Pi integration, Codex plugin packaging, DeepSeek Harness adapter, Claude Code adapter, and Helper-managed Kiro installation are implemented.
 
 ## Project Index
 
@@ -36,14 +36,27 @@ read_if: Working anywhere in the committed Operator Memory project
 
 - [`effect-smol/`](effect-smol.md) - Locally installed Effect v4 source tree used to verify implementation and testing patterns.
 
+### `reference/` - Git-ignored harness and library source clones
+
+Indexed by subindexes under `index/harnesses/`; clone the upstream repository to `reference/<repo-name>` to use them:
+
+- [`harnesses/codex.md`](harnesses/codex.md) - OpenAI Codex CLI source map: hooks, plugins, skills, trust, session identity.
+- [`harnesses/pi.md`](harnesses/pi.md) - Pi agent monorepo map focused on the coding-agent extension system.
+- [`harnesses/deepseek-harness/`](harnesses/deepseek-harness/overview.md) - DeepSeek Harness reference monorepo: runtime, plugins, and distribution maps.
+- [`harnesses/claude-code/docs.md`](harnesses/claude-code/docs.md) - Official anthropics/claude-code repository map: plugin examples, mod/plugin engine TypeScript API, and configuration examples.
+- [`harnesses/opencode-v1/`](harnesses/opencode-v1/monorepo.md) - OpenCode v1 reference monorepo map; entry point for the focused v1 subindexes.
+- [`harnesses/opencode-v2/`](harnesses/opencode-v2/monorepo.md) - OpenCode v2 stable reference monorepo map; entry point for the focused v2 subindexes.
+- [`opentui.md`](opentui.md) - OpenTUI Solid JSX runtime and renderer reference for the OpenCode V2 TUI.
+
 ### Repository root
 
 - `README.md` - Product positioning, installation, agent-assisted setup, everyday workflow, command reference, and documentation entrypoint.
+- `CONTRIBUTING.md` - Contributor requirements: use Operator and maintain the shared brain.
 - `README.zh-CN.md` - Simplified Chinese README for the Chinese-speaking DeepSeek Harness audience; cross-linked with the English README.
 - `docs/getting-started.zh-CN.md` - Simplified Chinese version of the onboarding guide; the only doc besides the README with a Chinese version.
 - `docs/getting-started.md` - New-user onboarding and usage guide: mechanisms, setup, daily use, directing the agent, and Brain review.
 - `docs/comparison.md` - Public comparison of Operator against snippet-capture, RAG, CRUD-tool, and compression memory plugins.
-- `docs/harnesses/` - Per-harness guides (OpenCode 2, OpenCode 1, Pi, Codex, Claude Code, DeepSeek Harness): install command, verification, commands, updates, and harness-specific troubleshooting.
+- `docs/harnesses/` - Per-harness guides (OpenCode 2, OpenCode 1, Pi, Codex, Claude Code, DeepSeek Harness, Kiro): install command, verification, commands, updates, and harness-specific troubleshooting.
 - `docs/architecture.md` - User-facing Brain, partition, catalog, Project Index, deterministic loading, failure, and OpenCode architecture.
 - `docs/troubleshooting.md` - User-facing installation, status, lint, memory-check, repair, Git, Shared, harness update, and support guidance.
 - `docs/assets/banner.jpeg` - Operator Memory README banner.

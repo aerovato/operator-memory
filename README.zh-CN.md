@@ -44,6 +44,7 @@ bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest
 | [OpenCode V1](docs/harnesses/opencode.md) | 🟡 支持（旧版） | `operator-helper install opencode` |
 | [Pi](docs/harnesses/pi.md) | 🟢 完全支持 | `operator-helper install pi` |
 | [DeepSeek Harness](docs/harnesses/deepseek.md) | 🟢 完全支持 | `operator-helper install deepseek` |
+| [Kiro](docs/harnesses/kiro.md) | 🟡 支持 | `operator-helper install kiro` |
 
 设置就是与智能体的一场对话。在新的会话中逐个运行以下命令。
 
@@ -109,6 +110,8 @@ Operator 给智能体一个持久的 Markdown 工作区，保存在三个位置�
 ### 对比其他记忆插件
 
 片段捕获、RAG 检索和上下文压缩以同样的方式失败：[阅读对比文章](docs/comparison.md)（英文）。
+
+[寻找基准测试？](https://github.com/aerovato/operator-memory/issues/48#issuecomment-5979061413)（英文）
 
 ### 了解更多
 

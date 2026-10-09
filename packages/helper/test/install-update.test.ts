@@ -205,6 +205,65 @@ test.runIf(process.platform !== "win32")(
   },
 );
 
+test.runIf(process.platform !== "win32")(
+  "installs the Kiro SessionStart hook, steering, and skills",
+  async () => {
+    executable("operator-helper", 'printf "helper|%s\\n" "$*" >> "$OPERATOR_TEST_RECORD"');
+    const kiroHome = join(directory, ".kiro");
+    const skill = join(kiroHome, "skills", "operator-index", "SKILL.md");
+    fs.mkdirSync(dirname(skill), { recursive: true });
+    fs.writeFileSync(skill, "stale");
+
+    const result = await execute(["install", "kiro"], "4.5.6");
+
+    expect(result).toEqual({
+      exitCode: 0,
+      output: `✓ Kiro adapter installed in ${kiroHome}\nStart a new Kiro session.`,
+    });
+    expect(fs.readFileSync(record, "utf8")).toBe("helper|help\n");
+    expect(
+      JSON.parse(fs.readFileSync(join(kiroHome, "hooks", "operator-memory.json"), "utf8")),
+    ).toEqual({
+      version: "v1",
+      hooks: [
+        {
+          name: "Operator Memory preamble",
+          trigger: "SessionStart",
+          action: { type: "command", command: "operator-helper preamble" },
+          timeout: 120,
+          enabled: true,
+        },
+      ],
+    });
+    expect(fs.readFileSync(join(kiroHome, "steering", "operator-memory.md"), "utf8")).toBe(
+      "---\ninclusion: always\n---\n\n# Operator Memory\n\nOperator Memory is installed for Kiro. If you do not see Operator's preamble guidance above wrapped within `<operator-guidance>`, manually run the `operator-helper preamble` command once from the workspace root and follow all instructions from the command output. If the command fails, report to the user and stop. Do not run if the preamble is already available.\n",
+    );
+    for (const name of [
+      "operator-user-init",
+      "operator-project-init",
+      "operator-index",
+      "operator-repair",
+    ]) {
+      expect(fs.readFileSync(join(kiroHome, "skills", name, "SKILL.md"), "utf8")).toMatch(
+        new RegExp(`^---\\nname: ${name}\\n`),
+      );
+    }
+    expect(await execute(["install", "kiro"], "4.5.6")).toEqual(result);
+  },
+);
+
+test.runIf(process.platform !== "win32")(
+  "requires Operator Helper on PATH before installing the Kiro adapter",
+  async () => {
+    executable("operator-helper", "exit 1");
+    expect(await execute(["install", "kiro"], "4.5.6")).toEqual({
+      exitCode: 1,
+      output: "Operator Helper must be available on PATH",
+    });
+    expect(fs.existsSync(join(directory, ".kiro"))).toBe(false);
+  },
+);
+
 test("registers the marketplace in config.toml when the Codex CLI is unavailable", async () => {
   const codexHome = join(directory, "codex-home");
   process.env.CODEX_HOME = codexHome;

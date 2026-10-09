@@ -16,6 +16,7 @@ Run `operator-helper install <id>` for your harness — see the [harness docs](h
 - [OpenCode V1 (legacy)](harnesses/opencode.md)
 - [Pi](harnesses/pi.md)
 - [DeepSeek Harness](harnesses/deepseek.md)
+- [Kiro](harnesses/kiro.md)
 
 Restart the harness after installation or repair. Until the harness reloads the adapter, setup commands and preamble injection will not behave as expected.
 
