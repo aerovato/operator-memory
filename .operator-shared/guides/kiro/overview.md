@@ -31,7 +31,7 @@ Kiro Crew is a separate orchestration product with its own agent backends (Kiro 
 - [`steering.md`](./steering.md) - Steering scopes, inclusion modes, file references, AGENTS.md, and inherited subagent instructions.
 - [`skills.md`](./skills.md) - Agent Skills format, locations, activation, and slash commands.
 - [`powers.md`](./powers.md) - Agent Plugins packaging, manifests, and installation pathways.
-- [`agents.md`](./agents.md) - General subagent inheritance, injection limitations, and Operator's integration scope.
+- [`subagents.md`](./subagents.md) - General subagent inheritance, injection limitations, and Operator's integration scope.
 - [`injection.md`](./injection.md) - Verified V3 injection behavior: main-agent hooks, subagent limitation, `KIRO_HOME` resolution defect, and custom-agent profile findings.
 
 ## Facility Summary
