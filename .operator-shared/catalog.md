@@ -52,6 +52,9 @@ Repository-wide Operator product knowledge published with the project.
 
 ### `guides/`
 
+- `antigravity/`
+  - Description: Google Antigravity native reference guides — packaging/install, hook API/runtime/identity, dedicated injection/compaction guide, delegation, and workflow skills; authoritative behavior first, verification notes below.
+  - Read If: Preparing or implementing Antigravity support, assessing model/subagent injection, or checking native plugin installation and command behavior.
 - `effect.md`
   - Description: Effect v4 and effect-smol source, implementation, and testing guidance.
   - Read If: Working with Effect v4 or effect-smol TypeScript code.
