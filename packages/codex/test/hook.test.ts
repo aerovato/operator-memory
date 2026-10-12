@@ -1,4 +1,4 @@
-import { chmod, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -68,7 +68,7 @@ test("returns a blocking user-visible failure when Helper fails", async () => {
 });
 
 async function temporaryDirectory(prefix: string): Promise<string> {
-  const directory = await mkdtemp(join(tmpdir(), prefix));
+  const directory = await realpath(await mkdtemp(join(tmpdir(), prefix)));
   temporaryDirectories.push(directory);
   return directory;
 }
