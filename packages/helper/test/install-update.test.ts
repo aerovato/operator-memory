@@ -24,7 +24,7 @@ beforeEach(() => {
   const bin = join(directory, "bin");
   fs.mkdirSync(bin);
   record = join(directory, "record");
-  process.env.PATH = `${bin}:${originalPath ?? ""}`;
+  process.env.PATH = bin;
   process.env.OPERATOR_TEST_RECORD = record;
   context = {
     cwd: directory,
