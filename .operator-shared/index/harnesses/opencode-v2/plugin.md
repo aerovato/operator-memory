@@ -16,6 +16,7 @@ read_if: Researching OpenCode v2 plugin domains, hooks, in-process SDK hosting, 
 - V2 plugin package `@opencode/plugin` has two parallel versions: Effect and Promise. Every Effect domain extends the corresponding API client interface from `@opencode/client/effect/api` and adds only plugin-context functions; never redefine client interface functions.
 - V2 SDKs are separate from V1 SDK versions; `@opencode/sdk` runs the assembled Server HTTP router in memory (no listener, no network hop) with Promise and Effect APIs plus a Workerd entrypoint for Cloudflare Durable Objects.
 - Plugin lifecycle contract lives in `reference/opencode-v2/specs/v2/catalog-config-plugin-lifecycle.md`.
+- Reference clone tracks `origin/dev` (updated October 20, 2026). Local source loading fingerprints and watches imported files; package loading and local-directory loading are separate paths.
 
 ## `reference/opencode-v2/packages/plugin/` Index
 
@@ -23,7 +24,11 @@ read_if: Researching OpenCode v2 plugin domains, hooks, in-process SDK hosting, 
 
 - `app.ts` — Plugin application entry
 - `options.ts` — Plugin options
-- `rpc.ts`, `storage.ts`, `source*.ts`, `host.ts` — RPC/storage surfaces, package resolution, and loader
+- `rpc.ts`, `storage.ts`, `options.ts`, `permission.ts`, `worktree.ts` — Plugin contracts and supporting surfaces
+- `host.ts` — Resolves server/root, TUI, and RPC entrypoints; local directories use direct filenames, not package exports
+- `source.ts`, `source.bun.ts`, `source.node.ts`, `source.package.ts` — Local import graph fingerprints, dependency watches, runtime-specific reloads, and missing-package detection
+- `runtime.ts`, `runtime-modules.ts` — Runtime module provision and host dependency identity
+- `README.md` — Ditto
 - `effect/`, `promise/` — Parallel plugin domains for agent, provider, model, command, RPC, session, tools, and other contexts
 - `tui/` — TUI plugin surface: `context.ts`, `plugin.ts`, `solid.ts`
 

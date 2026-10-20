@@ -13,6 +13,7 @@ read_if: Researching OpenCode v2 core services, session execution, plugins, tool
 
 - V2 core runtime: hosts nearly all domain services — sessions, agents, tools, plugins, permissions, config, database, filesystem, VCS, skills, MCP, and Effect infrastructure. The V1 `packages/opencode` app no longer exists; `server`, `cli`, and `tui` are thin consumers of core.
 - Session behavior is governed by `reference/opencode-v2/specs/v2/session.md` and `tools.md`; consult those before changing session admission, execution, or tool laws.
+- Reference clone tracks `origin/dev` (updated October 20, 2026). Configured local plugin directories and imported local dependencies have native watches and reload support.
 
 ## `reference/opencode-v2/packages/core/` Index
 
@@ -22,25 +23,26 @@ read_if: Researching OpenCode v2 core services, session execution, plugins, tool
 - `execution.ts` / `execution/` — Execution coordinator; `restart.ts` handles execution restarts
 - `run-coordinator.ts` — Joins same-session resumes, coalesces prompt wakeups
 - `runner/` — Runner internals: `index.ts`, `llm.ts`, `max-steps.ts`, `model.ts`, `step.ts`, `retry.ts`, `prompt/`, `publish-llm-event.ts`, `to-llm-message.ts`
-- `prompt.ts` / `prompt-node.ts` / `generate-node.ts` — Durable prompt admission and generation nodes
+- `prompt.ts`, `generate.ts`, `model-request.ts`, `model-transport.ts` — Prompt admission, generation, and model dispatch
 - `compaction.ts` — Compaction: history overflow, tool output pruning, summaries
 - `context.ts` — Session context management
 - `instructions.ts` / `instruction-state.ts` / `instruction-entry.ts` / `system-prompt.ts` — Instruction assembly and system prompts
 - `projector.ts` — Event-sourced state to visible message projection
 - `store.ts`, `sql.ts`, `history.ts`, `stats.ts` — Persistence, schema, history, usage stats
 - `message.ts`, `message-updater.ts` — Message and part types, update persistence
-- `revert.ts` / `revert-node.ts` — Revert to prior message/snapshot states
+- `revert.ts` — Revert to prior message/snapshot states
+- `affinity.ts`, `command.ts`, `diff.ts`, `move.ts`, `recent-text.ts`, `shell.ts`, `skill.ts`, `subagent-job.ts`, `to-session-error.ts`, `usage.ts` — Supporting session execution, movement, tools, errors, and usage
 - `transfer.ts`, `inbox.ts`, `subagent-completion.ts`, `title.ts`, `environment.ts`, `event.ts`, `error.ts`, `info.ts`, `schema.ts` — Supporting session concerns
 
 ### `src/plugin/` — Plugin host, hooks, providers, skills
 
 - `host.ts` — Plugin host: lifecycle, hook triggering, context construction
-- `runtime.ts`, `module.ts`, `instance.ts`, `internal.ts`, `supervisor.ts` / `supervisor-service.ts` — Plugin runtime, module loading, supervision
+- `service.ts`, `module.ts`, `instance.ts`, `internal.ts`, `supervisor.ts`, `promise.ts`, `identity.ts` — Plugin lifecycle, module loading, Promise binding, identity, and supervision; duplicate IDs keep the first source and report later sources as failures
 - `sdk.ts` — SDK-facing plugin integration
 - `hooks.ts` — Plugin hook definitions
 - `agent.ts`, `command.ts` / `command/`, `provider.ts` / `provider/` — Agent, command, and provider hook surfaces; `provider/` holds built-in provider plugins
-- `skill.ts` / `skill/`, `plan.ts`, `warming.ts`, `variant.ts`, `update.ts` — Skill hooks, plan support, model warming, variants, plugin updates
-- `system-prompt.ts` / `system-prompt/`, `models-dev.ts`, `vcs/`, `websearch/`, `mcp-codemode-exclusion.ts` — Prompt, catalog, VCS, and websearch plugin surfaces
+- `skill.ts` / `skill/`, `plan.ts`, `warming.ts`, `verbosity.ts`, `optimize.ts`, `tool-input-repair.ts`, `update.ts` — Skills, plan support, model warming, verbosity, optimization, tool repair, and updates
+- `system-prompt/`, `models-dev.ts`, `vcs/`, `websearch/`, `mcp-codemode-defaults.ts` — Prompt, catalog, VCS, websearch, and MCP defaults
 - `source-directory.ts` — Plugin source directory resolution
 
 ### `src/tool/` — Tool system
@@ -54,7 +56,7 @@ read_if: Researching OpenCode v2 core services, session execution, plugins, tool
 
 - `config.ts` — Configuration loading, merging, validation
 - `normalize.ts`, `variable.ts`, `markdown.ts` — Normalization, variables, markdown parsing
-- `plugin/` — Plugin configuration
+- `plugin/` — Plugin configuration; `source.ts` validates configured directories, orders discovery/config operations, and watches local sources outside config roots
 
 ### `src/v1/` — V1 config migration
 

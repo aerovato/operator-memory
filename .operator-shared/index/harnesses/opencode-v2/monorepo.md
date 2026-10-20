@@ -1,5 +1,5 @@
 ---
-description: OpenCode v2 stable reference monorepo package map
+description: OpenCode V2 dev reference monorepo package map
 read_if: Navigating reference/opencode-v2 packages or choosing a focused OpenCode v2 subindex
 ---
 
@@ -7,11 +7,11 @@ read_if: Navigating reference/opencode-v2 packages or choosing a focused OpenCod
 
 ## Coverage
 
-- `reference/opencode-v2/` (branch `v2`, single-branch clone)
+- `reference/opencode-v2/` (tracking branch `dev`; fetched and pulled October 20, 2026)
 
 ## Architecture
 
-- OpenCode V2 stable monorepo (2.0.18 at last pull): TypeScript/Bun + Turborepo. Packages live under `reference/opencode-v2/packages/` and services under `reference/opencode-v2/services/`.
+- OpenCode V2 development monorepo (root package version `2.1.0` at last pull): TypeScript/Bun + Turborepo. Packages live under `reference/opencode-v2/packages/` and services under `reference/opencode-v2/services/`. The clone now tracks `origin/dev`, not the older `v2` branch.
 - V2 is a substantial re-architecture of V1: the old `packages/opencode` main app is split into `core` (runtime services), `server` (HTTP API), `cli`, and `tui`. Session execution, plugins, and permissions moved into `packages/core/src`.
 - V2 has separate SDKs and APIs; V1 SDK versions (in `reference/opencode-v1`) have no relation to OpenCode V2.
 - `specs/v2/` holds authoritative V2 cross-module contracts; protocol endpoint definitions assembled by Server `HttpApi` own HTTP operations, `schema` owns public domain shapes.
@@ -41,6 +41,8 @@ read_if: Navigating reference/opencode-v2 packages or choosing a focused OpenCod
 - `packages/codemode` — Code mode orchestration runtime
 - `packages/identity` — Identity/account package
 - `packages/plugin-browser` — Browser plugin package
+- `packages/plugins/` — Built-in plugin packages; directory-only coverage
+- `packages/gui-extensions/` — GUI extension framework and contributions; directory-only coverage
 - `packages/function` — Cloudflare Worker functions
 - `packages/util` — Shared utilities
 - `packages/theme` — Theme definitions
@@ -64,7 +66,7 @@ read_if: Navigating reference/opencode-v2 packages or choosing a focused OpenCod
 ### Other Directories
 
 - `services/www/src/docs/content/` — V2 documentation source, including plugin and migration guides
-- `services/update/`, `services/files/` — Update and file services
+- `services/update/`, `services/files/`, `services/changelog/` — Update, file, and changelog services
 - `specs/v2/` — V2 specifications: session, tools, event-stream architecture, provider policy, plugin lifecycle, catalog config
 - `sdks/vscode/` — VS Code extension
 - `github/` — GitHub integration
@@ -73,3 +75,10 @@ read_if: Navigating reference/opencode-v2 packages or choosing a focused OpenCod
 - `install/` — Installation scripts
 - `patches/` — Package patches
 - `nix/`, `perf/`, `artifacts/` — Nix flake, benchmarks, build artifacts
+
+### Plugin Installation Navigation
+
+- `packages/cli/src/commands/handlers/plugin/` — Global package add/check/list/remove/update handlers; `add.ts` rejects local targets
+- `packages/util/src/npm.ts` — Registry/Git target parsing and package cache operations; local paths, tarballs, and aliases are not installable package targets
+- `packages/core/src/config/plugin/source.ts` — Ordered plugin operations, local-directory validation, entrypoint containment, and configured-local-source watches
+- `packages/core/src/plugin/source-directory.ts` — Native `plugin/` and `plugins/` discovery, including directory symlinks
