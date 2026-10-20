@@ -1,10 +1,10 @@
-# OpenCode V2 Plugin Development
+# OpenCode Plugin Development
 
-Last Updated: September 24, 2026
+Last Updated: October 20, 2026
 
 Verified from https://opencode.ai/v2/docs/build/plugins/ and `<reference>/opencode-v2/` source. Hooks detail in [`hooks.md`](hooks.md), sessions and messaging in [`sessions.md`](sessions.md), TUI plugins in [`tui.md`](tui.md), installation and local development in [`installation.md`](installation.md).
 
-V2 is a breaking rewrite: V1 plugins do not work in V2. As of OpenCode 2.0.14 the V2 package names are `@opencode/plugin`, `@opencode/client`, and `@opencode/sdk`. The V1/V2 SDK naming in `../opencode-v1/` guides relates to OpenCode V1 only.
+This directory is the canonical OpenCode development guide, targeting V2. Its package names are `@opencode/plugin`, `@opencode/client`, and `@opencode/sdk`. For the frozen legacy adapter contract only, see [`../../specs/opencode/implementation.md`](../../specs/opencode/implementation.md).
 
 ## Definition and Lifecycle
 

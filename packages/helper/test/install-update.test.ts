@@ -486,7 +486,7 @@ test("produces identical content when run twice", async () => {
 });
 
 test.runIf(process.platform !== "win32")(
-  "installs the latest OpenCode plugin globally",
+  "installs the latest legacy OpenCode V1 plugin globally",
   async () => {
     const cache = join(
       directory,
@@ -503,7 +503,7 @@ test.runIf(process.platform !== "win32")(
       'printf "%s\\n%s" "$*" "$NPM_CONFIG_MIN_RELEASE_AGE" > "$OPERATOR_TEST_RECORD"\nprintf "installed"',
     );
 
-    const result = await execute(["install", "opencode"], "4.5.6");
+    const result = await execute(["install", "opencode-v1"], "4.5.6");
 
     expect(result).toEqual({ exitCode: 0, output: "installed" });
     expect(fs.readFileSync(record, "utf8")).toBe(
@@ -514,7 +514,7 @@ test.runIf(process.platform !== "win32")(
 );
 
 test.runIf(process.platform !== "win32")(
-  "clears the OpenCode plugin cache from XDG_CACHE_HOME",
+  "clears the legacy OpenCode V1 plugin cache from XDG_CACHE_HOME",
   async () => {
     const xdgCacheHome = join(directory, "custom-cache");
     const cache = join(
@@ -529,7 +529,7 @@ test.runIf(process.platform !== "win32")(
     fs.writeFileSync(join(cache, "stale"), "stale");
     executable("opencode", 'printf "installed"');
 
-    const result = await execute(["install", "opencode"], "4.5.6");
+    const result = await execute(["install", "opencode-v1"], "4.5.6");
 
     expect(result).toEqual({ exitCode: 0, output: "installed" });
     expect(fs.existsSync(cache)).toBe(false);
@@ -537,19 +537,33 @@ test.runIf(process.platform !== "win32")(
 );
 
 test.runIf(process.platform !== "win32")(
-  "installs the latest OpenCode V2 plugin globally",
+  "installs OpenCode V2 by default and through its explicit alias without clearing the V1 cache",
   async () => {
     executable(
       "opencode",
       'printf "%s\n%s" "$*" "$NPM_CONFIG_MIN_RELEASE_AGE" > "$OPERATOR_TEST_RECORD"\nprintf "installed"',
     );
 
-    const result = await execute(["install", "opencode-v2"], "4.5.6");
-
-    expect(result).toEqual({ exitCode: 0, output: "installed" });
-    expect(fs.readFileSync(record, "utf8")).toBe(
-      "plugin add @aerovato/operator-opencode-v2@latest\n0",
+    const cache = join(
+      directory,
+      ".cache",
+      "opencode",
+      "packages",
+      "@aerovato",
+      "operator-opencode@latest",
     );
+    fs.mkdirSync(cache, { recursive: true });
+    fs.writeFileSync(join(cache, "stale"), "stale");
+
+    for (const harness of ["opencode", "opencode-v2"]) {
+      const result = await execute(["install", harness], "4.5.6");
+
+      expect(result).toEqual({ exitCode: 0, output: "installed" });
+      expect(fs.readFileSync(record, "utf8")).toBe(
+        "plugin add @aerovato/operator-opencode-v2@latest\n0",
+      );
+      expect(fs.readFileSync(join(cache, "stale"), "utf8")).toBe("stale");
+    }
   },
 );
 

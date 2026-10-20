@@ -4,7 +4,7 @@ Operator Memory: Durable context for agent-driven development.
 
 Operator Helper installs and manages Operator Memory, an agent-driven development framework that turns agent work into lasting project knowledge through continuous documentation.
 
-## Install
+### Install
 
 Operator Helper requires Node.js 20 or newer.
 
@@ -21,11 +21,11 @@ bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest
 Install an adapter:
 
 ```sh
-# OpenCode 2
-operator-helper install opencode-v2
+# OpenCode (V2)
+operator-helper install opencode
 
 # OpenCode 1 (legacy)
-operator-helper install opencode
+operator-helper install opencode-v1
 
 # Pi
 operator-helper install pi
@@ -37,9 +37,11 @@ operator-helper install deepseek
 operator-helper install kiro
 ```
 
+OpenCode defaults to V2; `install opencode-v1` is the explicit legacy route. Existing plugin registrations are not migrated automatically.
+
 Restart the harness, then run `/operator:user-init` in a new conversation to begin setup.
 
-## Usage
+### Usage
 
 Users interact with Operator through the harness commands `/operator:user-init`, `/operator:project-init`, `/operator:index`, and `/operator:repair`. These commands guide the working agent, which uses Operator Helper for setup, status, validation, and repair mechanics.
 
@@ -49,7 +51,7 @@ The direct user-facing Helper operation is adapter installation:
 
 ```sh
 operator-helper install opencode
-operator-helper install opencode-v2
+operator-helper install opencode-v1
 operator-helper install pi
 operator-helper install deepseek
 operator-helper install kiro
@@ -57,7 +59,7 @@ operator-helper install kiro
 
 Operator Helper automatically checks for and installs updates when commands run. If it cannot determine whether Bun or npm owns the global installation, it asks for a manual update using the original installation method.
 
-## Documentation
+### Documentation
 
 - [Overview and setup](https://github.com/aerovato/operator-memory#readme)
 - [Getting Started](https://github.com/aerovato/operator-memory/blob/main/docs/getting-started.md)

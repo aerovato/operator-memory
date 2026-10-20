@@ -1,14 +1,18 @@
-# OpenCode V2
+# OpenCode
+
+OpenCode V2 is the default supported version. For legacy installations, see [OpenCode V1](opencode.md).
 
 ### Install
 
 Requires Node.js 20 or newer (for Operator Helper) and the [Helper](../../README.md#installation) installed.
 
 ```sh
-operator-helper install opencode-v2
+operator-helper install opencode
 ```
 
 Restart OpenCode after installation. Until OpenCode reloads the plugin, commands and preamble injection will not work.
+
+The default command no longer installs V1; use `install opencode-v1` for legacy installations. Installing V2 does not remove or migrate existing plugin registrations.
 
 ### Verify
 
@@ -44,6 +48,6 @@ Restart OpenCode after updating.
 
 ### Troubleshooting
 
-- `Operator Connecting` persists: the server plugin is not active. Rerun `operator-helper install opencode-v2` and restart OpenCode.
+- `Operator Connecting` persists: the server plugin is not active. Rerun `operator-helper install opencode` and restart OpenCode.
 - `Operator Unavailable` or sidebar `Error`: run `/operator:repair` in a new conversation. See [Troubleshooting](../troubleshooting.md).
 - Duplicate plugin failures after installing both the global package and a local dev build: OpenCode V2 cannot dedupe package identity. Remove one source with `opencode plugin remove`.

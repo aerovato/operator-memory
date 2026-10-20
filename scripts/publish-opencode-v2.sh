@@ -5,7 +5,7 @@ set -eu
 requested_version=${1:-}
 
 if [ -z "$requested_version" ]; then
-  printf '%s\n' 'Usage: bun run publish:opencode-v2 -- <major|minor|patch|version>' >&2
+  printf '%s\n' 'Usage: bun run publish:opencode -- <major|minor|patch|version>' >&2
   exit 1
 fi
 

@@ -73,8 +73,8 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 
 - `codex.ts` — Helper-managed npm marketplace, Codex CLI installation, and installed/enabled verification
 - `claude-code.ts` — Registers the repository marketplace and delegates npm plugin installation, refresh, and enabled-state verification to Claude
-- `opencode.ts` — OpenCode CLI installation and stable-cache recovery
-- `opencode-v2.ts` — OpenCode V2 CLI package installation
+- `opencode.ts` — Explicit legacy `install opencode-v1` CLI installation and stable-cache recovery
+- `opencode-v2.ts` — Default `install opencode` CLI package installation and explicit `opencode-v2` alias
 - `pi.ts` — Pi CLI package installation through its unversioned npm package spec
 - `deepseek.ts` — Independent native DeepSeek Web and Desktop profile installation and outcome reporting
 - `kiro.ts` — Helper-on-PATH check and direct `~/.kiro` writes of the Kiro adapter files

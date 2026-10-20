@@ -222,7 +222,7 @@ async function showUpdateResult(client: OpencodeClient, result: UpdateResult): P
     }
     return {
       title: "Operator Update Failed",
-      message: `Could not install v${result.latest}. Run operator-helper install opencode to install the latest version.`,
+      message: `Could not install v${result.latest}. Run operator-helper install opencode-v1 to install the latest version.`,
       variant: "error" as const,
     };
   })();

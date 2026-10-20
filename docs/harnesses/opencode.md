@@ -1,13 +1,13 @@
 # OpenCode V1 (legacy)
 
-OpenCode V1 is deprecated. Prefer the [OpenCode V2 adapter](opencode-v2.md) on current OpenCode.
+OpenCode V1 is frozen and receives no further releases. For current OpenCode, use the [OpenCode adapter](opencode-v2.md).
 
 ### Install
 
 Requires Node.js 20 or newer (for Operator Helper) and the [Helper](../../README.md#installation) installed.
 
 ```sh
-operator-helper install opencode
+operator-helper install opencode-v1
 ```
 
 Restart OpenCode after installation. Until OpenCode reloads the plugin, commands and preamble injection will not work.
@@ -39,6 +39,6 @@ The plugin updates itself after a restart when a newer npm release exists. On su
 
 ### Troubleshooting
 
-- Any update or load failure: rerun `operator-helper install opencode` and restart OpenCode. This is also the recovery path for a damaged plugin cache.
+- Any update or load failure: rerun `operator-helper install opencode-v1` and restart OpenCode. This is also the recovery path for a damaged plugin cache.
 - A container launch that rebuilds the plugin cache can reject a freshly published version because of npm release-age policy. The install command sets `NPM_CONFIG_MIN_RELEASE_AGE=0` itself; other cache rebuilds need the same environment override or a persisted cache.
 - Sidebar `Error` or missing memory: run `/operator:repair` in a new conversation. See [Troubleshooting](../troubleshooting.md).

@@ -23,11 +23,11 @@ operator-helper install claude-code
 # Install Codex plugin
 operator-helper install codex
 
-# Install OpenCode V2 plugin
-operator-helper install opencode-v2
-
 # Install OpenCode plugin
 operator-helper install opencode
+
+# Install legacy OpenCode V1 plugin
+operator-helper install opencode-v1
 
 # Install Pi plugin
 operator-helper install pi

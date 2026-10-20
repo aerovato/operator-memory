@@ -40,8 +40,8 @@ bun add --global --minimum-release-age 0 @aerovato/operator-helper@latest
 | --- | --- | --- |
 | [Claude Code](docs/harnesses/claude-code.md) | 🟢 完全支持 | `operator-helper install claude-code` |
 | [Codex](docs/harnesses/codex.md) | 🟢 完全支持 | `operator-helper install codex` |
-| [OpenCode V2](docs/harnesses/opencode-v2.md) | 🟢 完全支持 | `operator-helper install opencode-v2` |
-| [OpenCode V1](docs/harnesses/opencode.md) | 🟡 支持（旧版） | `operator-helper install opencode` |
+| [OpenCode](docs/harnesses/opencode-v2.md) | 🟢 完全支持（V2） | `operator-helper install opencode` |
+| [OpenCode V1（旧版）](docs/harnesses/opencode.md) | 🟡 支持（旧版） | `operator-helper install opencode-v1` |
 | [Pi](docs/harnesses/pi.md) | 🟢 完全支持 | `operator-helper install pi` |
 | [DeepSeek Harness](docs/harnesses/deepseek.md) | 🟢 完全支持 | `operator-helper install deepseek` |
 | [Kiro](docs/harnesses/kiro.md) | 🟡 支持 | `operator-helper install kiro` |
