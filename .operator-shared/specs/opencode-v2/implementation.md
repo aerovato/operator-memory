@@ -14,7 +14,7 @@ operator-helper install opencode
 
 The package exports server, RPC contract, and TUI entrypoints.
 
-`install opencode-v2` is an undocumented compatibility alias: accepted for existing callers but omitted from help and user-facing installation examples. Legacy V1 installation is explicit through `install opencode-v1`; the default installer does not remove or migrate existing registrations. Unversioned workspace build, local install, and release commands target V2; explicit V1 commands retain the legacy package and tag identity.
+`install opencode-v2` is an undocumented compatibility alias: accepted for existing callers but omitted from help and user-facing installation examples. The default installer does not remove or migrate existing registrations. All workspace OpenCode development and release commands target this adapter.
 
 The TUI bundle must compile JSX with OpenTUI's Solid build transform and keep `solid-js`, `@opentui/solid`, and `@opentui/core` external so slot components share the terminal host's Solid owner and OpenTUI renderer. Ordinary JSX compilation evaluates dynamic status text only at mount; bundling a second renderer crashes slot rendering with `No renderer found`.
 

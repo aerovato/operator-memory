@@ -32,8 +32,8 @@ Repository-wide Operator product knowledge published with the project.
   - Description: Command contract for the four Operator workflows (`user-init`, `project-init`, `index`, `repair`) and the User, Project, and Project Index setup workflows they orchestrate.
   - Read If: Implementing adapter commands or changing setup workflows.
 - `opencode/implementation.md`
-  - Description: Legacy OpenCode V1 binding — explicit V1 installation, session-cached core rendering, slash commands, TUI status, client bridge, and update ownership.
-  - Read If: Implementing or changing the OpenCode V1 adapter.
+  - Description: Frozen OpenCode V1 adapter contract and retained installation/recovery behavior; no further development or releases.
+  - Read If: Checking existing OpenCode V1 behavior or recovering a legacy installation.
 - `opencode-v2/implementation.md`
   - Description: Default OpenCode V2 binding — installation aliases, global local-build installation, context-hook injection, commands, RPC-backed TUI status, and native update.
   - Read If: Implementing or changing the OpenCode V2 adapter.
@@ -73,12 +73,9 @@ Repository-wide Operator product knowledge published with the project.
 - `kiro/`
   - Description: Kiro research — surfaces, hooks, steering, skills, powers, agents, and verified V3 injection behavior (`injection.md`).
   - Read If: Researching or implementing the Kiro adapter or checking verified Kiro V3 behavior.
-- `opencode-v1/`
-  - Description: OpenCode v1 plugin documentation, messaging behavior, and V1/V2 SDK reference (SDK versions relate to OpenCode V1 only).
-  - Read If: OpenCode v1 harness guidance beyond the committed adapter implementation.
 - `opencode-v2/`
-  - Description: OpenCode V2 plugin, hook, session, TUI, and installation guides.
-  - Read If: Researching or implementing an OpenCode V2 integration.
+  - Description: Canonical OpenCode plugin, hook, session, TUI, and installation guides, targeting V2.
+  - Read If: Researching or implementing an OpenCode integration.
 - `pi/`
   - Description: Pi extension authoring, injection semantics, and package installation guides.
   - Read If: Porting the Operator plugin to Pi or researching Pi extensions or packages.

@@ -1,8 +1,8 @@
 # OpenCode V2 Runtime Hooks
 
-Last Updated: September 24, 2026
+Last Updated: October 20, 2026
 
-Verified from https://opencode.ai/v2/docs/build/plugins/ and `<reference>/opencode-v2/packages/plugin/src/promise/session.ts`. Replaces the V1 hook map in `../opencode-v1/v2-sdk.md`.
+Verified from https://opencode.ai/v2/docs/build/plugins/ and `<reference>/opencode-v2/packages/plugin/src/promise/session.ts`.
 
 Register a hook on its domain and dispose the returned `Registration` when no longer needed. Multiple plugins can register the same hook; OpenCode runs them in plugin order and later hooks see earlier hooks' changes.
 

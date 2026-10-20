@@ -61,7 +61,7 @@ Runtime code uses portable Node APIs. Bun owns workspace management, dependency 
 
 ## Harness Adapters
 
-Unqualified OpenCode support and workspace commands target V2. Keep V1 explicit and legacy; npm package names, source directories, and release tag identities remain unchanged.
+Unqualified OpenCode support, development, and reference guidance target V2. V1 is frozen: retain its adapter contract, runtime, tests, and Helper installation/recovery route, but no development guides, indexes, or release/development plumbing. Package names and source directories remain unchanged.
 
 Follow this workflow in order when implementing a harness adapter:
 

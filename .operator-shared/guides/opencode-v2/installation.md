@@ -2,11 +2,9 @@
 
 Last Updated: October 20, 2026
 
-Source-verified against the `origin/dev` reference clone (root package version `2.1.0`, pulled October 20, 2026), https://opencode.ai/v2/docs/plugins/ and `<reference>/opencode-v2/packages/cli/src/commands/handlers/plugin/`. Development-source findings below are not live-install verification. Replaces the V1 registration analysis in `../opencode-v1/local-development.md`.
+Source-verified against the `origin/dev` reference clone (root package version `2.1.0`, pulled October 20, 2026), https://opencode.ai/v2/docs/plugins/ and `<reference>/opencode-v2/packages/cli/src/commands/handlers/plugin/`. Development-source findings below are not live-install verification.
 
-## Side-by-Side with V1
-
-OpenCode 2 is the standard `opencode` binary; `opencode2` is no longer the standard separate beta installation. V2 reads the existing global and project server config locations and normalizes supported V1 fields in memory. V1 plugin implementations do not run in V2.
+OpenCode 2 is the standard `opencode` binary and reads the existing global and project server config locations.
 
 ## CLI Plugin Management
 

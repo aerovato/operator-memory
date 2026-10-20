@@ -1,6 +1,6 @@
 # OpenCode V1 (legacy)
 
-OpenCode V1 is deprecated. Prefer the [OpenCode V2 adapter](opencode-v2.md) on current OpenCode.
+OpenCode V1 is frozen and receives no further releases. For current OpenCode, use the [OpenCode adapter](opencode-v2.md).
 
 ### Install
 

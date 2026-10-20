@@ -1,8 +1,8 @@
 # OpenCode V2 Sessions and Messaging
 
-Last Updated: September 15, 2026
+Last Updated: October 20, 2026
 
-Verified from https://opencode.ai/v2/docs/build/plugins/ and `<reference>/opencode-v2/` source. Replaces the V1 messaging model in `../opencode-v1/messaging.md`; the V1 SQLite part-row model (`MessageTable`/`PartTable`) does not apply to V2.
+Verified from https://opencode.ai/v2/docs/build/plugins/ and `<reference>/opencode-v2/` source.
 
 ## Durable Session Core
 

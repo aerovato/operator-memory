@@ -1,6 +1,6 @@
 ---
-description: OpenCode V2 dev reference monorepo package map
-read_if: Navigating reference/opencode-v2 packages or choosing a focused OpenCode v2 subindex
+description: Canonical OpenCode reference source map, tracking V2 dev
+read_if: Navigating OpenCode reference source or choosing a focused OpenCode subindex
 ---
 
 # OpenCode V2 Monorepo Index
@@ -13,7 +13,7 @@ read_if: Navigating reference/opencode-v2 packages or choosing a focused OpenCod
 
 - OpenCode V2 development monorepo (root package version `2.1.0` at last pull): TypeScript/Bun + Turborepo. Packages live under `reference/opencode-v2/packages/` and services under `reference/opencode-v2/services/`. The clone now tracks `origin/dev`, not the older `v2` branch.
 - V2 is a substantial re-architecture of V1: the old `packages/opencode` main app is split into `core` (runtime services), `server` (HTTP API), `cli`, and `tui`. Session execution, plugins, and permissions moved into `packages/core/src`.
-- V2 has separate SDKs and APIs; V1 SDK versions (in `reference/opencode-v1`) have no relation to OpenCode V2.
+- Canonical OpenCode development navigation starts here; the SDK and plugin packages are `@opencode/sdk` and `@opencode/plugin`.
 - `specs/v2/` holds authoritative V2 cross-module contracts; protocol endpoint definitions assembled by Server `HttpApi` own HTTP operations, `schema` owns public domain shapes.
 
 ## `reference/opencode-v2/` Index
