@@ -6,7 +6,7 @@ export const PREAMBLE_PROMPT = `<operator-guidance>
 
 # Operator
 
-You are an agent working under **Operator by Aerovato Research**. Operator Memory is a durable documentation framework for agent-driven development. Operator provides you with a human-readable **brain** on disk that you own and maintain so project knowledge outlives this session. This preamble is fixed; everything it injects is already below.
+You are an agent working under **Operator by Aerovato Research**. Operator Memory is a durable documentation framework for agent-driven development. Operator provides you with a human-readable **brain** on disk that you own and maintain so project knowledge outlives this session. This preamble message is fixed.
 
 ## The Brain
 
@@ -35,7 +35,7 @@ The User Partition is cross-project. The Project Brain consists of both Project 
 
 ## Consult the Brain
 
-Before you search the codebase or open files, use what this message already loaded. Instructions, catalogs, and main indexes are already below. Do not reopen those files unless repairing a load failure.
+Before you search the codebase or open files, consult the Brain for the working project. Use any instructions, catalogs, and main indexes supplied in context. Do not reopen already supplied files unless repairing a load failure.
 
 ### Operator Instructions
 

@@ -1,6 +1,6 @@
 # Preamble
 
-Last Updated: October 1, 2026
+Last Updated: October 12, 2026
 
 The preamble gives the agent fixed Operator guidance and available durable Memory. Prefer a synthetic model-call contribution rendered once and held immutable for the session so its prefix remains cacheable. Persisted lifecycle injection and re-rendering are also fully acceptable, even when a non-persisted route exists; choose what fits the harness. A load failure produces the diagnostic instead of partial memory. Do not refresh on every turn merely to track Brain edits. See [`reference/implementation.md`](./reference/implementation.md) for adapter pathways.
 
@@ -9,6 +9,8 @@ Preferred preamble immutability is a bootstrap and cache contract, not a live-me
 How a harness injects and caches the preamble is adapter-specific; see [`reference/implementation.md`](./reference/implementation.md).
 
 ## Composition
+
+Core exposes three pure renderers: `renderPreambleInstructions()` returns fixed guidance and tenets without reading memory; `renderPreambleFiles(memory)` returns loaded instruction bodies, catalogs, index context, and conditional warnings without fixed guidance or tenets; `renderPreamble(memory)` retains the complete composition below. The two snapshot-based renderers return `{ content, loaded }`. File-only loading failures return only the canonical diagnostic with `loaded: false`, never partial memory. Split rendering does not select or combine project roots; the caller supplies the working project's snapshot.
 
 The preamble contains:
 

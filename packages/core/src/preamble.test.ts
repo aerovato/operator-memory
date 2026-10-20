@@ -3,7 +3,11 @@ import { expect, test } from "vitest";
 import type { MemorySnapshot } from "./memory/load.ts";
 import type { ProjectPartitionSnapshot } from "./memory/project.ts";
 import type { UserPartitionSnapshot } from "./memory/user.ts";
-import { renderPreamble as renderMemoryPreamble } from "./preamble.ts";
+import {
+  renderPreamble as renderMemoryPreamble,
+  renderPreambleFiles,
+  renderPreambleInstructions,
+} from "./preamble.ts";
 import { PREAMBLE_PROMPT, PREAMBLE_TENETS } from "./prompts/preamble.ts";
 import { CATALOG_TEMPLATE } from "./templates/catalog.ts";
 import { PROJECT_INDEX_TEMPLATE } from "./templates/project-index.ts";
@@ -14,6 +18,72 @@ test("embeds core document templates in fixed guidance", () => {
   expect(PREAMBLE_PROMPT).toContain(PROJECT_INDEX_TEMPLATE.trimEnd());
   expect(PREAMBLE_PROMPT).toContain(PROJECT_SUBINDEX_TEMPLATE.trimEnd());
   expect(PREAMBLE_PROMPT).toContain(CATALOG_TEMPLATE.trimEnd());
+});
+
+test("renders only fixed guidance and tenets without a memory snapshot", () => {
+  expect(renderPreambleInstructions()).toBe(`${PREAMBLE_PROMPT}\n\n${PREAMBLE_TENETS}`);
+});
+
+test("renders file context and warnings without fixed guidance or tenets", () => {
+  const memory: MemorySnapshot = {
+    shared: success({
+      exists: true,
+      operatorInstructions: "shared instructions",
+      catalog: "shared catalog",
+      indexes: [
+        {
+          path: "index.md",
+          content: "shared main index",
+          frontmatter: success({ description: "Shared map", readIf: "Always" }),
+        },
+      ],
+    }),
+    user: success({
+      exists: true,
+      operatorInstructions: "user instructions",
+      catalog: "user catalog",
+    }),
+    private: success({
+      exists: true,
+      operatorInstructions: "private instructions",
+      catalog: "private catalog",
+      indexes: [],
+    }),
+  };
+  const files = renderPreambleFiles(memory);
+
+  expect(files.loaded).toBe(true);
+  expect(files.content).toBe(
+    renderMemoryPreamble(memory)
+      .content.replace(`${PREAMBLE_PROMPT}\n\n`, "")
+      .replace(`\n\n${PREAMBLE_TENETS}`, ""),
+  );
+  expect(files.content).toContain("shared instructions");
+  expect(files.content).toContain("user instructions");
+  expect(files.content).toContain("private instructions");
+  expect(files.content).toContain("<user-catalog>");
+  expect(files.content).toContain("<partition-catalog>");
+  expect(files.content).toContain("<project-index>");
+  expect(files.content).not.toContain("<operator-guidance>");
+  expect(files.content).not.toContain("<operator-tenets>");
+  expect(renderPreambleFiles(memory)).toEqual(files);
+});
+
+test("keeps warnings in file output and tenets before warnings in full output", () => {
+  const memory: MemorySnapshot = {
+    shared: success({ exists: false, operatorInstructions: null, catalog: null, indexes: [] }),
+    user: success({ exists: false, operatorInstructions: null, catalog: null }),
+    private: success({ exists: false, operatorInstructions: null, catalog: null, indexes: [] }),
+  };
+  const files = renderPreambleFiles(memory);
+
+  expect(files.loaded).toBe(true);
+  expect(files.content.startsWith("<operator-warning>")).toBe(true);
+  expect(files.content).toContain("/operator:user-init");
+  expect(files.content).toContain("/operator:project-init");
+  expect(renderMemoryPreamble(memory).content).toBe(
+    `${PREAMBLE_PROMPT}\n\n${PREAMBLE_TENETS}\n\n${files.content}`,
+  );
 });
 
 test("renders fixed guidance and the missing-catalog warning for empty memory", () => {
@@ -286,7 +356,7 @@ test("warns about a missing user catalog independently of project catalogs", () 
 });
 
 test("renders only recovery diagnostics when any partition fails", () => {
-  const rendered = renderMemoryPreamble({
+  const memory: MemorySnapshot = {
     shared: success({
       exists: true,
       operatorInstructions: "must not be rendered",
@@ -295,8 +365,17 @@ test("renders only recovery diagnostics when any partition fails", () => {
     }),
     user: failure({ path: "/home/.operator/user/operator.md", cause: new Error("denied") }),
     private: failure({ path: "/project/.operator/index", cause: new Error("obstructed") }),
-  });
+  };
+  const rendered = renderMemoryPreamble(memory);
+  const files = renderPreambleFiles(memory);
 
+  expect(files.loaded).toBe(false);
+  expect(rendered.content).toBe(`${PREAMBLE_PROMPT}\n\n${files.content}`);
+  expect(files.content.startsWith("<operator-diagnostic>")).toBe(true);
+  expect(files.content).not.toContain("must not be rendered");
+  expect(files.content).not.toContain("<operator-guidance>");
+  expect(files.content).not.toContain("<operator-tenets>");
+  expect(files.content).not.toContain("<operator-warning>");
   expect(rendered.loaded).toBe(false);
   expect(rendered.content).toContain("- Shared: Loaded");
   expect(rendered.content).toContain("- User: Error at /home/.operator/user/operator.md: denied");

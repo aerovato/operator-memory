@@ -37,8 +37,8 @@ Read-only memory module with no barrel export.
 
 ### `packages/core/src/`
 
-- `preamble.ts` — Pure deterministic renderer for guidance, all-or-nothing memory injection, recovery diagnostics, and setup warnings
-- `preamble.test.ts` — Guidance, memory injection, recovery diagnostic, index formatting, warning, and deterministic rendering coverage
+- `preamble.ts` — Pure deterministic full, instructions-only, and files-only renderers with all-or-nothing memory injection, recovery diagnostics, and setup warnings
+- `preamble.test.ts` — Split rendering boundaries, full composition, memory injection, recovery diagnostic, index formatting, warning, and deterministic rendering coverage
 - `utils.ts` — Generic result, type-guard, and error utilities shared across core modules
 
 #### `packages/core/src/prompts/`

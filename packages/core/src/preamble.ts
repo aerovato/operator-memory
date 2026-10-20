@@ -20,10 +20,42 @@ type LoadedMemorySnapshot = {
   readonly private: ProjectPartitionSnapshot;
 };
 
+type PreambleFileSections = {
+  readonly sections: ReadonlyArray<string>;
+  readonly warnings: ReadonlyArray<string>;
+  readonly loaded: boolean;
+};
+
+export function renderPreambleInstructions(): string {
+  return `${PREAMBLE_PROMPT}\n\n${PREAMBLE_TENETS}`;
+}
+
+export function renderPreambleFiles(memory: MemorySnapshot): RenderedPreamble {
+  const files = renderPreambleFileSections(memory);
+  return {
+    content: [...files.sections, ...files.warnings].join("\n\n"),
+    loaded: files.loaded,
+  };
+}
+
 export function renderPreamble(memory: MemorySnapshot): RenderedPreamble {
+  const files = renderPreambleFileSections(memory);
+  return {
+    content: [
+      PREAMBLE_PROMPT,
+      ...files.sections,
+      ...(files.loaded ? [PREAMBLE_TENETS] : []),
+      ...files.warnings,
+    ].join("\n\n"),
+    loaded: files.loaded,
+  };
+}
+
+function renderPreambleFileSections(memory: MemorySnapshot): PreambleFileSections {
   if (!memory.shared.ok || !memory.user.ok || !memory.private.ok) {
     return {
-      content: `${PREAMBLE_PROMPT}\n\n${renderLoadDiagnostic(memory)}`,
+      sections: [renderLoadDiagnostic(memory)],
+      warnings: [],
       loaded: false,
     };
   }
@@ -33,7 +65,7 @@ export function renderPreamble(memory: MemorySnapshot): RenderedPreamble {
     user: memory.user.value,
     private: memory.private.value,
   };
-  const sections = [PREAMBLE_PROMPT];
+  const sections: string[] = [];
   const warnings: string[] = [];
 
   const instructions = renderInstructions(loaded);
@@ -89,12 +121,7 @@ Neither .operator/index/index.md nor .operator-shared/index/index.md exists. If 
     }
   }
 
-  sections.push(PREAMBLE_TENETS);
-  for (const warning of warnings) {
-    sections.push(warning);
-  }
-
-  return { content: sections.join("\n\n"), loaded: true };
+  return { sections, warnings, loaded: true };
 }
 
 function hasMainIndex(memory: LoadedMemorySnapshot): boolean {
