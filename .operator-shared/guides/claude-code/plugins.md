@@ -34,7 +34,7 @@ Relative paths must start with `./`. Components are auto-discovered from their c
 
 ## Development workflow
 
-- `claude --plugin-dir <path>` loads a plugin directory for one session without installing — the local preview mechanism for the Operator package (analogous to `preview:opencode`)
+- `claude --plugin-dir <path>` loads a plugin directory for one session without installing — the local preview mechanism for the Operator package
 - `/reload-plugins` reloads plugins mid-session (warns when it would invalidate the prompt cache; `--force` overrides)
 - `claude plugin validate <dir>` statically validates the manifest and configuration, and for mods lists handled events and API calls. Live-verified behavior: the analyzer resolves call sites wrapped in local helper functions (e.g. `$.fs.write ... (via log)`), so non-inline-but-static calls pass; it accepts `agent.spawn` handlers; the only warning on an otherwise minimal manifest is a missing `author` field
 - `claude --debug` surfaces load failures

@@ -1,6 +1,6 @@
-# OpenCode Adapter Implementation
+# OpenCode V1 (Legacy) Adapter Implementation
 
-Last Updated: October 2, 2026
+Last Updated: October 20, 2026
 
 How `@aerovato/operator-opencode` binds the general adapter contract for the deprecated OpenCode V1 platform. Command meaning and setup workflows stay in [`commands.md`](../commands.md) and [`../reference/implementation.md`](../reference/implementation.md). Behavioral deviations are recorded against the reference implementation; prefer the V2 adapter on current OpenCode.
 
@@ -12,10 +12,12 @@ Published as `@aerovato/operator-opencode`. Configured for OpenCode as `@aerovat
 Install and manual recovery:
 
 ```text
-operator-helper install opencode
+operator-helper install opencode-v1
 ```
 
 ## Preamble Injection
+
+Unversioned Helper and workspace commands target V2. The legacy package, source directory, and `opencode@v...` release tags retain their existing identities; development operations use explicit `opencode-v1` commands.
 
 - Server plugin loads and renders through core, then caches the result per OpenCode `sessionID`
 - Injects the cached text into model calls for that session (immutable for the session)

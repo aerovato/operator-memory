@@ -1,18 +1,20 @@
 # OpenCode V2 Adapter Implementation
 
-Last Updated: October 2, 2026
+Last Updated: October 20, 2026
 
-How `@aerovato/operator-opencode-v2` binds the general adapter contract. V2 is an incompatible plugin platform and therefore remains a separate package. Behavioral deviations are recorded against [`../reference/implementation.md`](../reference/implementation.md), not other bindings.
+How `@aerovato/operator-opencode-v2` binds the general adapter contract as the default OpenCode integration. V2 is an incompatible plugin platform and therefore remains a separate package; the unversioned npm package and source directory still belong to legacy V1. Behavioral deviations are recorded against [`../reference/implementation.md`](../reference/implementation.md), not other bindings.
 
 ## Package
 
 Install with:
 
 ```text
-operator-helper install opencode-v2
+operator-helper install opencode
 ```
 
 The package exports server, RPC contract, and TUI entrypoints.
+
+`install opencode-v2` is an undocumented compatibility alias: accepted for existing callers but omitted from help and user-facing installation examples. Legacy V1 installation is explicit through `install opencode-v1`; the default installer does not remove or migrate existing registrations. Unversioned workspace build, local install, and release commands target V2; explicit V1 commands retain the legacy package and tag identity.
 
 The TUI bundle must compile JSX with OpenTUI's Solid build transform and keep `solid-js`, `@opentui/solid`, and `@opentui/core` external so slot components share the terminal host's Solid owner and OpenTUI renderer. Ordinary JSX compilation evaluates dynamic status text only at mount; bundling a second renderer crashes slot rendering with `No renderer found`.
 
@@ -40,7 +42,7 @@ The server registers one typed plugin RPC contract. Its `status` method loads th
 
 ## Native Update
 
-OpenCode 2 owns plugin update checks and installation through `opencode plugin check` and `opencode plugin update`. Operator does not mutate OpenCode's package cache or auto-update its own plugin. Helper's `install opencode-v2` remains the installation path.
+OpenCode 2 owns plugin update checks and installation through `opencode plugin check` and `opencode plugin update`. Operator does not mutate OpenCode's package cache or auto-update its own plugin. Helper's `install opencode` remains the installation path.
 
 ## Differences From Reference
 
@@ -51,7 +53,7 @@ Pathway selections: bundled-core resolution, transform injection as an appended 
 1. Command handoff: V2's plugin command definition has only `execute`, so the adapter admits the instruction prompt through `session.prompt` without running Helper itself.
 2. Client/server ownership: V2 may run remotely, so the server reads memory and exposes status plus toast events through typed RPC while the TUI renders client-local UI. RPC events are ephemeral when no TUI is connected.
 3. Readiness lifecycle: the package TUI loads only after the server plugin is active. `Connecting` means the TUI is verifying RPC connectivity; a server setup failure prevents this package TUI from loading.
-4. Local development: V2 has no package-identity dedupe and no per-source disabling — `-<plugin-id>` disables every source with that ID, and re-adding the same ID re-enables both sources, failing the second as a duplicate. The local preview build therefore uses a distinct dev ID (`OPERATOR_PLUGIN_ID=aerovato.operator-memory-dev`, via `bun run build:opencode-v2:dev`; `src/id.ts` holds the define fallback). `.opencode/opencode.json` disables the canonical ID and loads the dev-ID `dist`, so the global npm registration is suppressed in this project only. The supervisor reports duplicate active IDs as plugin failures without dropping the whole generation.
+4. Local development: V2 has no package-identity dedupe and no per-source disabling — `-<plugin-id>` disables every source with that ID, and re-adding the same ID re-enables both sources, failing the second as a duplicate. `bun run install:opencode` builds and links Helper, builds the distinct dev ID (`OPERATOR_PLUGIN_ID=aerovato.operator-memory-dev`, via `build:opencode-v2:dev`), and registers its absolute `dist` directory in global server config after disabling the canonical ID. Existing settings, JSONC comments, and package registrations are preserved; repeated installation is idempotent. `OPENCODE_CONFIG_DIR` overrides the XDG/default config directory. There is no separate preview script. The published build retains the canonical ID, and the supervisor reports duplicate active IDs as plugin failures without dropping the whole generation.
 5. V2 uses `Plugin.define({ id, setup })`, receives `sessionID` directly on the context event, and uses the `home.footer` and `sidebar.content` slots. Stable V2 uses `@opencode/plugin` and requires the corresponding plugin API at runtime.
 6. Command registration snapshots registered commands before adding its transform and skips matching names. Later definitions replace earlier ones, so user configuration remains authoritative.
 

@@ -1,10 +1,10 @@
-# Operator Memory For OpenCode
+# Operator Memory for OpenCode V1 (legacy)
 
 Operator Memory: Durable context for agent-driven development.
 
-This package is the OpenCode adapter for Operator Memory. It gives OpenCode agents deterministic project and user context from a human-readable Brain they continuously maintain as Markdown.
+This package is the legacy OpenCode V1 adapter for Operator Memory. For current OpenCode (V2), use `@aerovato/operator-opencode-v2` through `operator-helper install opencode`.
 
-## Install
+### Install
 
 Install Operator Helper first:
 
@@ -15,14 +15,14 @@ npm install --global @aerovato/operator-helper
 Then install or update the OpenCode adapter:
 
 ```sh
-operator-helper install opencode
+operator-helper install opencode-v1
 ```
 
 Restart OpenCode after installation. In a new conversation, run `/operator:user-init` to begin setup.
 
 Do not install this package directly unless you are integrating Operator with OpenCode manually. The Operator Helper CLI is required for the plugin to work.
 
-## OpenCode Commands
+### OpenCode Commands
 
 - `/operator:user-init` initializes or revises user-global instructions.
 - `/operator:project-init` initializes project setup and guides Private and Shared knowledge.
@@ -31,7 +31,7 @@ Do not install this package directly unless you are integrating Operator with Op
 
 Run each Operator command in a new conversation so the agent can focus on setup, indexing, or repair with a clean working context.
 
-## Documentation
+### Documentation
 
 - [Overview and setup](https://github.com/aerovato/operator-memory#readme)
 - [Getting Started](https://github.com/aerovato/operator-memory/blob/main/docs/getting-started.md)

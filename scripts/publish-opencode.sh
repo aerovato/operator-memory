@@ -5,7 +5,7 @@ set -eu
 requested_version=${1:-}
 
 if [ -z "$requested_version" ]; then
-  printf '%s\n' 'Usage: bun run publish:opencode -- <major|minor|patch|version>' >&2
+  printf '%s\n' 'Usage: bun run publish:opencode-v1 -- <major|minor|patch|version>' >&2
   exit 1
 fi
 
@@ -39,7 +39,7 @@ if [ "$published_version" = "$version" ]; then
 fi
 
 bun run check packages/opencode
-bun run build:opencode
+bun run build:opencode-v1
 (cd packages/opencode && npm pack --dry-run)
 
 npm version "$version" --no-git-tag-version --workspaces=false --prefix packages/opencode

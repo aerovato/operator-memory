@@ -40,8 +40,8 @@ Then install the Operator adapter for your harness. Click each link for harness-
 | --- | --- | --- |
 | [Claude Code (CLI + Desktop)](docs/harnesses/claude-code.md) | 🟢 Fully Supported | `operator-helper install claude-code` |
 | [Codex (CLI + Desktop)](docs/harnesses/codex.md) | 🟢 Fully Supported | `operator-helper install codex` |
-| [OpenCode V2](docs/harnesses/opencode-v2.md) | 🟢 Fully Supported | `operator-helper install opencode-v2` |
-| [OpenCode V1](docs/harnesses/opencode.md) | 🟡 Supported, Legacy | `operator-helper install opencode` |
+| [OpenCode](docs/harnesses/opencode-v2.md) | 🟢 Fully Supported (V2) | `operator-helper install opencode` |
+| [OpenCode V1 (legacy)](docs/harnesses/opencode.md) | 🟡 Supported, Legacy | `operator-helper install opencode-v1` |
 | [Pi](docs/harnesses/pi.md) | 🟢 Fully Supported | `operator-helper install pi` |
 | [DeepSeek Harness](docs/harnesses/deepseek.md) | 🟢 Fully Supported | `operator-helper install deepseek` |
 | [Kiro](docs/harnesses/kiro.md) | 🟡 Supported | `operator-helper install kiro` |

@@ -12,7 +12,7 @@ Run `operator-helper install <id>` for your harness — see the [harness docs](h
 
 - [Claude Code](harnesses/claude-code.md)
 - [Codex](harnesses/codex.md)
-- [OpenCode V2](harnesses/opencode-v2.md)
+- [OpenCode](harnesses/opencode-v2.md)
 - [OpenCode V1 (legacy)](harnesses/opencode.md)
 - [Pi](harnesses/pi.md)
 - [DeepSeek Harness](harnesses/deepseek.md)

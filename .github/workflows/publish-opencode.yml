@@ -1,4 +1,4 @@
-name: Publish OpenCode Release
+name: Publish Legacy OpenCode V1 Release
 
 on:
   push:
@@ -38,13 +38,13 @@ jobs:
           version=$(node -e 'process.stdout.write(require("./packages/opencode/package.json").version)')
           test "$GITHUB_REF_NAME" = "opencode@v$version"
 
-      - name: Check OpenCode plugin
+      - name: Check legacy OpenCode V1 plugin
         run: bun run check packages/opencode
 
-      - name: Build OpenCode plugin
-        run: bun run build:opencode
+      - name: Build legacy OpenCode V1 plugin
+        run: bun run build:opencode-v1
 
-      - name: Check OpenCode plugin package
+      - name: Check legacy OpenCode V1 plugin package
         working-directory: packages/opencode
         run: npm pack --dry-run
 

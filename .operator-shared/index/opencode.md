@@ -1,9 +1,9 @@
 ---
 description: "@aerovato/operator-opencode source map"
-read_if: Working in packages/opencode or changing OpenCode preamble injection
+read_if: Working in packages/opencode or changing legacy OpenCode V1 preamble injection
 ---
 
-# Operator OpenCode Index
+# Operator OpenCode V1 (Legacy) Index
 
 ## Guidelines
 
@@ -18,7 +18,7 @@ read_if: Working in packages/opencode or changing OpenCode preamble injection
 
 ## Architecture
 
-- `@aerovato/operator-opencode` is the published OpenCode adapter. Its server entry injects one immutable rendered Operator preamble into every model call for each session, its TUI entry renders readiness and partition status, and it refreshes its stable `@latest` OpenCode cache installation in the background.
+- `@aerovato/operator-opencode` is the legacy OpenCode V1 adapter; unversioned support and workspace commands now target V2. Its server entry injects one immutable rendered Operator preamble into every model call for each session, its TUI entry renders readiness and partition status, and it refreshes its stable `@latest` OpenCode cache installation in the background.
 
 ## `packages/opencode/` Index
 

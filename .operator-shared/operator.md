@@ -8,8 +8,8 @@ The Bun/TypeScript monorepo has six TypeScript adapter/runtime packages plus the
 
 - `@aerovato/operator-core` — private, harness-agnostic runtime loading and preamble generation
 - `@aerovato/operator-helper` — published setup, filesystem, Git, status, guide, and lint CLI
-- `@aerovato/operator-opencode` — published OpenCode plugin and harness adapter
-- `@aerovato/operator-opencode-v2` — published OpenCode V2 server, RPC, and TUI plugin adapter
+- `@aerovato/operator-opencode-v2` — default OpenCode (V2) server, RPC, and TUI plugin adapter
+- `@aerovato/operator-opencode` — legacy OpenCode V1 plugin and harness adapter
 - `@aerovato/operator-pi` — published Pi extension adapter
 - `@aerovato/operator-deepseek` — published DeepSeek Harness Host plugin and bundle adapter
 
@@ -60,6 +60,8 @@ Runtime code uses portable Node APIs. Bun owns workspace management, dependency 
 - Keep specifications focused primarily on expected behavior and current scope.
 
 ## Harness Adapters
+
+Unqualified OpenCode support and workspace commands target V2. Keep V1 explicit and legacy; npm package names, source directories, and release tag identities remain unchanged.
 
 Follow this workflow in order when implementing a harness adapter:
 

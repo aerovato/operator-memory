@@ -33,8 +33,8 @@ ${renderTable([
   ["version", "Show the installed version and check for updates"],
   ["upgrade", "Update Operator Helper to the latest release"],
   ["install codex", "Install or update the Codex plugin"],
-  ["install opencode", "Install or update the OpenCode plugin"],
-  ["install opencode-v2", "Install or update the OpenCode V2 plugin"],
+  ["install opencode", "Install or update the OpenCode plugin (V2)"],
+  ["install opencode-v1", "Install or update the legacy OpenCode V1 plugin"],
   ["install deepseek", "Install or update the DeepSeek Harness plugin"],
   ["install pi", "Install or update the Pi plugin"],
   ["install claude-code", "Install or update the Claude Code plugin"],
@@ -105,9 +105,10 @@ export function runCli(
       case "install claude-code":
         return yield* installClaudeCode(context);
       case "install opencode":
-        return yield* installOpenCode(context);
       case "install opencode-v2":
         return yield* installOpenCodeV2(context);
+      case "install opencode-v1":
+        return yield* installOpenCode(context);
       case "install deepseek":
         return yield* installDeepSeek(context);
       case "install pi":

@@ -32,10 +32,10 @@ Repository-wide Operator product knowledge published with the project.
   - Description: Command contract for the four Operator workflows (`user-init`, `project-init`, `index`, `repair`) and the User, Project, and Project Index setup workflows they orchestrate.
   - Read If: Implementing adapter commands or changing setup workflows.
 - `opencode/implementation.md`
-  - Description: OpenCode V1 binding — session-cached core rendering, slash commands, TUI status, client bridge, and update ownership.
+  - Description: Legacy OpenCode V1 binding — explicit V1 installation, session-cached core rendering, slash commands, TUI status, client bridge, and update ownership.
   - Read If: Implementing or changing the OpenCode V1 adapter.
 - `opencode-v2/implementation.md`
-  - Description: OpenCode V2 binding — context-hook injection, commands, RPC-backed TUI status, native update, and harness notes.
+  - Description: Default OpenCode V2 binding — installation aliases, global local-build installation, context-hook injection, commands, RPC-backed TUI status, and native update.
   - Read If: Implementing or changing the OpenCode V2 adapter.
 - `pi/implementation.md`
   - Description: Pi binding — synthetic-message injection, commands, footer status, and native package updates.
