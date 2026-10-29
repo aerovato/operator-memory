@@ -1,4 +1,5 @@
 import {
+  dedupDeltaTokens,
   EMPTY_TRIGGER_STATE,
   type TriggerKind,
   type TriggerState,
@@ -31,6 +32,11 @@ export type SessionRuntime = {
   // and the step anchor (message count).
   lastEstimate: number | null;
   lastMessageCount: number;
+  // Last host-reported failed compaction for this session, with the estimate
+  // known at that time. A failure proves the estimate uncompactable right
+  // now; both requesters hold off until the cooldown passes and real growth
+  // resumes. Cleared when a compaction attempt runs or succeeds.
+  lastCompactionFailure: { at: number; estimate: number } | null;
 };
 
 export type ContextRuntime = {
@@ -44,9 +50,20 @@ export type ContextRuntime = {
   readonly hydrated: Set<string>;
   // Compaction causes recorded by our own requesters, consumed once by the
   // compaction hook for the receipt label. A host-initiated compaction finds
-  // no entry and is labeled manual.
-  readonly pendingCauses: Map<string, TriggerKind>;
+  // no entry and is labeled manual, as is a stale entry from a
+  // requested-but-never-executed compaction past its TTL.
+  readonly pendingCauses: Map<string, PendingCause>;
 };
+
+export type PendingCause = {
+  readonly cause: TriggerKind;
+  readonly at: number;
+};
+
+// A requested-but-never-executed compaction must not label a far-future
+// host-initiated compaction with its stale trigger. Ten minutes is generous:
+// post-run compactions execute within seconds or not at all.
+export const PENDING_CAUSE_TTL_MS = 10 * 60 * 1000;
 
 // Shared wiring for the context-management hooks: the config, the state
 // root, the compaction requester, and the Brain gate. The compaction hook
@@ -64,6 +81,33 @@ export type ContextManagementDeps = {
   // with empty dedup state and double-firing triggers.
   readonly isCurrent?: () => boolean;
 };
+
+// How long a host-reported failed compaction suppresses new requests
+// unconditionally. Past the cooldown, only real growth past the failure
+// point re-arms. Ten minutes matches the pending-cause horizon: an attempt
+// that never reports back stays single-flight for the same window.
+export const FAILED_COMPACTION_COOLDOWN_MS = 10 * 60 * 1000;
+
+// True when a host-reported failed compaction still covers this estimate.
+// A fresh failure suppresses unconditionally: the host just proved this
+// estimate uncompactable, and re-requesting would add a second driver to
+// its retry loop. Past the cooldown, the same growth rule as trigger dedup
+// decides.
+export function shouldSuppressCompactionRequest(
+  session: Pick<SessionRuntime, "lastCompactionFailure">,
+  estimatedTokens: number,
+  windowTokens: number,
+  now: number,
+): boolean {
+  const failure = session.lastCompactionFailure;
+  if (failure === null) {
+    return false;
+  }
+  if (now - failure.at <= FAILED_COMPACTION_COOLDOWN_MS) {
+    return true;
+  }
+  return estimatedTokens - failure.estimate < dedupDeltaTokens(windowTokens);
+}
 
 // True once a superseding setup has taken over. Checked at handler entry
 // and again after awaits: a reload landing mid-await must not let the old
@@ -88,18 +132,42 @@ export function createContextRuntime(): ContextRuntime {
 // compaction followed by a reload would fire a second time on the next
 // terminal signal. Sharing keeps the fired entries (and the refusal record)
 // alive across generations within the process.
-let sharedRuntime: ContextRuntime | null = null;
+//
+// The instance lives on globalThis, not module state: the host re-imports
+// the bundle when the config changes (observed as a fresh "loading plugin"
+// followed by repeat admissions), which resets module-level bindings. A
+// superseded generation never touches it — every handler checks staleness
+// before reading or writing.
+const SHARED_RUNTIME_KEY = "__operatorContextRuntime";
+
+function readSharedRuntime(): ContextRuntime | null {
+  const existing = (globalThis as Record<string, unknown>)[SHARED_RUNTIME_KEY];
+  if (typeof existing !== "object" || existing === null || !("sessions" in existing)) {
+    return null;
+  }
+  return existing as ContextRuntime;
+}
 
 export function sharedContextRuntime(): ContextRuntime {
-  if (sharedRuntime === null) {
-    sharedRuntime = createContextRuntime();
+  const existing = readSharedRuntime();
+  if (existing !== null) {
+    return existing;
   }
-  return sharedRuntime;
+  const created = createContextRuntime();
+  (globalThis as Record<string, unknown>)[SHARED_RUNTIME_KEY] = created;
+  return created;
 }
 
 export function sessionRuntime(runtime: ContextRuntime, sessionID: string): SessionRuntime {
   const existing = runtime.sessions.get(sessionID);
   if (existing !== undefined) {
+    // Backfill for sessions created before this field existed (a pinned
+    // globalThis runtime outlives a bundle upgrade): without it the
+    // suppression check would read undefined and throw on `.at`.
+    const legacy = existing as unknown as { lastCompactionFailure?: unknown };
+    if (legacy.lastCompactionFailure === undefined) {
+      existing.lastCompactionFailure = null;
+    }
     return existing;
   }
 
@@ -111,6 +179,7 @@ export function sessionRuntime(runtime: ContextRuntime, sessionID: string): Sess
     windowFailures: 0,
     lastEstimate: null,
     lastMessageCount: 0,
+    lastCompactionFailure: null,
   };
   runtime.sessions.set(sessionID, created);
   return created;

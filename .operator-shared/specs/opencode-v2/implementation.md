@@ -69,6 +69,8 @@ All keys live under `operator.contextManagement` in the plugin entry's `options`
 
 Trim replaces bulky completed tool input and output with omission notices and stores the originals on disk, recoverable in the same session through the `operator:read_omitted` tool. Pending, running, and errored tool calls, user messages, and the injected preamble are never trimmed. Every trim and compaction appends one JSON line to `~/.operator/state/context-log/<sessionID>.log`; failures and refusals are recorded in the same file, never silent.
 
+A host-reported failed compaction (`session.compaction.failed`) arms a per-session backoff: new requests are suppressed for ten minutes, then only real growth past the failure-point estimate re-arms. A compaction attempt running (or `session.compaction.ended`) clears the backoff. Requests are also single-flight: a second admission while one request is outstanding with an unknown outcome is skipped. The shared runtime lives on `globalThis` so a host bundle re-import on config change keeps dedup and backoff state instead of refiring. None of this stops a host-side retry loop already in progress — that needs the server stopped and the stuck inbox row deleted — it only stops our plugin from feeding it.
+
 ## Differences From Reference
 
 Pathway selections: bundled-core resolution, transform injection as an appended system text part, slash commands, status UI, and harness-native updates. All are accepted reference pathways; there are no behavioral deviations. The appended system part versus a prepended synthetic user message is a documented placement choice within the transform pathway.

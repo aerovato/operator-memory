@@ -182,3 +182,11 @@ test("shared runtime preserves fired state across reloads", async () => {
   // Clean up so later tests in this worker see a fresh probe entry.
   session.triggerState = { fired: {} };
 });
+
+test("shared runtime is pinned to globalThis so a module reload keeps it", () => {
+  const runtime = sharedContextRuntime();
+
+  expect(
+    (globalThis as unknown as { __operatorContextRuntime: unknown }).__operatorContextRuntime,
+  ).toBe(runtime);
+});

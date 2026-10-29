@@ -7,7 +7,9 @@ import {
   ensureRefusalReceipt,
   ensureSessionHydrated,
   isContextStale,
+  PENDING_CAUSE_TTL_MS,
   sessionRuntime,
+  shouldSuppressCompactionRequest,
   type ContextManagementDeps,
   type ContextRuntime,
 } from "./runtime.ts";
@@ -20,6 +22,8 @@ import {
 
 const EXECUTION_SUCCEEDED = "session.execution.succeeded";
 const STEP_ENDED = "session.step.ended";
+const COMPACTION_FAILED = "session.compaction.failed";
+const COMPACTION_ENDED = "session.compaction.ended";
 
 // Runs as a background loop; a dead or failed stream must not take the
 // plugin down with it. The caller passes an AbortSignal tied to plugin
@@ -88,6 +92,10 @@ export async function dispatchEvent(
     await handleExecutionSucceeded(event.sessionID, deps, runtime);
   } else if (event.type === STEP_ENDED) {
     handleStepEnded(event.sessionID, event.tokens, deps, runtime);
+  } else if (event.type === COMPACTION_FAILED) {
+    handleCompactionFailed(event.sessionID, runtime);
+  } else if (event.type === COMPACTION_ENDED) {
+    handleCompactionEnded(event.sessionID, runtime);
   }
 }
 
@@ -122,6 +130,12 @@ async function handleExecutionSucceeded(
   if (decision.fire === null) {
     return;
   }
+  if (shouldSuppressCompactionRequest(session, estimate, session.windowTokens ?? 0, Date.now())) {
+    // The host already failed a compaction at this estimate: re-requesting
+    // would add a second driver to its retry loop. The fired state above
+    // stays recorded, so dedup math resumes from the latest estimate.
+    return;
+  }
 
   // No receipt here: the compaction hook records the compaction itself when
   // it executes, with the estimate over the actual request. A requested but
@@ -148,6 +162,27 @@ function handleStepEnded(
   session.estimator = anchorEstimator(tokens, session.lastMessageCount);
 }
 
+function handleCompactionFailed(sessionID: string | undefined, runtime: ContextRuntime): void {
+  if (sessionID === undefined) {
+    return;
+  }
+  const session = sessionRuntime(runtime, sessionID);
+  if (session.lastEstimate === null) {
+    // No request observed yet for this session, so nothing we would
+    // re-request: stamping a zero estimate would only block the first
+    // legitimate request for the cooldown window.
+    return;
+  }
+  session.lastCompactionFailure = { at: Date.now(), estimate: session.lastEstimate };
+}
+
+function handleCompactionEnded(sessionID: string | undefined, runtime: ContextRuntime): void {
+  if (sessionID === undefined) {
+    return;
+  }
+  sessionRuntime(runtime, sessionID).lastCompactionFailure = null;
+}
+
 // Requests a host compaction. session.compact exists on the client but the
 // plugin type Pick predates it, so the call goes through a narrow cast. Shared
 // by the context hook and the completion trigger so index.ts stays trivial.
@@ -166,7 +201,14 @@ export function requestSessionCompaction(
   if (typeof session.compact !== "function") {
     return;
   }
-  runtime.pendingCauses.set(sessionID, cause);
+  const outstanding = runtime.pendingCauses.get(sessionID);
+  if (outstanding !== undefined && Date.now() - outstanding.at <= PENDING_CAUSE_TTL_MS) {
+    // A request is already outstanding with an unknown outcome; the failure
+    // path reports back through the event stream, so a second admission
+    // would only stack another driver on the host's retry loop.
+    return;
+  }
+  runtime.pendingCauses.set(sessionID, { cause, at: Date.now() });
   void session.compact({ sessionID }).catch(() => {
     runtime.pendingCauses.delete(sessionID);
   });

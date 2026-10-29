@@ -4,6 +4,7 @@ import { beforeEach, expect, test, vi } from "vitest";
 
 import type { ContextManagementConfig } from "../src/context-config.ts";
 import { registerContextHook } from "../src/context.ts";
+import { dispatchEvent } from "../src/events.ts";
 import { createContextRuntime } from "../src/runtime.ts";
 
 vi.mock("node:fs/promises", async () => {
@@ -192,6 +193,42 @@ test("re-trimming after a restart reuses the same omission ID", async () => {
   // still applies, but no second receipt and no second compaction request.
   const receipts = await readReceipts(`${STATE}/context-log`, SESSION);
   expect(receipts.ok && receipts.value).toHaveLength(1);
+  expect(requestCompaction).toHaveBeenCalledTimes(1);
+});
+
+test("skips the compaction request after a failed compaction without growth", async () => {
+  const { context, sessionHook } = contextHookFake(100000);
+  const requestCompaction = vi.fn();
+  const deps = {
+    config: CONFIG,
+    stateDirectory: STATE,
+    isBrainAvailable: () => true,
+    requestCompaction,
+  };
+  const runtime = createContextRuntime();
+  registerContextHook(context, deps, runtime);
+  const hook = sessionHook.mock.calls[0]?.[1] as (event: unknown) => Promise<void>;
+
+  // ~30k tokens of context; trimming removes almost nothing, so the first
+  // fire requests a compaction.
+  await hook(fakeEvent([[{ type: "text", text: "word ".repeat(40000) }]], null));
+  expect(requestCompaction).toHaveBeenCalledTimes(1);
+
+  // The host attempted our compaction and failed: the request path must not
+  // re-request without real growth, or it adds a second driver to the
+  // host's retry loop.
+  await dispatchEvent(
+    { type: "session.compaction.failed", data: { sessionID: SESSION } },
+    deps,
+    runtime,
+  );
+  // ~60k tokens: growth the trigger dedup would fire on.
+  await hook(fakeEvent([[{ type: "text", text: "word ".repeat(80000) }]], null));
+
+  // The trims still apply and stay receipted; only the second compaction
+  // request is suppressed.
+  const receipts = await readReceipts(`${STATE}/context-log`, SESSION);
+  expect(receipts.ok && receipts.value).toHaveLength(2);
   expect(requestCompaction).toHaveBeenCalledTimes(1);
 });
 
