@@ -1,6 +1,6 @@
 # OpenCode V2 Adapter Implementation
 
-Last Updated: October 20, 2026
+Last Updated: October 29, 2026
 
 How `@aerovato/operator-opencode-v2` binds the general adapter contract as the default OpenCode integration. V2 is an incompatible plugin platform and therefore remains a separate package; the unversioned npm package and source directory still belong to legacy V1. Behavioral deviations are recorded against [`../reference/implementation.md`](../reference/implementation.md), not other bindings.
 
@@ -43,6 +43,31 @@ The server registers one typed plugin RPC contract. Its `status` method loads th
 ## Native Update
 
 OpenCode 2 owns plugin update checks and installation through `opencode plugin check` and `opencode plugin update`. Operator does not mutate OpenCode's package cache or auto-update its own plugin. Helper's `install opencode` remains the installation path.
+
+## Context Management
+
+Opt-in request-view reduction for long sessions. Disabled by default; vanilla preamble and command behavior is unchanged while disabled. Requires an initialized Brain: without one the feature stays off and records one refusal receipt per session.
+
+All keys live under `operator.contextManagement` in the plugin entry's `options`. Absent means the defaults (disabled); a present block with a wrong-typed value fails loudly with an error toast, never a silent fallback:
+
+```jsonc
+{
+  "operator": {
+    "contextManagement": {
+      "enabled": false,
+      "ratio": 0.8,
+      "hardCapTokens": 250000,
+      "keepRecentTurns": 3,
+      "compactOnComplete": true,
+      "compactFloorTokens": 32000
+    }
+  }
+}
+```
+
+`ratio` trims past that fraction of the model's declared window, `hardCapTokens` trims past that absolute size and backstops an unknown window, `keepRecentTurns` excludes the most recent assistant turns from trimming, `compactOnComplete` compacts at the end of successful runs, and `compactFloorTokens` skips end-of-run compaction below that size.
+
+Trim replaces bulky completed tool input and output with omission notices and stores the originals on disk, recoverable in the same session through the `operator:read_omitted` tool. Pending, running, and errored tool calls, user messages, and the injected preamble are never trimmed. Every trim and compaction appends one JSON line to `~/.operator/state/context-log/<sessionID>.log`; failures and refusals are recorded in the same file, never silent.
 
 ## Differences From Reference
 
