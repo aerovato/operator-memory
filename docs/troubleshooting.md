@@ -21,40 +21,16 @@ Restart the harness after installation or repair. Until the harness reloads the 
 
 #### Helper Updates
 
-Run `operator-helper version` to check for updates and `operator-helper upgrade` to install them. Setup and repair workflows check the version before continuing. If Helper cannot determine whether Bun or npm owns the global installation, update it using the original installation method.
+Run `operator-helper version` to check for updates and `operator-helper upgrade` to install them. Setup and automatic loading recovery check the version before continuing. If Helper cannot determine whether Bun or npm owns the global installation, update it using the original installation method.
 
 Adapter updates are harness-specific; see the [harness docs](harnesses/).
 
 ### Partition And Memory Repair
 
-Partition and memory repair is agent driven.
+If a partition fails to load, the preamble directs the agent to repair loading before ordinary work. After successful recovery, start a new session and resubmit your original request so the complete preamble loads.
 
-#### Automatic Repair via Preamble
-
-If any partition fails to load, Operator does not inject a partial Brain. The session preamble becomes a recovery diagnostic instead: it lists partition results and directs repair before ordinary work continues. That diagnostic stays fixed for the session; after a successful fix, the agent can still read the recovered documents into the active conversation without waiting for a new preamble.
-
-The same repair workflow is available on demand through `/operator:repair`.
-
-#### Repair Command
-
-Use `/operator:repair` when the preamble reports a load failure, setup looks incomplete, or expected knowledge never appears. A new conversation is useful for focus, but not required—repair can continue in the session that already shows the diagnostic.
-
-Repair runs `operator-helper memory check` and addresses only reported load failures. It does not initialize uninitialized partitions or overwrite unrelated content. Typical ground covered:
-
-- User, Project, and Project Index status
-- Index structure and frontmatter
-- Whether each available partition can load
-- Git ignore configuration and tracked Private files
-
-Project Index files need the lowercase `.md` extension and non-empty `description` and `read_if` frontmatter. Structural checks confirm format only—they do not judge whether an index is accurate or current.
-
-Frequent load failures:
-
-- A required path is a directory instead of a file.
-- A Markdown file cannot be read.
-- Project Index frontmatter is malformed.
-- A partition exists but its expected structure is invalid.
+For on-demand diagnosis, ask the agent or run `operator-helper memory check` from the project directory. It validates loading only and does not modify files.
 
 #### Private Files Appear In Git
 
-Run `/operator:repair`. Helper ensures the exact `.operator/` entry is in the global Git ignore, but it does not untrack files that were already committed or staged. Repair can identify those paths and guide removal from repository tracking.
+Run `operator-helper project status` to inspect ignore and tracking status. Project initialization ensures the exact `.operator/` entry is in the global Git ignore, but does not untrack files already committed or staged.

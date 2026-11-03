@@ -25,7 +25,7 @@ read_if: Working in packages/pi or changing Pi extension behavior
 
 ### `packages/pi/test/`
 
-- `commands.test.ts` - Four instruction-based commands, prompt handoff, and collision coverage.
+- `commands.test.ts` - Three instruction-based commands, prompt handoff, and collision coverage.
 - `index.test.ts` - Preamble, failure, session reset, and footer lifecycle coverage.
 
 ### `packages/pi/scripts/`

@@ -43,7 +43,7 @@ Restart the harness, then run `/operator:user-init` in a new conversation to beg
 
 ### Usage
 
-Users interact with Operator through the harness commands `/operator:user-init`, `/operator:project-init`, `/operator:index`, and `/operator:repair`. These commands guide the working agent, which uses Operator Helper for setup, status, validation, and repair mechanics.
+Users interact with Operator through the harness commands `/operator:user-init`, `/operator:project-init`, and `/operator:index`. These commands guide the working agent, which uses Operator Helper for setup, status, and validation.
 
 Run each Operator command in a new conversation so the agent can focus on that operation with a clean working context. Initialization preserves existing content. Project setup configures `.operator/` in the global Git ignore but does not automatically untrack files already committed.
 

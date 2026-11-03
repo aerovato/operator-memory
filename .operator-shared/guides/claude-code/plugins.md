@@ -1,6 +1,6 @@
 # Claude Code Plugins
 
-Last Updated: October 3, 2026
+Last Updated: November 3, 2026
 
 Packaging, distribution, installation, and updates for the Operator plugin.
 
@@ -75,7 +75,7 @@ Native update exists (`claude plugin update`), but it is marketplace-driven and 
 ## Dependencies and policy
 
 - Manifest `dependencies` install alongside the plugin; enable/disable/uninstall act on the chain; `claude plugin prune` removes auto-installed orphans
-- `allowManagedHooksOnly` org policy blocks installed-plugin hooks (except managed force-enables); `disableAllHooks` and `--bare`/`--safe-mode` also silence the plugin. `/operator:repair` and Helper status should detect these states
+- `allowManagedHooksOnly` org policy blocks installed-plugin hooks (except managed force-enables); `disableAllHooks` and `--bare`/`--safe-mode` also silence the plugin.
 - Plugins run with user privileges and are not sandboxed; the marketplace review pane shows what a plugin will install
 
 ## Reference examples

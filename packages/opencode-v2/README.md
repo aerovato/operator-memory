@@ -8,7 +8,7 @@ Operator Memory gives current OpenCode (V2) durable project and user context mai
 operator-helper install opencode
 ```
 
-The server plugin injects one immutable rendered Operator preamble into every model call for each session and registers `/operator:user-init`, `/operator:project-init`, `/operator:index`, and `/operator:repair`.
+The server plugin injects one immutable rendered Operator preamble into every model call for each session and registers `/operator:user-init`, `/operator:project-init`, and `/operator:index`.
 
 The TUI displays connecting and ready state, package version or local-build identity, User/Private/Shared partition status, repair guidance, completed-turn refresh, and preamble recovery and error notifications.
 

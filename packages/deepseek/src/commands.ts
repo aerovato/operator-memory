@@ -6,7 +6,6 @@ export const OPERATOR_COMMAND_NAMES = [
   "operator-user-init",
   "operator-project-init",
   "operator-index",
-  "operator-repair",
 ] as const;
 
 const commands = {
@@ -27,12 +26,6 @@ const commands = {
     operation: "index init",
     guide:
       "Follow the Project Index Setup guide in its output, including when inspection reports failures.",
-  },
-  "operator-repair": {
-    description: "Repair Operator",
-    operation: "memory check",
-    guide:
-      "If no issues are detected, stop. Otherwise, repair only the reported load failures without initializing absent partitions. Rerun `operator-helper memory check` to confirm the repair, then read the applicable Operator memory documents.",
   },
 } as const;
 

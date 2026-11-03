@@ -1,6 +1,6 @@
 # DeepSeek Harness Adapter Implementation
 
-Last Updated: October 2, 2026
+Last Updated: November 3, 2026
 
 How `@aerovato/operator-deepseek` binds the general adapter contract to DeepSeek Harness. Command meaning and setup workflows stay in [`commands.md`](../commands.md) and [`../reference/implementation.md`](../reference/implementation.md).
 
@@ -24,7 +24,6 @@ When the active composition supplies DeepSeek's optional `commands` service, the
 - `/operator-user-init`
 - `/operator-project-init`
 - `/operator-index`
-- `/operator-repair`
 
 The hyphenated names are the DeepSeek-compatible equivalents of the preferred colon names. Each handler sends one identified follow-up message instructing the Agent to check Helper's version, upgrade when outdated, run the workflow operation, and handle failures directly. Cancellation prevents handoff.
 

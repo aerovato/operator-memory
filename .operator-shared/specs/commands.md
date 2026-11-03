@@ -1,6 +1,6 @@
 # Commands
 
-Last Updated: October 5, 2026
+Last Updated: November 3, 2026
 
 Agent-assisted configuration of User Instructions, the Project Brain, and the Project Index. Deterministic work lives in `operator-helper`; phased agent work lives in emitted guides; harness commands orchestrate both.
 
@@ -12,14 +12,15 @@ Adapter registration and injection obligations are specified in [`reference/impl
 
 ## Command Contract
 
-Every supported harness exposes these commands with the same intent and, where supported, the same names. Concrete bindings document unavoidable naming differences. Execution stays in the current conversation; Operator never switches sessions automatically. User guidance should recommend starting each command in a new conversation so the agent can focus on that setup, indexing, or repair operation with clean working context. This is workflow guidance, not a requirement to refresh the preamble after agent-authored changes.
+Every maintained harness exposes these commands with the same intent and, where supported, the same names. Concrete bindings document unavoidable naming differences. Execution stays in the current conversation; Operator never switches sessions automatically. User guidance should recommend starting each command in a new conversation so the agent can focus on setup or indexing with clean working context. This is workflow guidance, not a requirement to refresh the preamble after agent-authored changes.
 
 - `/operator:user-init` — `user init`; follow the User Setup guide in its output with the user
 - `/operator:project-init` — `project init`; follow the Project Setup guide in its output; after confirmation, offer to index in the current conversation or via `/operator:index` in a new conversation
 - `/operator:index` — `index init`; follow the Project Index Setup guide with the user
-- `/operator:repair` — `memory check`; stop when no issues are detected, otherwise fix only reported load failures without initializing uninitialized partitions, re-check, then read applicable memory documents
 
-Each command hands the agent instructions in the current conversation without executing Helper in the adapter. The agent first runs `operator-helper version` and, when an update is available, must run `operator-helper upgrade` before continuing. It then runs the corresponding workflow operation. If Helper cannot start, the agent repairs its installation and retries the failed command without asking the user to reinvoke the harness command. If the version check or upgrade fails, the agent diagnoses and retries it. Non-zero results from a running setup operation retain their guide and failure details; memory-check failures are repair findings. Agents never invoke harness commands themselves.
+Each command hands the agent instructions in the current conversation without executing Helper in the adapter. The agent first runs `operator-helper version` and, when an update is available, must run `operator-helper upgrade` before continuing. It then runs the corresponding workflow operation. If Helper cannot start, the agent repairs its installation and retries the failed command without asking the user to reinvoke the harness command. If the version check or upgrade fails, the agent diagnoses and retries it. Non-zero results from a running setup operation retain their guide and failure details. Agents never invoke harness commands themselves.
+
+The repair command has been removed; loading recovery is handled by the preamble diagnostic.
 
 Helper output is agent working context, not reproduced or specially formatted for the user. Setup commands remain dedicated harness commands wherever supported; Codex uses explicitly invoked skills because it cannot register such commands.
 

@@ -11,7 +11,7 @@ read_if: Working in packages/claude-code
 
 ## Architecture
 
-- Runtime injection uses Helper subprocess output; explicitly invoked skills hand setup and repair workflows to the agent.
+- Runtime injection uses Helper subprocess output; explicitly invoked skills hand setup and indexing workflows to the agent.
 - Bun builds the mod entrypoint into a self-contained ESM `hooks/register.js`.
 
 ## `packages/claude-code` Index
@@ -24,4 +24,4 @@ read_if: Working in packages/claude-code
 - `src/types.ts` — Structural subset of the mod API consumed by the adapter.
 - `test/register.test.ts` — Render caching, diagnostic passthrough, failure, subagent, and launch tests.
 - `test/skills.test.ts` — Explicit skill invocation and Helper workflow instruction checks.
-- `skills/user-init/SKILL.md`, `skills/project-init/SKILL.md`, `skills/index/SKILL.md`, `skills/repair/SKILL.md` — Agent-driven User, Project, Index, and memory-repair workflows.
+- `skills/user-init/SKILL.md`, `skills/project-init/SKILL.md`, `skills/index/SKILL.md` — Agent-driven User, Project, and Index workflows.

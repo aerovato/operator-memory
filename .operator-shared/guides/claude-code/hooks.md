@@ -1,6 +1,6 @@
 # Claude Code Hooks
 
-Last Updated: October 2, 2026
+Last Updated: November 3, 2026
 
 Settings-hook system reference, focused on what the Operator plugin's `hooks/hooks.json` needs.
 
@@ -72,7 +72,7 @@ Stdout must contain only the JSON object. `additionalContext`/`systemMessage`/pl
 - Workspace trust gates project-scope hooks and frontmatter hooks in untrusted folders
 - Built-in `sec-default` mod guards org-managed configuration from installed plugins
 
-Document these in the adapter's troubleshooting surface: an Operator install can be silently hook-less under managed policy, and the `/operator:repair` flow should detect and explain that condition.
+Document these in the adapter's troubleshooting surface: an Operator install can be silently hook-less under managed policy.
 
 ## Testing
 

@@ -1,6 +1,6 @@
 # OpenCode Plugin Development
 
-Last Updated: October 20, 2026
+Last Updated: November 3, 2026
 
 Verified from https://opencode.ai/v2/docs/build/plugins/ and `<reference>/opencode-v2/` source. Hooks detail in [`hooks.md`](hooks.md), sessions and messaging in [`sessions.md`](sessions.md), TUI plugins in [`tui.md`](tui.md), installation and local development in [`installation.md`](installation.md).
 

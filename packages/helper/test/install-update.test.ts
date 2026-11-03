@@ -213,6 +213,11 @@ test.runIf(process.platform !== "win32")(
     const skill = join(kiroHome, "skills", "operator-index", "SKILL.md");
     fs.mkdirSync(dirname(skill), { recursive: true });
     fs.writeFileSync(skill, "stale");
+    const retiredSkill = join(kiroHome, "skills", "operator-repair", "SKILL.md");
+    const retainedFile = join(dirname(retiredSkill), "user-content.md");
+    fs.mkdirSync(dirname(retiredSkill), { recursive: true });
+    fs.writeFileSync(retiredSkill, "retired repair skill");
+    fs.writeFileSync(retainedFile, "preserve unrelated content");
 
     const result = await execute(["install", "kiro"], "4.5.6");
 
@@ -238,16 +243,13 @@ test.runIf(process.platform !== "win32")(
     expect(fs.readFileSync(join(kiroHome, "steering", "operator-memory.md"), "utf8")).toBe(
       "---\ninclusion: always\n---\n\n# Operator Memory\n\nOperator Memory is installed for Kiro. If you do not see Operator's preamble guidance above wrapped within `<operator-guidance>`, manually run the `operator-helper preamble` command once from the workspace root and follow all instructions from the command output. If the command fails, report to the user and stop. Do not run if the preamble is already available.\n",
     );
-    for (const name of [
-      "operator-user-init",
-      "operator-project-init",
-      "operator-index",
-      "operator-repair",
-    ]) {
+    for (const name of ["operator-user-init", "operator-project-init", "operator-index"]) {
       expect(fs.readFileSync(join(kiroHome, "skills", name, "SKILL.md"), "utf8")).toMatch(
         new RegExp(`^---\\nname: ${name}\\n`),
       );
     }
+    expect(fs.existsSync(retiredSkill)).toBe(false);
+    expect(fs.readFileSync(retainedFile, "utf8")).toBe("preserve unrelated content");
     expect(await execute(["install", "kiro"], "4.5.6")).toEqual(result);
   },
 );

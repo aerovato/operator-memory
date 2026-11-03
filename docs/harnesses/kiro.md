@@ -12,7 +12,7 @@ Helper writes the adapter into `~/.kiro`:
 
 - `hooks/operator-memory.json` — `SessionStart` hook that runs `operator-helper preamble`. Kiro adds its output to the agent's context.
 - `steering/operator-memory.md` — Always-included steering. If the hook did not inject the preamble, it tells the agent to run `operator-helper preamble` once itself.
-- `skills/operator-user-init/`, `skills/operator-project-init/`, `skills/operator-index/`, `skills/operator-repair/` — Operator commands as Kiro skills.
+- `skills/operator-user-init/`, `skills/operator-project-init/`, `skills/operator-index/` — Operator commands as Kiro skills.
 
 Start a new Kiro session after installation.
 
@@ -24,7 +24,7 @@ In a new session, ask:
 Is Operator Memory guidance available to you? Give a brief outline of what it says.
 ```
 
-The agent should confirm the guidance is loaded and outline the brain, partitions, and memory-aware workflow. If it cannot, run `/operator-repair`.
+The agent should confirm the guidance is loaded and outline the brain, partitions, and memory-aware workflow. If it cannot, confirm the hook is enabled and the steering file is installed, or rerun the install command and start a new session.
 
 ### Commands
 
@@ -33,7 +33,6 @@ Kiro invokes skills as slash commands:
 - `/operator-user-init`
 - `/operator-project-init`
 - `/operator-index`
-- `/operator-repair`
 
 Run each in a new session. See [Getting Started](../getting-started.md#appendix-commands) for what each command does.
 
@@ -55,4 +54,4 @@ operator-helper install kiro
 
 - The agent runs `operator-helper preamble` at the start of a session: the hook did not fire and the steering fallback loaded the preamble instead. Confirm `~/.kiro/hooks/operator-memory.json` exists and is enabled in Kiro's hooks panel, or rerun the install command.
 - Helper failure: Kiro shows the hook's error output to the user as a warning. Repair Helper's global installation and start a new session.
-- Missing memory or load failures: run `/operator-repair` in a new session. See [Troubleshooting](../troubleshooting.md).
+- Missing memory or load failures: see [Troubleshooting](../troubleshooting.md).

@@ -1,6 +1,6 @@
 # Claude Code Mods
 
-Last Updated: October 3, 2026
+Last Updated: November 3, 2026
 
 The in-process mod API (Claude Code v2.1.287+): a plugin whose behavior is a JavaScript/TypeScript hooks module. For Operator this is the transform pathway that avoids the settings-hook 10k context cap.
 
@@ -75,4 +75,4 @@ Resolved open questions:
 - Subagents: **disproved for compose, solved via `agent.spawn` (live-verified v2.1.287)** — `prompt.compose` does not fire for subagent system prompts (foreground `Task` subagent cannot see compose-appended sections; background agents fire no compose). An `agent.spawn` hook may rewrite `prompt` (also `description`, `subagentType`, `model`, `cwd`) before the subagent's model resolves; prepending the preamble there reaches the subagent, uncapped, in-process. The rewrite is not visible to the parent (its transcript keeps the original tool-call parameters) and works cross-model. `classic.SubagentStart` `additionalContext` (10k per-string cap) is the recorded fallback
 - Conversation boundaries: the mod `session.start` does not re-fire after `/clear`/`/resume`/`/branch`, so it is not a lazy-render trigger. `/clear` emits `session.end` with reason `clear` and creates a new session ID. Operator keeps its process-lifetime render cache unchanged across these boundaries.
 
-Settings hooks are not used for injection; the version floor (v2.1.287+) and org-policy restrictions (`allowManagedModsOnly`, `disableAllHooks`, `--bare`, `--safe-mode`) are documented limitations, explained by `/operator:repair` and the harness guide.
+Settings hooks are not used for injection; the version floor (v2.1.287+) and org-policy restrictions (`allowManagedModsOnly`, `disableAllHooks`, `--bare`, `--safe-mode`) are documented limitations explained by the harness guide.

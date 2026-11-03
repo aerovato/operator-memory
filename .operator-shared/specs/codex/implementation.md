@@ -1,6 +1,6 @@
 # Codex Adapter
 
-Last Updated: October 2, 2026
+Last Updated: November 3, 2026
 
 Codex CLI and Codex Desktop use the dependency-free `@aerovato/operator-codex` legacy plugin package. Shared memory rendering remains in Helper; the adapter only binds Codex lifecycle events to `operator-helper preamble`. Behavioral deviations are recorded against [`../reference/implementation.md`](../reference/implementation.md), not other bindings.
 
@@ -20,9 +20,9 @@ If Helper cannot render a non-empty preamble, the hook emits a concise `systemMe
 
 ## Commands
 
-Codex plugins cannot register arbitrary slash commands. The adapter exposes the four Operator workflows as explicitly invoked plugin skills: `$operator-user-init`, `$operator-project-init`, `$operator-index`, and `$operator-repair`. They may also be selected through Codex's skills picker. Implicit invocation is disabled. Codex requires each skill name to match its folder name, and colons are invalid in Windows folder names, so these skill names use hyphens rather than the canonical command namespace.
+Codex plugins cannot register arbitrary slash commands. The adapter exposes the three Operator workflows as explicitly invoked plugin skills: `$operator-user-init`, `$operator-project-init`, and `$operator-index`. They may also be selected through Codex's skills picker. Implicit invocation is disabled. Codex requires each skill name to match its folder name, and colons are invalid in Windows folder names, so these skill names use hyphens rather than the canonical command namespace.
 
-Each skill directs the agent to check Helper's version, upgrade when outdated, then run the corresponding workflow operation. If Helper cannot start, the agent repairs it and retries the failed command; non-zero setup results supply their guide and failure details, and memory checks supply repair findings. Helper output is working context for the agent and is not reproduced for the user. Skills do not duplicate Helper filesystem, Git, status, guide, lint, installation, or repair logic.
+Each skill directs the agent to check Helper's version, upgrade when outdated, then run the corresponding workflow operation. If Helper cannot start, the agent repairs it and retries the failed command; non-zero setup results supply their guide and failure details. Helper output is working context for the agent and is not reproduced for the user. Skills do not duplicate Helper filesystem, Git, status, guide, lint, or installation logic.
 
 ## Installation
 

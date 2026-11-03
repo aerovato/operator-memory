@@ -1,6 +1,6 @@
 # Pi Extensions
 
-Last Updated: October 3, 2026
+Last Updated: November 3, 2026
 
 Verified from `<reference>/pi/packages/coding-agent/docs/extensions.md` and `<reference>/pi/packages/coding-agent/src/core/extensions/`.
 
