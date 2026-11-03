@@ -1,6 +1,6 @@
 # Reference Implementation
 
-Last Updated: October 5, 2026
+Last Updated: November 3, 2026
 
 The complete adapter specification: what every harness adapter must do, and what the reference implementation looks like. Concrete bindings in `implementation.md` documents measure themselves against the Reference Implementation section, not against one another. A binding may deviate only through the accepted pathways defined here or through an explicitly recorded deviation.
 
@@ -34,7 +34,6 @@ Expose these command intents on every supported harness. Prefer the following co
 - `/operator:user-init` — User Setup
 - `/operator:project-init` — Project Setup
 - `/operator:index` — Project Index Setup
-- `/operator:repair` — memory load repair
 
 Orchestration, helper sequencing, and agent handoff are specified in [`commands.md`](../commands.md). How a harness registers or runs a command, including its names, is adapter-specific.
 
@@ -89,7 +88,7 @@ Cross-cutting rules under both pathways:
 
 ### Commands
 
-Register `/operator:user-init`, `/operator:project-init`, `/operator:index`, and `/operator:repair` as dedicated commands that submit instructions to the agent in the current conversation. Preserve user-defined commands. Host-compatible slash names are acceptable; if command registration is unavailable, use user-selected skills (Codex). **The adapter must never execute Helper on behalf of the agent.**
+Register `/operator:user-init`, `/operator:project-init`, and `/operator:index` as dedicated commands that submit instructions to the agent in the current conversation. Preserve user-defined commands. Host-compatible slash names are acceptable; if command registration is unavailable, use user-selected skills (Codex). **The adapter must never execute Helper on behalf of the agent.**
 
 Each registration supplies this prompt, substituting its command description, operation, and workflow instruction:
 
@@ -110,7 +109,6 @@ Use Helper output as working context. Do not reproduce it wholesale or reimpleme
 ```
 
 - `user init`, `project init`, `index init`: follow the corresponding emitted setup guide, including on operation failure.
-- `memory check`: stop if clear; otherwise repair only reported load failures, recheck, then read applicable memory documents. Do not initialize absent partitions.
 
 ### Status UI
 

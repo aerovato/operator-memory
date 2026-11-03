@@ -1,6 +1,6 @@
 # Claude Code Guide
 
-Last Updated: October 2, 2026
+Last Updated: November 3, 2026
 
 Implementation reference for porting Operator Memory to Claude Code. Primary sources: the official `anthropics/claude-code` repository (cloned locally under `<reference>/claude-code-docs/`) and the live documentation at `code.claude.com/docs`, retrieved October 2, 2026.
 
@@ -22,7 +22,7 @@ Implementation reference for porting Operator Memory to Claude Code. Primary sou
 
 - [`injection.md`](./injection.md) - Preamble injection surfaces: SessionStart, SubagentStart, UserPromptSubmit, instruction files, and the mod prompt events; the 10k context cap and pathway recommendation.
 - [`hooks.md`](./hooks.md) - Settings-hook system: configuration formats, handler types, matchers, input/output contract, exit codes, environment, and policy restrictions.
-- [`commands.md`](./commands.md) - Slash commands and skills for the four Operator command intents.
+- [`commands.md`](./commands.md) - Slash commands and skills for the three Operator command intents.
 - [`plugins.md`](./plugins.md) - Packaging, manifest, marketplaces, installation scopes, CLI, updates, and development workflow.
 - [`mods.md`](./mods.md) - The in-process mod API: event middleware, prompt and command events, API surface, and its fit as Operator's transform pathway.
 

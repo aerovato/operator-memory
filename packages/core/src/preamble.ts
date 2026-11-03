@@ -125,12 +125,19 @@ ${status("Shared", memory.shared)}
 ${status("User", memory.user)}
 ${status("Private", memory.private)}
 
-IMPORTANT: You MUST focus explicitly and exclusively on fixing Operator memory loading before proceeding with the user's requested work; otherwise, user and project instructions will not be loaded and you may not perform according to the user's wishes.
+IMPORTANT: You MUST resolve Operator memory loading before proceeding with the user's requested work. User and project instructions were not loaded.
 
-Use the error paths and causes above to repair the affected partitions, then run \`operator-helper memory check\` to validate the full load. \`operator-helper\` is the globally installed Operator CLI (npm package \`@aerovato/operator-helper\`), not a project dependency; it runs directly in any shell.
+1. Run \`operator-helper version\`. If an update is available, run \`operator-helper upgrade\` before continuing.
+2. Run \`operator-helper memory check\` from the affected project directory to obtain current loading results.
+3. Repair only the reported load failures. Preserve existing content, do not initialize absent partitions, and do not reset or replace the Brain. If a repair requires deleting content, reconstructing instructions, or choosing between ambiguous fixes, stop and ask the user for guidance.
+4. Rerun \`operator-helper memory check\` after repairs. Resolve any additional load failures it reveals until the check succeeds or a concrete blocker prevents further progress.
 
-- If the check succeeds: tell the user to start a new session and resubmit their original request so the next session loads the full preamble.
-- If you cannot resolve the loading failure: stop, ask the user for guidance, and suggest they run \`/operator:repair\` in a standalone session to perform self-repair.
+\`operator-helper\` is the globally installed Operator CLI (npm package \`@aerovato/operator-helper\`), not a project dependency.
+
+- If Helper cannot start, install or repair its global installation and retry the failed command.
+- If the version check or upgrade fails, diagnose the failure and retry.
+- If recovery is blocked, report the failing path or operation, the cause, and what is needed to continue. Do not proceed with the original task.
+- When validation succeeds, tell the user that loading is repaired and ask them to start a new session and resubmit their original request so the complete preamble is loaded. Do not resume the original task in this diagnostic-only session.
 </operator-diagnostic>`;
 }
 

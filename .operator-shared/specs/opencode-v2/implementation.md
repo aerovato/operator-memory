@@ -1,6 +1,6 @@
 # OpenCode V2 Adapter Implementation
 
-Last Updated: October 29, 2026
+Last Updated: November 3, 2026
 
 How `@aerovato/operator-opencode-v2` binds the general adapter contract as the default OpenCode integration. V2 is an incompatible plugin platform and therefore remains a separate package; the unversioned npm package and source directory still belong to legacy V1. Behavioral deviations are recorded against [`../reference/implementation.md`](../reference/implementation.md), not other bindings.
 
@@ -26,13 +26,13 @@ The TUI bundle must compile JSX with OpenTUI's Solid build transform and keep `s
 
 ## Commands
 
-Register `operator:user-init`, `operator:project-init`, `operator:index`, and `operator:repair`. Each command admits instructions for the agent to check the Helper version, upgrade when outdated, run the corresponding workflow operation, and handle failures in the current conversation.
+Register `operator:user-init`, `operator:project-init`, and `operator:index`. Each command admits instructions for the agent to check the Helper version, upgrade when outdated, run the corresponding workflow operation, and handle failures in the current conversation.
 
 ## TUI Status
 
 - Show `Operator Connecting... (detail)` while the TUI verifies the active server plugin, `Operator Ready (detail)` after a successful status query, and `Operator Unavailable (detail)` after failure. Place this compact indicator in the built-in home footer status row; keep partition details in the session sidebar.
 - Use `Local Build` for local packages and `vX.Y.Z` for installed packages.
-- Show User, Private, and Shared as Checking, Loaded, Uninitialized, or Error in the session sidebar, with `/operator:repair` guidance when needed.
+- Show User, Private, and Shared as Checking, Loaded, Uninitialized, or Error in the session sidebar, with guidance to ask the agent to diagnose Operator loading when needed.
 - Cache status per V2 location. Query the resolved location when the initial home screen receives it, and refresh after a top-level session transitions from active to idle. Ignore subagent idle transitions.
 - Retry status after server reconnection. The server is authoritative because project memory may be remote from the TUI process.
 

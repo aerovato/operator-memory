@@ -1,6 +1,6 @@
 # Preamble
 
-Last Updated: October 1, 2026
+Last Updated: November 3, 2026
 
 The preamble gives the agent fixed Operator guidance and available durable Memory. Prefer a synthetic model-call contribution rendered once and held immutable for the session so its prefix remains cacheable. Persisted lifecycle injection and re-rendering are also fully acceptable, even when a non-persisted route exists; choose what fits the harness. A load failure produces the diagnostic instead of partial memory. Do not refresh on every turn merely to track Brain edits. See [`reference/implementation.md`](./reference/implementation.md) for adapter pathways.
 
@@ -23,7 +23,7 @@ Machine-significant sections use XML labels, including `<operator-guidance>`, `<
 
 Core tenets are fixed text injected after memory files and before warnings so they sit closer to the first user turn. A load-failure diagnostic replaces memory, tenets, and warnings; the diagnostic stays last.
 
-If any partition fails to load, no partition memory is injected. An `<operator-diagnostic>` lists every partition result and requires the agent to fix loading before continuing and validate with `operator-helper memory check`. On a successful check the agent tells the user to start a new session and resubmit their original request so the next session loads the full preamble; on unresolved failure the agent stops and directs the user to run `/operator:repair` in a standalone session. The human-facing `/operator:repair` command starts the same workflow from the harness in a standalone session. Adapters should surface one recovery notice per affected session when the harness allows it.
+If any partition fails to load, no partition memory is injected. An `<operator-diagnostic>` lists every partition result and directs recovery before ordinary work: check and update Helper, repair only reported load failures, and validate with `operator-helper memory check`. Preserve existing content and leave absent partitions absent; destructive or ambiguous repairs require user guidance. Report unresolved blockers. On success, ask the user to start a new session and resubmit the original request so the complete preamble loads. Adapters should surface one recovery notice per affected session when the harness allows it.
 
 Fixed guidance embeds main-index, subindex, and catalog bodies from `@aerovato/operator-core` templates via interpolation inside the Project Index and Partition Catalog sections. Those template exports are the single source of truth for document syntax; helper init reuses them. Agents follow those shapes when creating or restructuring indexes and catalogs. Filled documents need only real content; seed instructional text is not preserved.
 

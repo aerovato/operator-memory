@@ -64,7 +64,6 @@ test("registers commands and injects the preamble through the context hook", asy
     "operator:user-init",
     "operator:project-init",
     "operator:index",
-    "operator:repair",
   ]);
   expect(sessionHook).toHaveBeenCalledWith("context", expect.any(Function));
   const hook = sessionHook.mock.calls[0]?.[1];

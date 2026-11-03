@@ -1,6 +1,6 @@
 # Kiro Adapter Implementation
 
-Last Updated: October 5, 2026
+Last Updated: November 3, 2026
 
 How Operator binds the [reference adapter implementation](../reference/implementation.md) to Kiro IDE and CLI V3. The adapter is distributed through Helper as hook, steering, and skill files; there is no separate Kiro package. Core owns memory loading and rendering through Helper. Command meaning and setup workflows stay in [Commands](../commands.md).
 
@@ -36,12 +36,11 @@ A non-zero `SessionStart` command shows a warning to the user. Kiro proceeds wit
 
 ## Commands
 
-Four explicitly invoked skills expose the Operator workflows:
+Three explicitly invoked skills expose the Operator workflows:
 
 - `/operator-user-init`
 - `/operator-project-init`
 - `/operator-index`
-- `/operator-repair`
 
 Each supplies the reference command instructions: check Helper's version, upgrade when outdated, run the corresponding workflow operation, and handle failures directly. The agent executes Helper in the current conversation. Skill descriptions restrict use to explicit user invocation; hyphenated names are the Kiro-compatible command names.
 
@@ -49,9 +48,11 @@ Helper output remains agent working context. Skills do not duplicate Helper's se
 
 ## Installation and Updates
 
-`operator-helper install kiro` is available from Helper `1.8.0`, requires Helper on `PATH`, and installs one hook, one always-included steering file, and four skill entry files under ordinary `$HOME/.kiro/`.
+`operator-helper install kiro` is available from Helper `1.8.0`, requires Helper on `PATH`, and installs one hook, one always-included steering file, and three skill entry files under ordinary `$HOME/.kiro/`.
 
-These six files are plugin-owned. Installation and reinstallation overwrite them intentionally; user modifications are at the user's risk. No edit-preservation or disabled-hook-preservation policy is required.
+These five files are plugin-owned. Installation and reinstallation overwrite them intentionally; user modifications are at the user's risk. No edit-preservation or disabled-hook-preservation policy is required.
+
+Migration: installation removes the retired plugin-owned `skills/operator-repair/SKILL.md` so existing installations stop exposing the removed command. The marked migration block removes only that entry file, preserves adjacent content, and succeeds when the file is already absent.
 
 Installation ignores `KIRO_HOME`. CLI binary `2.27.1`, running the V3 engine (`--v3`) with KAS `0.66.22`, ignores that override for global hooks, steering, and skills and discovers them under ordinary `$HOME/.kiro/`. Do not install duplicate copies into both directories.
 
@@ -68,7 +69,7 @@ Behavioral differences:
 
 ## Verification
 
-Helper tests cover installed hook configuration, the exact approved steering prompt and frontmatter, all four skills, replacement of a stale plugin file, repeat installation, and the Helper-on-`PATH` prerequisite. `bun run check packages/helper` validates the package.
+Helper tests cover installed hook configuration, the exact approved steering prompt and frontmatter, all three skills, removal of the retired repair skill without deleting adjacent content, replacement of a stale plugin file, repeat installation, and the Helper-on-`PATH` prerequisite. `bun run check packages/helper` validates the package.
 
 Runtime experiments verified main-agent hook injection, inherited steering in built-in subagents, absence of parent hook output in those subagents, full skill-body activation, and ordinary-home discovery despite `KIRO_HOME`. CLI sessions explicitly selected `--v3` and confirmed `engine: "v3"`; the CLI binary's `2.27.1` version is not the selected engine version.
 

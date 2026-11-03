@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 import { Effect } from "effect";
@@ -24,6 +24,9 @@ export const installKiro = Effect.fn("installKiro")(function* (context: CliConte
 function writeKiroFiles(kiroHome: string): Effect.Effect<CliResult> {
   return Effect.promise(async () => {
     try {
+      // Migration: remove the retired Operator-owned repair skill from existing installations.
+      await rm(join(kiroHome, "skills", "operator-repair", "SKILL.md"), { force: true });
+
       for (const file of KIRO_FILES) {
         const path = join(kiroHome, file.path);
         await mkdir(dirname(path), { recursive: true });

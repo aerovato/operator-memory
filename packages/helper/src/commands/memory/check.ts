@@ -23,7 +23,7 @@ export const memoryCheck = Effect.fn("memoryCheck")(function* (context: CliConte
   }
 
   if (!failed) {
-    lines.push("\nNo issues detected.");
+    lines.push("\nNo memory load failures detected.");
   }
 
   return { exitCode: failed ? 1 : 0, output: lines.join("\n") };

@@ -35,7 +35,6 @@ DeepSeek command names use hyphens:
 - `/operator-user-init`
 - `/operator-project-init`
 - `/operator-index`
-- `/operator-repair`
 
 Run each in a new conversation. See [Getting Started](../getting-started.md#appendix-commands) for what each command does. Profiles without DeepSeek's interactive command service still receive the Operator preamble but do not expose these commands.
 
@@ -54,5 +53,5 @@ Fully quit Desktop before updating its profile and use Desktop's installed `dsh`
 - Web installs but Desktop does not: launch Desktop once, fully quit it, select Desktop's `dsh` command through **Manage dsh Command…**, then rerun the install. The npm-installed CLI cannot manage Desktop's profile. The Desktop Plugins page is an alternative.
 - Commands are absent: the active profile does not provide DeepSeek's interactive command service. Preamble injection remains available.
 - Operator guidance is absent: rerun the profile installation command and restart that profile.
-- Missing memory or load failures: run `/operator-repair` in a new interactive conversation. See [Troubleshooting](../troubleshooting.md).
+- Missing memory or load failures: see [Troubleshooting](../troubleshooting.md).
 - An out-of-process ACP, SDK, Codex, or Claude Code delegated agent does not receive Operator from its parent. Install the matching Operator adapter in that delegated harness.

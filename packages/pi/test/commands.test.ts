@@ -12,7 +12,6 @@ test.each([
   ["operator:user-init", "user init", "User Setup"],
   ["operator:project-init", "project init", "Project Setup"],
   ["operator:index", "index init", "Project Index Setup"],
-  ["operator:repair", "memory check", "reported load failures"],
 ] as const)("hands %s to the agent without executing Helper", async (name, operation, guide) => {
   const commands = new Map<string, CommandHandler>();
   const sendUserMessage = vi.fn();
@@ -50,11 +49,6 @@ test("registers exact names and leaves duplicate renaming to Pi", () => {
   } as unknown as ExtensionAPI;
   registerCommands(pi);
 
-  expect(names).toEqual([
-    "operator:user-init",
-    "operator:project-init",
-    "operator:index:1",
-    "operator:repair",
-  ]);
-  expect(OPERATOR_COMMAND_NAMES).toHaveLength(4);
+  expect(names).toEqual(["operator:user-init", "operator:project-init", "operator:index:1"]);
+  expect(OPERATOR_COMMAND_NAMES).toHaveLength(3);
 });

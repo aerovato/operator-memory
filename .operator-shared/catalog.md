@@ -29,7 +29,7 @@ Repository-wide Operator product knowledge published with the project.
   - Description: Preamble composition, injection order, instruction authority, catalogs and index injection, all-or-nothing diagnostics, and conditional warnings.
   - Read If: Changing preamble composition, authority, warnings, or diagnostics.
 - `commands.md`
-  - Description: Command contract for the four Operator workflows (`user-init`, `project-init`, `index`, `repair`) and the User, Project, and Project Index setup workflows they orchestrate.
+  - Description: Command contract for the three Operator workflows (`user-init`, `project-init`, `index`) and their setup guides.
   - Read If: Implementing adapter commands or changing setup workflows.
 - `opencode/implementation.md`
   - Description: Frozen OpenCode V1 adapter contract and retained installation/recovery behavior; no further development or releases.

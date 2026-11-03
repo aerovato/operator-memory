@@ -1,6 +1,6 @@
 # Codex Commands and Skills
 
-Last Updated: September 27, 2026
+Last Updated: November 3, 2026
 
 Verified command, skill, invocation, and script-execution facilities.
 

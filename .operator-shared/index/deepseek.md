@@ -12,7 +12,7 @@ read_if: Working in packages/deepseek or changing the DeepSeek Harness adapter
 ## Architecture
 
 - The published package is a Cordis Host and Web Client plugin plus a DeepSeek Harness bundle whose patch mounts it under a stable row id.
-- The Host runtime lazily renders and caches one complete Core preamble per live agent, contributes it through the asynchronous system-prompt assembly hook, blocks prompt assembly after unexpected render failures, and optionally registers the four Helper-backed Operator commands when DeepSeek supplies its interactive command service.
+- The Host runtime lazily renders and caches one complete Core preamble per live agent, contributes it through the asynchronous system-prompt assembly hook, blocks prompt assembly after unexpected render failures, and optionally registers the three Helper-backed Operator commands when DeepSeek supplies its interactive command service.
 - The package is an installable DeepSeek bundle whose stable patch row mounts the Host plugin in any compatible profile.
 
 ## `packages/deepseek/` Index

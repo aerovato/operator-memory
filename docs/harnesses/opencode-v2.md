@@ -31,7 +31,6 @@ Secondary signals: the home footer shows `Operator Ready (vX.Y.Z)` and the sessi
 - `/operator:user-init`
 - `/operator:project-init`
 - `/operator:index`
-- `/operator:repair`
 
 Run each in a new conversation. See [Getting Started](../getting-started.md#appendix-commands) for what each command does.
 
@@ -49,5 +48,5 @@ Restart OpenCode after updating.
 ### Troubleshooting
 
 - `Operator Connecting` persists: the server plugin is not active. Rerun `operator-helper install opencode` and restart OpenCode.
-- `Operator Unavailable` or sidebar `Error`: run `/operator:repair` in a new conversation. See [Troubleshooting](../troubleshooting.md).
+- `Operator Unavailable` or sidebar `Error`: see [Troubleshooting](../troubleshooting.md).
 - Duplicate plugin failures after installing both the global package and a local dev build: OpenCode V2 cannot dedupe package identity. Remove one source with `opencode plugin remove`.
