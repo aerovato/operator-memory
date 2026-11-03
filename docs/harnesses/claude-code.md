@@ -25,7 +25,6 @@ The agent should describe the Brain, partitions, and memory-aware workflow. Oper
 - `/operator:user-init` — Configure the User Partition.
 - `/operator:project-init` — Configure the Project Brain.
 - `/operator:index` — Build or refresh the Project Index.
-- `/operator:repair` — Diagnose and repair memory load failures.
 
 These are explicitly invoked skills. The agent runs Helper and follows its output in the current conversation, using your existing tool permissions. See [Getting Started](../getting-started.md#appendix-commands).
 
@@ -51,7 +50,7 @@ Then restart Claude Code. Third-party marketplace auto-update is off by default;
 
 - No injection: check the Claude Code version, confirm the plugin is enabled, and ensure `operator-helper` is on `PATH`.
 - Hooks disabled: `disableAllHooks`, `--bare`, and `--safe-mode` prevent Operator's mod injection. Organization policies such as `allowManagedHooksOnly` and `allowManagedModsOnly` can restrict installed hooks or mods; check the applicable policy with your administrator.
-- Helper failure: Operator logs a recovery cue and injects nothing. Repair Helper's global installation and restart Claude Code. A canonical memory-load diagnostic is injected normally; run `/operator:repair` to address its findings.
+- Helper failure: Operator logs a recovery cue and injects nothing. Repair Helper's global installation and restart Claude Code.
 - Local plugin load failure: run `claude plugin validate <plugin-directory>` and launch with `claude --debug` for load diagnostics. For development, `bun run preview:claude-code` builds Helper and the adapter and launches the local plugin.
 - Direct `<package>@npm` installation reports an account gate: use `operator-helper install claude-code`, which uses the repository marketplace's npm source instead.
 

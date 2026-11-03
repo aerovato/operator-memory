@@ -20,7 +20,7 @@ Codex has no status UI, so verify through the agent. In a fresh session, ask:
 Is Operator Memory guidance available to you? Give a brief outline of what it says.
 ```
 
-The agent should confirm the guidance is loaded and outline the brain, partitions, and memory-aware workflow. If it cannot, confirm the hooks were approved during Codex's startup review, then rerun `$operator-repair`.
+The agent should confirm the guidance is loaded and outline the brain, partitions, and memory-aware workflow. If it cannot, confirm the hooks were approved during Codex's startup review and that the plugin is enabled, then start a fresh session.
 
 ### Commands
 
@@ -29,7 +29,6 @@ Codex plugins cannot register slash commands. The Operator workflows are plugin 
 - `$operator-user-init`
 - `$operator-project-init`
 - `$operator-index`
-- `$operator-repair`
 
 See [Getting Started](../getting-started.md#appendix-commands) for what each workflow does.
 
@@ -48,4 +47,4 @@ Then start a fresh Codex session.
 - No preamble injection: hooks were not approved. Codex reviews untrusted or modified hooks at startup; approve Operator's hooks when prompted. Helper never writes hook trust itself.
 - The `codex` CLI is unavailable: Helper instead writes the `operator-memory` marketplace entry to `config.toml` (in `CODEX_HOME`, default `~/.codex`) and you install the plugin manually from Codex's plugins browser.
 - Installation fails with an invalid `config.toml` error: Helper refuses to edit a `config.toml` whose `marketplaces` value is not expressed as tables. Convert it to table form and rerun the install command.
-- Missing memory or load failures: run `$operator-repair` in a new session. See [Troubleshooting](../troubleshooting.md).
+- Missing memory or load failures: see [Troubleshooting](../troubleshooting.md).

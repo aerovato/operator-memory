@@ -77,7 +77,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 - `opencode-v2.ts` — Default `install opencode` CLI package installation and explicit `opencode-v2` alias
 - `pi.ts` — Pi CLI package installation through its unversioned npm package spec
 - `deepseek.ts` — Independent native DeepSeek Web and Desktop profile installation and outcome reporting
-- `kiro.ts` — Helper-on-PATH check and direct `~/.kiro` writes of the Kiro adapter files
+- `kiro.ts` — Helper-on-PATH check, targeted retired repair-skill migration, and direct `~/.kiro` writes of the Kiro adapter files
 - `preamble.ts` — Canonical core-backed preamble rendering for harness adapters
 - `upgrade.ts`, `version.ts` — Explicit Helper upgrade and read-only update check output
 

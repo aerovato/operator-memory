@@ -1,6 +1,6 @@
 # Pi Adapter Implementation
 
-Last Updated: October 2, 2026
+Last Updated: November 3, 2026
 
 How `@aerovato/operator-pi` binds the general adapter contract with first-class Pi support. Command meaning and setup workflows stay in [`commands.md`](../commands.md) and [`../reference/implementation.md`](../reference/implementation.md). Behavioral deviations are recorded against the reference implementation, not other bindings.
 
@@ -23,7 +23,7 @@ Pi provides the same required Operator surfaces as the reference adapter:
 - Immutable core-rendered preamble injection on every outgoing model call
 - Canonical all-or-nothing load diagnostic and visible recovery cue
 - Main-agent and independently launched subagent preamble injection
-- `/operator:user-init`, `/operator:project-init`, `/operator:index`, and `/operator:repair`
+- `/operator:user-init`, `/operator:project-init`, and `/operator:index`
 - Instruction-based command handoff and agent-driven repair workflow
 - Harness status UI with local-build or package-version identity
 - Helper-managed installation and harness-native package updates
@@ -39,7 +39,7 @@ Pi provides the same required Operator surfaces as the reference adapter:
 
 ## Commands
 
-The extension registers all four Operator command names directly. Each handler:
+The extension registers all three Operator command names directly. Each handler:
 
 1. Waits for the active turn to become idle.
 2. Sends the agent instructions through `pi.sendUserMessage(prompt, { expandPromptTemplates: false })` to check Helper's version, upgrade when outdated, run the requested workflow operation, and handle failures directly.
@@ -69,7 +69,7 @@ Pathway selections: bundled-core resolution (bundled into the package with Pi's 
 
 ## Verification
 
-- Pi unit coverage verifies pending-render coalescing, stable synthetic messages, canonical diagnostics, fatal aborts, session reset, footer lifecycle, all four instruction-based commands, and duplicate-name behavior.
+- Pi unit coverage verifies pending-render coalescing, stable synthetic messages, canonical diagnostics, fatal aborts, session reset, footer lifecycle, all three instruction-based commands, and duplicate-name behavior.
 - Helper integration coverage verifies construction of `pi install npm:@aerovato/operator-pi` through a live child process.
 - The built npm package contains only `dist`, package metadata, and its README; `operator-core` is bundled with no runtime package import.
 - Pi 0.84.2 loads both the package root and built entry. The integration mechanism and differences were also verified against Pi 0.85.1 source.

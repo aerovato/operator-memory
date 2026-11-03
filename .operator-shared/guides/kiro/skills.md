@@ -1,6 +1,6 @@
 # Kiro Agent Skills
 
-Last Updated: October 5, 2026
+Last Updated: November 3, 2026
 
 Kiro implements the open Agent Skills standard (`agentskills.io`).
 

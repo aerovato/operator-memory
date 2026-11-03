@@ -303,7 +303,7 @@ test("checks full memory loading and reports partition errors independently", as
   expect(missing.output).toContain("✓ Shared: Uninitialized");
   expect(missing.output).toContain("✓ User: Uninitialized");
   expect(missing.output).toContain("✓ Private: Uninitialized");
-  expect(missing.output).toContain("No issues detected.");
+  expect(missing.output).toContain("No memory load failures detected.");
 
   seed({
     "/project/.operator-shared/operator.md": "shared",
@@ -315,7 +315,7 @@ test("checks full memory loading and reports partition errors independently", as
   expect(loaded.output).toContain("✓ Shared: Loaded");
   expect(loaded.output).toContain("✓ User: Loaded");
   expect(loaded.output).toContain("✓ Private: Loaded");
-  expect(loaded.output).toContain("No issues detected.");
+  expect(loaded.output).toContain("No memory load failures detected.");
   expect(loaded.output).not.toContain("\u001B");
 
   fs.rmSync(resolvePath("/project/.operator"), { recursive: true });
@@ -328,7 +328,23 @@ test("checks full memory loading and reports partition errors independently", as
   expect(failed.output).toContain("✗ Private: Error");
   expect(failed.output).toContain(resolvePath("/project/.operator"));
   expect(failed.output).toContain(resolvePath("/project/.operator-shared"));
-  expect(failed.output).not.toContain("No issues detected.");
+  expect(failed.output).not.toContain("No memory load failures detected.");
+});
+
+test("memory check accepts loadable partitions with missing core files and invalid index metadata", async () => {
+  seed({
+    "/project/.operator/index/index.md": "# Index without frontmatter",
+    "/project/.operator-shared/catalog.md": "",
+    "/home/.operator/user/catalog.md": "",
+  });
+
+  const result = await executeCli(["memory", "check"], context);
+
+  expect(result.exitCode).toBe(0);
+  expect(result.output).toContain("✓ Shared: Loaded");
+  expect(result.output).toContain("✓ User: Loaded");
+  expect(result.output).toContain("✓ Private: Loaded");
+  expect(result.output).toContain("No memory load failures detected.");
 });
 
 test("renders the canonical preamble for normal and failed memory loads", async () => {

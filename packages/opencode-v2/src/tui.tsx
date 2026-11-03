@@ -161,7 +161,7 @@ function PartitionStatusView(props: {
       />
       <Show when={hasError()}>
         <text fg={props.context.theme.text.feedback.warning.default}>
-          Run /operator:repair to repair
+          Ask the agent to diagnose Operator loading
         </text>
       </Show>
     </box>

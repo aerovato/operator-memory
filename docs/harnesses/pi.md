@@ -20,14 +20,13 @@ Is Operator Memory guidance available to you? Give a brief outline of what it sa
 
 The agent should confirm the guidance is loaded and outline the brain, partitions, and memory-aware workflow. If it cannot, injection is not working.
 
-Secondary signal: the footer shows `· Operator Active (vX.Y.Z)`; local builds show `(Local Build)`. `· Operator Unavailable` means memory failed to load — run `/operator:repair`. `· Operator Error` means rendering failed — rerun the install command and restart Pi.
+Secondary signal: the footer shows `· Operator Active (vX.Y.Z)`; local builds show `(Local Build)`. `· Operator Unavailable` means memory failed to load. `· Operator Error` means rendering failed — rerun the install command and restart Pi.
 
 ### Commands
 
 - `/operator:user-init`
 - `/operator:project-init`
 - `/operator:index`
-- `/operator:repair`
 
 Run each in a new conversation. See [Getting Started](../getting-started.md#appendix-commands) for what each command does.
 
@@ -44,4 +43,4 @@ pi update --extensions
 - No Operator footer: the extension did not load. Rerun `operator-helper install pi` and start a new session.
 - Operator commands appear with a numeric suffix such as `:1`: another extension registered the same name. Use the suffixed name or rename the conflicting extension.
 - Subagents do not receive Operator: only persistent package registrations are inherited by child processes. Install via the command above rather than a temporary `-e` registration.
-- Footer `Unavailable` or missing memory: run `/operator:repair` in a new conversation. See [Troubleshooting](../troubleshooting.md).
+- Footer `Unavailable` or missing memory: see [Troubleshooting](../troubleshooting.md).

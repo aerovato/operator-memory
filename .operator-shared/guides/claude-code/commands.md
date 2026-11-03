@@ -1,16 +1,16 @@
 # Claude Code Commands
 
-Last Updated: October 3, 2026
+Last Updated: November 3, 2026
 
-How the four Operator command intents surface on Claude Code. Plugin commands and skills are markdown files; there is no code-level command registration in the settings-hook pathway (the mod API adds one — see [`mods.md`](./mods.md)).
+How the three Operator command intents surface on Claude Code. Plugin commands and skills are markdown files; there is no code-level command registration in the settings-hook pathway (the mod API adds one — see [`mods.md`](./mods.md)).
 
 ## Slash commands
 
 Files in the plugin's `commands/` directory are auto-discovered. A plugin command is invocable as `/<command-name>` and listed with its plugin label; plugin skills are invocable as `/<plugin>:<skill>`. Subdirectories add namespace segments (`/<command> (plugin:<plugin>:<dir>)`).
 
-Naming: Operator's canonical `/operator:user-init`, `/operator:project-init`, `/operator:index`, `/operator:repair` map naturally — either four command markdown files named `user-init.md`, `project-init.md`, `index.md`, `repair.md` (invoked as `/user-init` with an `operator` plugin label), or four skills invoked as `/operator:user-init` and so on. The skill form reproduces the colon names exactly and adds model-invocability control; prefer it unless command-only features are needed.
+Naming: Operator's canonical `/operator:user-init`, `/operator:project-init`, and `/operator:index` map naturally — either three command markdown files named `user-init.md`, `project-init.md`, and `index.md` (invoked as `/user-init` with an `operator` plugin label), or three skills invoked as `/operator:user-init` and so on. The skill form reproduces the colon names exactly and adds model-invocability control; prefer it unless command-only features are needed.
 
-Live-verified on v2.1.287: plugin skills use directory basenames for the displayed invocation names, even with differing frontmatter names or `skills: ["./skills"]` in the manifest. Use `skills/user-init/`, `project-init/`, `index/`, and `repair/` to expose the canonical names. The scratch `/operator:repair` flow executed Helper version and memory checks and left uninitialized partitions untouched.
+Live-verified on v2.1.287: plugin skills use directory basenames for the displayed invocation names, even with differing frontmatter names or `skills: ["./skills"]` in the manifest. Use `skills/user-init/`, `project-init/`, and `index/` to expose the canonical names.
 
 ## Command markdown format
 
@@ -36,7 +36,7 @@ Shared execution contract from the reference implementation applies: check Helpe
 
 ## Skills
 
-Plugin skills live in `skills/<name>/SKILL.md` with `name` and `description` frontmatter; `references/`, `examples/`, and `scripts/` subfolders hold supporting material. Skill names and descriptions occupy context every turn (the "context cost" of a plugin); full text loads only on invocation. Keep the four Operator skill descriptions short.
+Plugin skills live in `skills/<name>/SKILL.md` with `name` and `description` frontmatter; `references/`, `examples/`, and `scripts/` subfolders hold supporting material. Skill names and descriptions occupy context every turn (the "context cost" of a plugin); full text loads only on invocation. Keep the three Operator skill descriptions short.
 
 SessionStart can return `reloadSkills: true` so skills installed during a session are usable immediately — relevant only if Operator ever installs skills at runtime; Helper setup writes Brain files, not skills, so this is likely unnecessary.
 

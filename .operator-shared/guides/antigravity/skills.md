@@ -1,6 +1,6 @@
 ### Antigravity Skills and Operator Commands
 
-Last Updated: October 11, 2026
+Last Updated: November 3, 2026
 
 Skills are the native explicit-command surface for this binding. Namespacing, full-body expansion, and autonomous suppression are verified on CLI `1.3.3`; graphical equivalents and exact canonical-name collisions remain unverified.
 
@@ -24,7 +24,7 @@ Workspace discovery uses `.agents/skills/<name>/`; legacy `.agent/skills` remain
 
 CLI exposes discovered skills as slash commands, including in print mode. Antigravity 2.0 documents manual skill invocation. `--disable-slash-commands` disables print-mode expansion.
 
-An `operator` plugin with unprefixed `user-init`, `project-init`, `index`, and `repair` skills exposes `/operator:user-init`, `/operator:project-init`, `/operator:index`, and `/operator:repair`. Explicit activation expands the complete skill body into the current conversation. **Do not pre-prefix skill names or directories.** A workspace `/index` can coexist with `/operator:index`; this does not establish every exact-name collision case.
+An `operator` plugin with unprefixed `user-init`, `project-init`, and `index` skills exposes `/operator:user-init`, `/operator:project-init`, and `/operator:index`. Explicit activation expands the complete skill body into the current conversation. **Do not pre-prefix skill names or directories.** A workspace `/index` can coexist with `/operator:index`; this does not establish every exact-name collision case.
 
 #### Model-Invocation Controls
 
@@ -37,8 +37,7 @@ An `operator` plugin with unprefixed `user-init`, `project-init`, `index`, and `
 Skill bodies follow the [reference command prompt](../../specs/reference/implementation.md#commands) and [workflow contract](../../specs/commands.md), not shell expansion or hook-side setup:
 
 - Check `operator-helper version`; run `operator-helper upgrade` when an update is available.
-- Run the matching `user init`, `project init`, `index init`, or `memory check` operation.
-- Setup follows its emitted guide. Repair stops if clear; otherwise repairs reported load failures, rechecks, and reads applicable memory without initializing absent partitions.
+- Run the matching `user init`, `project init`, or `index init` operation and follow its emitted guide.
 - The agent diagnoses startup/version/operation failures and retries. Helper output is working context, not a wholesale user-facing response.
 
 Preamble rendering is separate: a hook can run `operator-helper preamble`, but must not execute setup workflows on the agent's behalf. Full sentinel-body expansion is verified; actual production setup-body execution is not.
@@ -49,7 +48,7 @@ Preamble rendering is separate: a hook can run `operator-helper preamble`, but m
 
 #### Verification Notes
 
-- An `operator` fixture exposed all four canonical commands; each expanded its full sentinel body into the current conversation without hook-side setup. Separate user `/index` and plugin `/operator:index` bodies were invoked correctly.
+- An `operator` fixture exposed four commands, including the now-retired repair command; each expanded its full sentinel body into the current conversation without hook-side setup. Separate user `/index` and plugin `/operator:index` bodies were invoked correctly.
 - `/skills` reported `model_invocable: false` for all four skills with `disable-model-invocation: true`; explicit commands still expanded. This verifies the CLI gate, not graphical behavior or prevention of ordinary file reads.
 - Release changes: `1.1.9` print-mode expansion; `1.1.12` slash hiding; `1.2.4` reload; `1.2.7` double-prefix and plugin-collision fixes. Historical reference pages omit some supported frontmatter and illustrate bare names.
 

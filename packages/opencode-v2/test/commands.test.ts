@@ -8,7 +8,6 @@ test.each([
   ["operator:user-init", "user init", "User Setup"],
   ["operator:project-init", "project init", "Project Setup"],
   ["operator:index", "index init", "Project Index Setup"],
-  ["operator:repair", "memory check", "reported load failures"],
 ] as const)("hands %s to the agent without executing Helper", async (name, operation, guide) => {
   const definitions: CommandDefinition[] = [];
   const prompt = vi.fn();
@@ -59,5 +58,5 @@ test("preserves existing user commands", async () => {
   await registerCommands(context);
 
   expect(definitions.map(definition => definition.name)).not.toContain("operator:index");
-  expect(definitions).toHaveLength(3);
+  expect(definitions).toHaveLength(2);
 });

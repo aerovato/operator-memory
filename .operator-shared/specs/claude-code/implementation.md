@@ -1,6 +1,6 @@
 # Claude Code Binding
 
-Last Updated: October 5, 2026
+Last Updated: November 3, 2026
 
 ## Scope
 
@@ -23,9 +23,9 @@ The bundle imports no Node builtins or npm dependencies. Helpers receiving `$` m
 
 ## Commands
 
-Expose `/operator:user-init`, `/operator:project-init`, `/operator:index`, and `/operator:repair` as explicitly invoked skills. Skill directory names omit the `operator-` prefix because Claude supplies the plugin namespace. Disable model invocation. Do not declare `allowed-tools`; use the user's existing tool permissions.
+Expose `/operator:user-init`, `/operator:project-init`, and `/operator:index` as explicitly invoked skills. Skill directory names omit the `operator-` prefix because Claude supplies the plugin namespace. Disable model invocation. Do not declare `allowed-tools`; use the user's existing tool permissions.
 
-The agent executes Helper and follows the [setup contract](../commands.md) in the current conversation. No inline shell expansion or harness-side workflow execution. Repair runs `memory check`, stops when clear, and never initializes absent partitions.
+The agent executes Helper and follows the [setup contract](../commands.md) in the current conversation. No inline shell expansion or harness-side workflow execution.
 
 ## Installation And Preview
 
@@ -35,6 +35,6 @@ The agent executes Helper and follows the [setup contract](../commands.md) in th
 
 ## Release Contract
 
-`bun run publish:claude-code -- <bump-or-version>` follows the repository's tag-driven release flow with `claude-code@v<version>`. The npm package version is the release source of truth; release preparation synchronizes `plugin.json` before committing. CI checks that both versions match the tag. The package must ship the built mod and all four skills, without generated Claude type declarations or source files. Package, Helper, and documentation requirements follow the [release checklist](../reference/release.md); first publication, trusted publishing setup, and the Helper release are maintainer duties.
+`bun run publish:claude-code -- <bump-or-version>` follows the repository's tag-driven release flow with `claude-code@v<version>`. The npm package version is the release source of truth; release preparation synchronizes `plugin.json` before committing. CI checks that both versions match the tag. The package must ship the built mod and all three skills, without generated Claude type declarations or source files. Package, Helper, and documentation requirements follow the [release checklist](../reference/release.md); first publication, trusted publishing setup, and the Helper release are maintainer duties.
 
 Publish the static repository catalog and adapter package before verifying the hosted `operator-helper install claude-code` path in a clean environment. Local npm-source verification does not establish hosted availability. The release command has no dry-run mode; it commits, tags, and pushes, so execution requires release/push approval.

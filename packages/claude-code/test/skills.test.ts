@@ -6,8 +6,13 @@ const skills = [
   { name: "user-init", command: "user init" },
   { name: "project-init", command: "project init" },
   { name: "index", command: "index init" },
-  { name: "repair", command: "memory check" },
 ] as const;
+
+test("does not ship the retired repair skill", async () => {
+  await expect(
+    readFile(resolve(import.meta.dirname, "../skills/repair/SKILL.md"), "utf8"),
+  ).rejects.toMatchObject({ code: "ENOENT" });
+});
 
 test.each(skills)(
   "registers /operator:$name for explicit invocation",

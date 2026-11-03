@@ -98,9 +98,8 @@ Customize your brain and your agent's behavior however you want. With Operator, 
 
 ### Appendix: Commands
 
-Tip: Run each Operator command in a new conversation so the agent can focus on setup or repair with a clean working context.
+Tip: Run each Operator command in a new conversation so the agent can focus on setup or indexing with a clean working context.
 
 - `/operator:user-init` — Initializes or revises private user-global memory (instructions and freeform) in the current conversation.
 - `/operator:project-init` — Initializes or revises project setup without overwriting existing content. It configures Private, guides optional Shared activation, and indexes the repository.
 - `/operator:index` — Builds or refreshes the Project Index so future agents can navigate repository structure and applicable subsystem context.
-- `/operator:repair` — Diagnoses and repairs missing, malformed, or unloadable Operator context in the current conversation. See [Troubleshooting](troubleshooting.md).
