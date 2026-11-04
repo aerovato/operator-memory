@@ -37,13 +37,15 @@ Read-only memory module with no barrel export.
 
 ### `packages/core/src/`
 
-- `preamble.ts` — Pure deterministic renderer for guidance, all-or-nothing memory injection, recovery diagnostics, and setup warnings
+- `preamble.ts` — Version-selected renderer for guidance, all-or-nothing memory injection, recovery diagnostics, and setup warnings
 - `preamble.test.ts` — Guidance, memory injection, recovery diagnostic, index formatting, warning, and deterministic rendering coverage
+- `preamble-rollout.ts`, `preamble-rollout.test.ts` — Machine-stable 80/20 preamble selection, beta override, OS identity reads, and fallback coverage
 - `utils.ts` — Generic result, type-guard, and error utilities shared across core modules
 
 #### `packages/core/src/prompts/`
 
-- `preamble.ts` — Static Operator framework guidance and core tenets; embeds core document templates
+- `preamble-v1.ts` — v1.1 Operator guidance and tenets; embeds core document templates
+- `preamble-v2.ts` — v2.0 revised context-maintenance guidance and tenets; embeds core document templates
 
 #### `packages/core/src/templates/`
 
