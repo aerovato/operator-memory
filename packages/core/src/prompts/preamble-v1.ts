@@ -2,7 +2,7 @@ import { CATALOG_TEMPLATE } from "../templates/catalog.ts";
 import { PROJECT_INDEX_TEMPLATE } from "../templates/project-index.ts";
 import { PROJECT_SUBINDEX_TEMPLATE } from "../templates/project-subindex.ts";
 
-export const PREAMBLE_PROMPT = `<operator-guidance>
+export const PREAMBLE_PROMPT = `<operator-guidance version="1.1">
 
 # Operator
 
@@ -182,7 +182,7 @@ Examples — record brain entries in scenarios like these:
 
 </operator-guidance>`;
 
-export const PREAMBLE_TENETS = `<operator-tenets>
+export const PREAMBLE_TENETS = `<operator-tenets version="1.1">
 ## **REMEMBER: Core Tenets**
 
 <important>
