@@ -1,5 +1,5 @@
-import { $ as shell, file, write } from "bun";
 import { resolve } from "node:path";
+import { file, $ as shell, write } from "bun";
 
 const root = resolve(import.meta.dirname, "..");
 const $ = shell.cwd(root);
@@ -39,11 +39,12 @@ export async function publishAll(bump: string | undefined): Promise<void> {
   ).json();
   plugin.version = claude.version;
   await write(pluginPath, `${JSON.stringify(plugin, null, 2)}\n`);
+  await $`bun scripts/sync-codex-version.ts`;
   await $`bun install --lockfile-only --ignore-scripts`;
 
   const manifests = releases.map(release => `packages/${release.directory}/package.json`);
   const title = "chore(release): publish coordinated package batch";
-  await $`git add -- bun.lock packages/claude-code/.claude-plugin/plugin.json ${manifests}`;
+  await $`git add -- bun.lock packages/claude-code/.claude-plugin/plugin.json packages/codex/.codex-plugin/plugin.json .agents/plugins/marketplace.json ${manifests}`;
   await $`git commit -m ${title}`;
   const head = (await $`git rev-parse HEAD`.text()).trim();
   await $`git push -u origin ${branch}`;

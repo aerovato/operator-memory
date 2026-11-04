@@ -4,46 +4,33 @@ import { join } from "node:path";
 import { Effect } from "effect";
 
 import { type CliContext, getErrorMessage } from "../../utils.ts";
-import { pathKind, type ProcessResult, readOptionalFile, runProcess } from "../common.ts";
+import { type ProcessResult, readOptionalFile, runProcess } from "../common.ts";
 
-const MARKETPLACE_MARKER = "Operator Memory managed Codex marketplace.\n";
+const MARKETPLACE_SOURCE = "https://github.com/aerovato/operator-memory.git";
 const MARKETPLACE_NAME = "operator-memory";
-const PLUGIN_NAME = "aerovato";
-const PLUGIN_ID = `${PLUGIN_NAME}@${MARKETPLACE_NAME}`;
-const MARKETPLACE = `${JSON.stringify(
-  {
-    name: MARKETPLACE_NAME,
-    plugins: [
-      {
-        name: PLUGIN_NAME,
-        source: {
-          source: "npm",
-          package: "@aerovato/operator-codex",
-          version: "latest",
-        },
-        policy: { installation: "AVAILABLE" },
-      },
-    ],
-  },
-  null,
-  2,
-)}\n`;
+const PLUGIN_ID = `aerovato@${MARKETPLACE_NAME}`;
 
 export const installCodex = Effect.fn("installCodex")(function* (context: CliContext) {
-  const marketplace = yield* writeMarketplace(context.home);
-  if (!marketplace.ok) return marketplace.result;
-
   const addMarketplace = yield* runProcess(
     "codex",
-    ["plugin", "marketplace", "add", marketplace.path, "--json"],
+    ["plugin", "marketplace", "add", MARKETPLACE_SOURCE, "--ref", "main", "--json"],
     context.cwd,
     { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
   );
   if (!addMarketplace.ok && isMissingBinary(addMarketplace.error)) {
-    return yield* registerDesktopMarketplace(context, marketplace.path);
+    return yield* registerDesktopMarketplace(context);
   }
   const addFailure = commandFailure(addMarketplace, "Codex marketplace installation failed");
   if (addFailure !== null) return addFailure;
+
+  const upgrade = yield* runProcess(
+    "codex",
+    ["plugin", "marketplace", "upgrade", MARKETPLACE_NAME, "--json"],
+    context.cwd,
+    { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
+  );
+  const upgradeFailure = commandFailure(upgrade, "Codex marketplace upgrade failed");
+  if (upgradeFailure !== null) return upgradeFailure;
 
   const install = yield* runProcess("codex", ["plugin", "add", PLUGIN_ID, "--json"], context.cwd, {
     NPM_CONFIG_MIN_RELEASE_AGE: "0",
@@ -75,54 +62,12 @@ export const installCodex = Effect.fn("installCodex")(function* (context: CliCon
   };
 });
 
-function writeMarketplace(
-  home: string,
-): Effect.Effect<
-  | { readonly ok: true; readonly path: string }
-  | { readonly ok: false; readonly result: { readonly exitCode: 1; readonly output: string } }
-> {
-  return Effect.promise(async () => {
-    const root = join(home, ".operator-helper", "codex-marketplace");
-    const marker = join(root, ".operator-managed");
-    const marketplace = join(root, ".agents", "plugins", "marketplace.json");
-    try {
-      const kind = await pathKind(root);
-      if (
-        kind !== "missing"
-        && (kind !== "directory" || (await readOptionalFile(marker)) !== MARKETPLACE_MARKER)
-      ) {
-        return {
-          ok: false,
-          result: {
-            exitCode: 1,
-            output: `✗ Preserved unmanaged Codex marketplace at ${root}`,
-          },
-        } as const;
-      }
-
-      await mkdir(join(root, ".agents", "plugins"), { recursive: true });
-      await writeFile(marker, MARKETPLACE_MARKER);
-      await writeFile(marketplace, MARKETPLACE);
-      return { ok: true, path: root } as const;
-    } catch (error) {
-      return {
-        ok: false,
-        result: {
-          exitCode: 1,
-          output: `✗ Could not prepare Codex marketplace: ${getErrorMessage(error)}`,
-        },
-      } as const;
-    }
-  });
-}
-
 function isMissingBinary(error: string): boolean {
   return error.startsWith("NotFound:");
 }
 
 function registerDesktopMarketplace(
   context: CliContext,
-  marketplacePath: string,
 ): Effect.Effect<{ readonly exitCode: number; readonly output: string }> {
   return Effect.promise(async () => {
     const codexHome = process.env.CODEX_HOME || join(context.home, ".codex");
@@ -130,7 +75,7 @@ function registerDesktopMarketplace(
     try {
       const content = await readOptionalFile(config);
       await mkdir(codexHome, { recursive: true });
-      await writeFile(config, upsertMarketplaceTable(content, marketplacePath));
+      await writeFile(config, upsertMarketplaceTable(content));
     } catch (error) {
       return {
         exitCode: 1,
@@ -148,9 +93,9 @@ function registerDesktopMarketplace(
   });
 }
 
-function upsertMarketplaceTable(content: string | null, source: string): string {
+function upsertMarketplaceTable(content: string | null): string {
   const header = `[marketplaces.${MARKETPLACE_NAME}]`;
-  const block = `${header}\nsource_type = "local"\nsource = ${JSON.stringify(source)}\n`;
+  const block = `${header}\nsource_type = "git"\nsource = ${JSON.stringify(MARKETPLACE_SOURCE)}\nref = "main"\n`;
   if (content === null) return block;
 
   const lines = content.split("\n");

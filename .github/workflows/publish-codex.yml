@@ -37,6 +37,16 @@ jobs:
         run: |
           version=$(node -e 'process.stdout.write(require("./packages/codex/package.json").version)')
           test "$GITHUB_REF_NAME" = "codex@v$version"
+          node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+            const read = path => JSON.parse(readFileSync(path, "utf8"));
+            const version = read("packages/codex/package.json").version;
+            const plugin = read("packages/codex/.codex-plugin/plugin.json");
+            const entry = read(".agents/plugins/marketplace.json").plugins.find(plugin => plugin.name === "aerovato");
+            if (plugin.version !== version || entry?.source.version !== version) {
+              throw new Error("Codex package, plugin manifest, and marketplace versions must match");
+            }
+          '
 
       - name: Check Codex plugin
         run: bun run check packages/codex

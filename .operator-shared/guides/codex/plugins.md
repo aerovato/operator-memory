@@ -1,6 +1,6 @@
 # OpenAI Plugins
 
-Last Updated: September 27, 2026
+Last Updated: November 4, 2026
 
 Verified plugin packaging, distribution, installation, and update behavior.
 
@@ -49,7 +49,9 @@ A marketplace is a JSON catalog. Common local locations are:
 
 Marketplace entries identify the plugin source, install policy, authentication policy, and category. Git-backed entries can select a repository, subdirectory, ref, or SHA. Npm-backed entries can select a package, version or range, and HTTPS registry.
 
-Codex downloads npm plugin packages without running npm lifecycle scripts.
+Codex downloads npm plugin packages without running npm lifecycle scripts. Git distribution must likewise contain executable build outputs; do not point a catalog at a source-only adapter directory.
+
+The public submission documentation explicitly rejects packages containing lifecycle hooks and directs hook-dependent plugins to manual Codex Desktop installation. The desktop-only submission route does not establish an exception for lifecycle hooks. Operator cannot currently use the universal public directory with its existing injection contract.
 
 ## Local Installation
 
@@ -71,7 +73,7 @@ Codex CLI supports:
 
 Installed plugin capabilities become available in a new chat or CLI session.
 
-Operator release installation uses a Helper-managed local marketplace whose `aerovato` plugin entry resolves `@aerovato/operator-codex@latest` from npm. Helper adds the marketplace, installs `aerovato@operator-memory`, and verifies installed/enabled state through `codex plugin list --json`. Hook trust remains a native Codex decision.
+Operator release installation registers the public `aerovato/operator-memory` Git repository at `main`. Its `operator-memory` catalog pins an exact `@aerovato/operator-codex` npm version. Helper adds and upgrades the marketplace, installs `aerovato@operator-memory`, and verifies installed/enabled state through `codex plugin list --json`. Hook trust remains a native Codex decision. Adding the Git source records the new source over the old local registration; the old local catalog is not deleted. `core-plugins/src/marketplace_add.rs` stages and validates the Git catalog before recording its configuration.
 
 ## Enablement
 
@@ -88,9 +90,13 @@ Bundled MCP servers have separate enablement and tool-approval settings. Plugin 
 
 ## Updates
 
-Codex can upgrade configured Git marketplaces globally or by marketplace name. Marketplace refresh can install or refresh files for configured plugins even when a plugin is disabled.
+Documented: `codex plugin marketplace upgrade [marketplace-name]` upgrades configured Git marketplaces. A local marketplace directory is not a configured Git source, even when its entries download npm packages; it has no Git marketplace upgrade action.
 
-The official documentation describes manual refresh and upgrade paths but does not specify a complete automatic-update contract for public or local plugins. Changed hook definitions require renewed trust because trust is tied to the definition hash.
+Source-verified in the checked-out Codex reference on November 4, 2026: `core-plugins/src/manager.rs` starts background Git marketplace upgrades during plugin startup. When the Git revision changes, it force-refreshes configured plugin copies from the upgraded catalog, including npm-backed entries. An unchanged Git revision skips that force-refresh; changing npm `latest` alone does not trigger this Git path. This source finding does not establish the behavior of every shipped Desktop version or an outdated-version notification UI.
+
+The separate non-curated cache refresh materializes plugin sources, including npm, and normally replaces the installed copy only when the plugin manifest version changes (`core-plugins/src/loader.rs`). The cache version comes from the plugin manifest, not npm `package.json` (`core-plugins/src/store.rs`). Keep both versions synchronized on every release; a frozen manifest version can suppress replacement despite a newer npm package.
+
+Changed hook definitions require renewed trust because trust is tied to the definition hash.
 
 ## Web Limits
 
@@ -98,6 +104,9 @@ Publishing a plugin makes its listing discoverable on Web surfaces, but installi
 
 ## Sources
 
+- [Plugin submission](https://developers.openai.com/plugins/deploy/submission)
+- [Desktop-only submission](https://developers.openai.com/plugins/deploy/desktop-only)
+- `<reference>/codex/codex-rs/core-plugins/src/manager.rs`, `marketplace_upgrade.rs`, `loader.rs`, `store.rs` — background Git upgrade, revision gating, source refresh, and manifest-version comparison.
 - [Plugin architecture](https://developers.openai.com/plugins/concepts/plugins)
 - [Package your plugin](https://developers.openai.com/plugins/build/plugins)
 - [Plugins](https://learn.chatgpt.com/docs/plugins)

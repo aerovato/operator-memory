@@ -25,7 +25,7 @@ read_if: Working anywhere in the committed Operator Memory project
 
 - [`claude-code/`](claude-code.md) - Claude Code mod adapter with Helper-rendered main-agent and subagent preamble injection.
 - [`core/`](core.md) - Private harness-agnostic runtime for memory loading, shared models, and preamble generation.
-- [`codex/`](codex.md) - Codex plugin package with local marketplace installation infrastructure.
+- [`codex/`](codex.md) - Codex plugin package installed through the repository Git marketplace and npm.
 - [`deepseek/`](deepseek.md) - Published DeepSeek Harness Host plugin and installable bundle package.
 - [`helper/`](helper.md) - Published harness installation, explicit upgrade, setup, status, guide, Git, and Project Index lint CLI.
 - [`opencode-v2/`](opencode-v2.md) - Default OpenCode adapter: context-hook preamble injection, Operator commands, and RPC-backed TUI status.
@@ -69,13 +69,14 @@ Indexed by subindexes under `index/harnesses/`; clone the upstream repository to
 - `scripts/check.sh` - Full-workspace or package-scoped validation runner.
 - `scripts/install-opencode.ts`, `scripts/install-opencode.test.ts` - Self-contained V2 development build and Helper linking, global JSONC-preserving local-directory registration, and installation coverage.
 - `scripts/install-pi.ts` - Persistently registers the built local Pi package through its absolute package-root path.
-- `scripts/preview-codex.ts` - Self-contained local Codex preview: builds and links Helper, builds the plugin package, then registers the repository marketplace and installs or refreshes the local `aerovato@operator-local` plugin.
+- `scripts/preview-codex.ts`, `scripts/preview-codex.test.ts` - Self-contained local Codex preview: builds and links Helper, builds the plugin package, then generates/registers a separate local marketplace and installs or refreshes the local `aerovato@operator-local` plugin.
 - `scripts/preview-claude-code.ts` - Builds and links Helper, builds the Claude Code adapter, and launches Claude with the local package through `--plugin-dir`.
-- `scripts/publish-helper.sh`, `scripts/publish-opencode-v2.sh`, `scripts/publish-pi.sh`, `scripts/publish-codex.sh`, `scripts/publish-claude-code.sh`, `scripts/publish-deepseek.sh` - Preflight-validated package check, build, version, lockfile, commit, tag, and atomic push release automation; accepts semantic bump names, `X.Y.Z`, or `vX.Y.Z`. Claude Code also synchronizes its plugin manifest version.
+- `scripts/publish-helper.sh`, `scripts/publish-opencode-v2.sh`, `scripts/publish-pi.sh`, `scripts/publish-codex.sh`, `scripts/publish-claude-code.sh`, `scripts/publish-deepseek.sh` - Preflight-validated package check, build, version, lockfile, commit, tag, and atomic push release automation; accepts semantic bump names, `X.Y.Z`, or `vX.Y.Z`. Claude Code synchronizes its plugin manifest version; Codex synchronizes its plugin manifest and public marketplace version.
+- `scripts/sync-codex-version.ts`, `scripts/sync-codex-version.test.ts` - Synchronize the Codex plugin manifest and public marketplace npm version from the package version during release preparation.
 - `scripts/resolve-publish-version.sh`, `scripts/resolve-publish-version.test.ts` - Shared semantic bump resolution and focused validation coverage for package releases.
 - `scripts/publish-all.ts`, `scripts/publish-all.test.ts` - Bun-shell six-package publishing through one version commit and PR and individual same-commit tags, Helper last; existing CI workflows validate and publish.
 - `biome.json`, `tsconfig.json`, `vitest.config.ts` - Workspace formatting, typechecking, and test configuration.
 - `.opencode/opencode.json` - Ignored project-local config from the retired V2 preview flow; existing files are not removed by global local-build installation.
-- `.agents/plugins/marketplace.json` - Local Codex marketplace entry for installing the workspace plugin package during development.
+- `.agents/plugins/marketplace.json` - Public Codex Git marketplace catalog pointing to the exact published npm plugin version.
 - `.claude-plugin/marketplace.json` - Static Claude Code marketplace pointing to the published npm adapter package.
 - `package.json`, `bun.lock` - Bun workspace metadata and locked dependencies; OpenCode build/install/publish commands target V2.
