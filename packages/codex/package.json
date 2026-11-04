@@ -1,6 +1,6 @@
 {
   "name": "@aerovato/operator-codex",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Operator Memory adapter for Codex.",
   "license": "BSD-3-Clause",
   "author": "Aerovato Research",
