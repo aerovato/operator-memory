@@ -1,6 +1,6 @@
 # Codex Hooks
 
-Last Updated: September 24, 2026
+Last Updated: November 4, 2026
 
 Verified lifecycle-hook discovery, execution, context injection, and trust behavior.
 
@@ -56,7 +56,8 @@ Command hooks:
 - Run with the session `cwd` as their working directory.
 - Run synchronously by default.
 - Run through the user's shell at host-user privilege, outside the agent sandbox (still subject to normal OS permissions); the session permission mode does not constrain them.
-- Support a Windows-specific `commandWindows` override.
+- Support a Windows-specific `commandWindows` override. The default Windows runner uses `COMSPEC` or `cmd.exe /C`; Unix uses `SHELL` or `/bin/sh -lc`. For a single-line leading explanation, use `: "Render the Operator Memory preamble"; node "…"` on Unix and `REM Render the Operator Memory preamble & node "…"` in the Windows override. The Unix colon is a silent no-op; Windows uses the native `REM` comment followed by the command separator. Keep Node last to preserve its exit status.
+- Support `statusMessage` for a human-readable execution status; this does not establish replacement of the command text in Desktop hook details.
 - Default to a 600-second timeout for most events.
 - Can run in the background with `async: true`, subject to event limitations.
 

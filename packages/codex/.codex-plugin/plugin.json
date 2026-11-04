@@ -1,6 +1,13 @@
 {
   "name": "aerovato",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Operator Memory",
-  "hooks": "./hooks/hooks.json"
+  "hooks": "./hooks/hooks.json",
+  "interface": {
+    "displayName": "Operator Memory",
+    "shortDescription": "Durable context for agent-driven development.",
+    "developerName": "Aerovato Research",
+    "logo": "./assets/aerovato-research.jpg",
+    "composerIcon": "./assets/aerovato-research.jpg"
+  }
 }

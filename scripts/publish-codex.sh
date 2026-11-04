@@ -43,9 +43,10 @@ bun run build:codex
 (cd packages/codex && npm pack --dry-run)
 
 npm version "$version" --no-git-tag-version --workspaces=false --prefix packages/codex
+bun scripts/sync-codex-version.ts
 bun install --lockfile-only --ignore-scripts
 
-git add "bun.lock" "packages/codex/package.json"
+git add "bun.lock" "packages/codex/package.json" "packages/codex/.codex-plugin/plugin.json" ".agents/plugins/marketplace.json"
 git commit -m "codex@v$version"
 git tag "$tag"
 git push --atomic origin main "$tag"

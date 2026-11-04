@@ -1,2 +1,4 @@
+interface:
+  display_name: Build or Refresh the Operator Project Index
 policy:
   allow_implicit_invocation: false

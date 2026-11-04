@@ -1,9 +1,20 @@
 {
-  "name": "operator-local",
+  "name": "operator-memory",
+  "interface": {
+    "displayName": "Operator Memory"
+  },
   "plugins": [
     {
       "name": "aerovato",
-      "source": "./packages/codex",
+      "interface": {
+        "displayName": "Operator Memory",
+        "developerName": "Aerovato Research"
+      },
+      "source": {
+        "source": "npm",
+        "package": "@aerovato/operator-codex",
+        "version": "0.3.0"
+      },
       "policy": {
         "installation": "AVAILABLE"
       }

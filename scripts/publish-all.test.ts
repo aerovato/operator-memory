@@ -104,7 +104,16 @@ test("bumps all packages in one PR commit and pushes individual same-commit tags
   );
   expect(calls.some(call => call[0] === "gh" && call[1] === "run")).toBe(false);
   expect(calls.some(call => call[0] === "npm" && call[1] === "view")).toBe(false);
-  expect(calls.some(call => call[0] === "bun" && call[1] === "run")).toBe(false);
+  expect(calls).toContainEqual(["bun", "scripts/sync-codex-version.ts"]);
+  expect(
+    calls.findIndex(call => call[0] === "bun" && call[1] === "scripts/sync-codex-version.ts"),
+  ).toBeLessThan(calls.findIndex(call => call[0] === "git" && call[1] === "commit"));
+  expect(calls.find(call => call[0] === "git" && call[1] === "add")).toEqual(
+    expect.arrayContaining([
+      "packages/codex/.codex-plugin/plugin.json",
+      ".agents/plugins/marketplace.json",
+    ]),
+  );
 });
 
 test("rejects invalid input before executing commands", async () => {

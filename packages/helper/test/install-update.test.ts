@@ -13,6 +13,7 @@ import { NpmRegistry, NpmRegistryError } from "../src/npm-registry.ts";
 import { detectInstallationChannel, upgradeHelper } from "../src/update.ts";
 import type { CliContext, CliResult } from "../src/utils.ts";
 
+const marketplaceSource = "https://github.com/aerovato/operator-memory.git";
 const originalPath = process.env.PATH;
 const originalCodexHome = process.env.CODEX_HOME;
 let directory: string;
@@ -25,6 +26,7 @@ beforeEach(() => {
   fs.mkdirSync(bin);
   record = join(directory, "record");
   process.env.PATH = bin;
+  delete process.env.CODEX_HOME;
   process.env.OPERATOR_TEST_RECORD = record;
   context = {
     cwd: directory,
@@ -46,7 +48,7 @@ afterEach(() => {
 });
 
 test.runIf(process.platform !== "win32")(
-  "installs and verifies the Codex plugin through a managed npm marketplace",
+  "registers and upgrades the Git marketplace before installing and verifying Codex",
   async () => {
     executable(
       "codex",
@@ -57,33 +59,15 @@ printf '{"installed":[{"pluginId":"aerovato@operator-memory","installed":true,"e
     );
 
     const result = await execute(["install", "codex"], "4.5.6");
-    const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
-    const marketplace = JSON.parse(
-      fs.readFileSync(join(marketplaceRoot, ".agents", "plugins", "marketplace.json"), "utf8"),
-    );
-
     expect(result).toEqual({
       exitCode: 0,
       output:
         "✓ Codex plugin installed and enabled\n"
         + "Start a new Codex session and approve the Operator hooks if prompted.",
     });
-    expect(marketplace).toEqual({
-      name: "operator-memory",
-      plugins: [
-        {
-          name: "aerovato",
-          source: {
-            source: "npm",
-            package: "@aerovato/operator-codex",
-            version: "latest",
-          },
-          policy: { installation: "AVAILABLE" },
-        },
-      ],
-    });
     expect(fs.readFileSync(record, "utf8")).toBe(
-      `0|plugin marketplace add ${marketplaceRoot} --json\n`
+      `0|plugin marketplace add ${marketplaceSource} --ref main --json\n`
+        + "0|plugin marketplace upgrade operator-memory --json\n"
         + "0|plugin add aerovato@operator-memory --json\n"
         + "0|plugin list --marketplace operator-memory --json\n",
     );
@@ -107,17 +91,32 @@ printf '{"installed":[{"pluginId":"aerovato@operator-memory","installed":true,"e
   },
 );
 
-test("preserves an unmanaged Codex marketplace", async () => {
+test.runIf(process.platform !== "win32")(
+  "stops before plugin installation when the Git marketplace cannot upgrade",
+  async () => {
+    executable(
+      "codex",
+      `printf '%s\\n' "$*" >> "$OPERATOR_TEST_RECORD"
+if [ "$1 $2 $3" = "plugin marketplace add" ]; then printf '{}'; exit 0; fi
+printf 'Could not refresh marketplace'; exit 7`,
+    );
+
+    expect(await execute(["install", "codex"], "4.5.6")).toEqual({
+      exitCode: 7,
+      output: "Could not refresh marketplace",
+    });
+    expect(fs.readFileSync(record, "utf8")).not.toContain("plugin add");
+  },
+);
+
+test("leaves the retired local marketplace files untouched", async () => {
   const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
   fs.mkdirSync(marketplaceRoot, { recursive: true });
   fs.writeFileSync(join(marketplaceRoot, "user-file"), "user owned");
 
   const result = await execute(["install", "codex"], "4.5.6");
 
-  expect(result).toEqual({
-    exitCode: 1,
-    output: `✗ Preserved unmanaged Codex marketplace at ${marketplaceRoot}`,
-  });
+  expect(result.exitCode).toBe(0);
   expect(fs.readFileSync(join(marketplaceRoot, "user-file"), "utf8")).toBe("user owned");
 });
 
@@ -269,8 +268,6 @@ test.runIf(process.platform !== "win32")(
 test("registers the marketplace in config.toml when the Codex CLI is unavailable", async () => {
   const codexHome = join(directory, "codex-home");
   process.env.CODEX_HOME = codexHome;
-  const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
-
   const result = await execute(["install", "codex"], "4.5.6");
 
   expect(result).toEqual({
@@ -280,7 +277,7 @@ test("registers the marketplace in config.toml when the Codex CLI is unavailable
       + "Codex CLI unavailable: install aerovato@operator-memory from the Codex plugins browser, then start a new session and approve the Operator hooks.",
   });
   expect(fs.readFileSync(join(codexHome, "config.toml"), "utf8")).toBe(
-    `[marketplaces.operator-memory]\nsource_type = "local"\nsource = ${JSON.stringify(marketplaceRoot)}\n`,
+    `[marketplaces.operator-memory]\nsource_type = "git"\nsource = ${JSON.stringify(marketplaceSource)}\nref = "main"\n`,
   );
 });
 
@@ -303,13 +300,11 @@ test("refreshes an existing marketplace table without touching other config", as
       "",
     ].join("\n"),
   );
-  const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
-
   const result = await execute(["install", "codex"], "4.5.6");
 
   expect(result.exitCode).toBe(0);
   const content = fs.readFileSync(config, "utf8");
-  expect(content).toContain(`source = ${JSON.stringify(marketplaceRoot)}`);
+  expect(content).toContain(`source = ${JSON.stringify(marketplaceSource)}`);
   expect(content).not.toContain("/old/path");
   expect(content).toContain('model = "gpt-5-mini"');
 });
@@ -343,8 +338,6 @@ test.runIf(process.platform !== "win32")(
       config,
       ['model = "gpt-5"', "", "[marketplaces.operator-memory]", 'source = "/old/path"'].join("\n"),
     );
-    const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
-
     const result = await execute(["install", "codex"], "4.5.6");
 
     expect(result.exitCode).toBe(0);
@@ -353,8 +346,9 @@ test.runIf(process.platform !== "win32")(
         'model = "gpt-5"',
         "",
         `[marketplaces.operator-memory]`,
-        `source_type = "local"`,
-        `source = ${JSON.stringify(marketplaceRoot)}`,
+        `source_type = "git"`,
+        `source = ${JSON.stringify(marketplaceSource)}`,
+        `ref = "main"`,
         "",
       ].join("\n"),
     );
@@ -374,23 +368,22 @@ test("replaces stale keys and comments inside an existing marketplace table", as
       "# stale comment",
       'source_type = "git"',
       'source = "https://example.com/old"',
-      'ref = "main"',
+      'ref = "old-branch"',
       "",
       "[profiles.fast]",
       'model = "gpt-5-mini"',
     ].join("\n"),
   );
-  const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
-
   const result = await execute(["install", "codex"], "4.5.6");
 
   expect(result.exitCode).toBe(0);
   const content = fs.readFileSync(config, "utf8");
   expect(content).toContain("# user comment");
   expect(content).not.toContain("stale comment");
-  expect(content).not.toContain("git");
-  expect(content).not.toContain('ref = "main"');
-  expect(content).toContain(`source = ${JSON.stringify(marketplaceRoot)}`);
+  expect(content).toContain('source_type = "git"');
+  expect(content).not.toContain('ref = "old-branch"');
+  expect(content).toContain('ref = "main"');
+  expect(content).toContain(`source = ${JSON.stringify(marketplaceSource)}`);
   expect(content).toContain('model = "gpt-5-mini"');
 });
 
@@ -405,8 +398,6 @@ test("appends without disturbing other marketplace tables", async () => {
       "\n",
     ),
   );
-  const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
-
   const result = await execute(["install", "codex"], "4.5.6");
 
   expect(result.exitCode).toBe(0);
@@ -414,7 +405,7 @@ test("appends without disturbing other marketplace tables", async () => {
   expect(content).toContain('source = "/personal/plugins"');
   expect(
     content.endsWith(
-      `[marketplaces.operator-memory]\nsource_type = "local"\nsource = ${JSON.stringify(marketplaceRoot)}\n`,
+      `[marketplaces.operator-memory]\nsource_type = "git"\nsource = ${JSON.stringify(marketplaceSource)}\nref = "main"\n`,
     ),
   ).toBe(true);
 });
@@ -425,13 +416,11 @@ test("appends when the config has no trailing newline", async () => {
   const config = join(codexHome, "config.toml");
   fs.mkdirSync(codexHome, { recursive: true });
   fs.writeFileSync(config, 'model = "gpt-5"');
-  const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
-
   const result = await execute(["install", "codex"], "4.5.6");
 
   expect(result.exitCode).toBe(0);
   expect(fs.readFileSync(config, "utf8")).toBe(
-    `model = "gpt-5"\n[marketplaces.operator-memory]\nsource_type = "local"\nsource = ${JSON.stringify(marketplaceRoot)}\n`,
+    `model = "gpt-5"\n[marketplaces.operator-memory]\nsource_type = "git"\nsource = ${JSON.stringify(marketplaceSource)}\nref = "main"\n`,
   );
 });
 
@@ -444,14 +433,12 @@ test("recognizes a spaced marketplace table header", async () => {
     config,
     ["[ marketplaces.operator-memory ]", 'source = "/old/path"', ""].join("\n"),
   );
-  const marketplaceRoot = join(directory, ".operator-helper", "codex-marketplace");
-
   const result = await execute(["install", "codex"], "4.5.6");
 
   expect(result.exitCode).toBe(0);
   const content = fs.readFileSync(config, "utf8");
   expect(content).not.toContain("/old/path");
-  expect(content).toContain(`source = ${JSON.stringify(marketplaceRoot)}`);
+  expect(content).toContain(`source = ${JSON.stringify(marketplaceSource)}`);
 });
 
 test("refuses an inline marketplaces table", async () => {

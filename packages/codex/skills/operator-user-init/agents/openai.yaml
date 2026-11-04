@@ -1,2 +1,4 @@
+interface:
+  display_name: Initialize the Operator User Partition
 policy:
   allow_implicit_invocation: false
