@@ -73,6 +73,7 @@ Indexed by subindexes under `index/harnesses/`; clone the upstream repository to
 - `scripts/preview-claude-code.ts` - Builds and links Helper, builds the Claude Code adapter, and launches Claude with the local package through `--plugin-dir`.
 - `scripts/publish-helper.sh`, `scripts/publish-opencode-v2.sh`, `scripts/publish-pi.sh`, `scripts/publish-codex.sh`, `scripts/publish-claude-code.sh`, `scripts/publish-deepseek.sh` - Preflight-validated package check, build, version, lockfile, commit, tag, and atomic push release automation; accepts semantic bump names, `X.Y.Z`, or `vX.Y.Z`. Claude Code also synchronizes its plugin manifest version.
 - `scripts/resolve-publish-version.sh`, `scripts/resolve-publish-version.test.ts` - Shared semantic bump resolution and focused validation coverage for package releases.
+- `scripts/publish-all.ts`, `scripts/publish-all.test.ts` - Bun-shell six-package publishing through one version commit and PR and individual same-commit tags, Helper last; existing CI workflows validate and publish.
 - `biome.json`, `tsconfig.json`, `vitest.config.ts` - Workspace formatting, typechecking, and test configuration.
 - `.opencode/opencode.json` - Ignored project-local config from the retired V2 preview flow; existing files are not removed by global local-build installation.
 - `.agents/plugins/marketplace.json` - Local Codex marketplace entry for installing the workspace plugin package during development.
