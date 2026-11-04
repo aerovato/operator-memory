@@ -1,6 +1,6 @@
 {
   "name": "@aerovato/operator-deepseek",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Operator Memory adapter for DeepSeek Harness.",
   "license": "BSD-3-Clause",
   "author": "Aerovato Research",
