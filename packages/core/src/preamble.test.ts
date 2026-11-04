@@ -1,19 +1,45 @@
-import { expect, test } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
 
 import type { MemorySnapshot } from "./memory/load.ts";
 import type { ProjectPartitionSnapshot } from "./memory/project.ts";
 import type { UserPartitionSnapshot } from "./memory/user.ts";
 import { renderPreamble as renderMemoryPreamble } from "./preamble.ts";
-import { PREAMBLE_PROMPT, PREAMBLE_TENETS } from "./prompts/preamble.ts";
+import { selectPreambleVersion } from "./preamble-rollout.ts";
+import { PREAMBLE_PROMPT, PREAMBLE_TENETS } from "./prompts/preamble-v1.ts";
+import * as preambleV2 from "./prompts/preamble-v2.ts";
 import { CATALOG_TEMPLATE } from "./templates/catalog.ts";
 import { PROJECT_INDEX_TEMPLATE } from "./templates/project-index.ts";
 import { PROJECT_SUBINDEX_TEMPLATE } from "./templates/project-subindex.ts";
 import { failure, success } from "./utils.ts";
 
+vi.mock("./preamble-rollout.ts", () => ({ selectPreambleVersion: vi.fn(() => "1.1") }));
+
+afterEach(() => {
+  vi.mocked(selectPreambleVersion).mockReturnValue("1.1");
+});
+
 test("embeds core document templates in fixed guidance", () => {
   expect(PREAMBLE_PROMPT).toContain(PROJECT_INDEX_TEMPLATE.trimEnd());
   expect(PREAMBLE_PROMPT).toContain(PROJECT_SUBINDEX_TEMPLATE.trimEnd());
   expect(PREAMBLE_PROMPT).toContain(CATALOG_TEMPLATE.trimEnd());
+  expect(preambleV2.PREAMBLE_PROMPT).toContain(PROJECT_INDEX_TEMPLATE.trimEnd());
+  expect(preambleV2.PREAMBLE_PROMPT).toContain(PROJECT_SUBINDEX_TEMPLATE.trimEnd());
+  expect(preambleV2.PREAMBLE_PROMPT).toContain(CATALOG_TEMPLATE.trimEnd());
+});
+
+test.each(["1.1", "2.0"] as const)("renders matching guidance and tenets for v%s", version => {
+  vi.mocked(selectPreambleVersion).mockReturnValue(version);
+  const content = renderPreamble({
+    shared: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
+    user: { exists: false, operatorInstructions: null, catalog: null },
+    private: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
+  });
+  const prompt = version === "2.0" ? preambleV2 : { PREAMBLE_PROMPT, PREAMBLE_TENETS };
+  expect(content.startsWith(prompt.PREAMBLE_PROMPT)).toBe(true);
+  expect(content).toContain(prompt.PREAMBLE_TENETS);
+  expect(content).toContain(`<operator-guidance version="${version}">`);
+  expect(content).toContain(`<operator-tenets version="${version}">`);
+  expect(content).not.toContain(`version="${version === "2.0" ? "1.1" : "2.0"}"`);
 });
 
 test("renders fixed guidance and the missing-catalog warning for empty memory", () => {
@@ -285,38 +311,44 @@ test("warns about a missing user catalog independently of project catalogs", () 
   expect(preamble).not.toContain("<user-catalog>");
 });
 
-test("renders only recovery diagnostics when any partition fails", () => {
-  const rendered = renderMemoryPreamble({
-    shared: success({
-      exists: true,
-      operatorInstructions: "must not be rendered",
-      catalog: "must not be rendered",
-      indexes: [],
-    }),
-    user: failure({ path: "/home/.operator/user/operator.md", cause: new Error("denied") }),
-    private: failure({ path: "/project/.operator/index", cause: new Error("obstructed") }),
-  });
+test.each(["1.1", "2.0"] as const)(
+  "renders v%s guidance and only recovery diagnostics on load failure",
+  version => {
+    vi.mocked(selectPreambleVersion).mockReturnValue(version);
+    const rendered = renderMemoryPreamble({
+      shared: success({
+        exists: true,
+        operatorInstructions: "must not be rendered",
+        catalog: "must not be rendered",
+        indexes: [],
+      }),
+      user: failure({ path: "/home/.operator/user/operator.md", cause: new Error("denied") }),
+      private: failure({ path: "/project/.operator/index", cause: new Error("obstructed") }),
+    });
 
-  expect(rendered.loaded).toBe(false);
-  expect(rendered.content).toContain("- Shared: Loaded");
-  expect(rendered.content).toContain("- User: Error at /home/.operator/user/operator.md: denied");
-  expect(rendered.content).toContain("- Private: Error at /project/.operator/index: obstructed");
-  expect(rendered.content).toContain("MUST resolve Operator memory loading");
-  expect(rendered.content).toContain("operator-helper version");
-  expect(rendered.content).toContain("operator-helper upgrade");
-  expect(rendered.content).toContain("operator-helper memory check");
-  expect(rendered.content).toContain("do not initialize absent partitions");
-  expect(rendered.content).toContain("Preserve existing content");
-  expect(rendered.content).toContain("stop and ask the user for guidance");
-  expect(rendered.content).toContain("Resolve any additional load failures");
-  expect(rendered.content).toContain("install or repair its global installation");
-  expect(rendered.content).toContain("report the failing path or operation");
-  expect(rendered.content).toContain("start a new session and resubmit their original request");
-  expect(rendered.content).toContain("Do not resume the original task");
-  expect(rendered.content).not.toContain("/operator:repair");
-  expect(rendered.content).not.toContain("must not be rendered");
-  expect(rendered.content).not.toContain(PREAMBLE_TENETS);
-});
+    expect(rendered.loaded).toBe(false);
+    expect(rendered.content).toContain(`<operator-guidance version="${version}">`);
+    expect(rendered.content).toContain("- Shared: Loaded");
+    expect(rendered.content).toContain("- User: Error at /home/.operator/user/operator.md: denied");
+    expect(rendered.content).toContain("- Private: Error at /project/.operator/index: obstructed");
+    expect(rendered.content).toContain("MUST resolve Operator memory loading");
+    expect(rendered.content).toContain("operator-helper version");
+    expect(rendered.content).toContain("operator-helper upgrade");
+    expect(rendered.content).toContain("operator-helper memory check");
+    expect(rendered.content).toContain("do not initialize absent partitions");
+    expect(rendered.content).toContain("Preserve existing content");
+    expect(rendered.content).toContain("stop and ask the user for guidance");
+    expect(rendered.content).toContain("Resolve any additional load failures");
+    expect(rendered.content).toContain("install or repair its global installation");
+    expect(rendered.content).toContain("report the failing path or operation");
+    expect(rendered.content).toContain("start a new session and resubmit their original request");
+    expect(rendered.content).toContain("Do not resume the original task");
+    expect(rendered.content).not.toContain("/operator:repair");
+    expect(rendered.content).not.toContain("must not be rendered");
+    expect(rendered.content).not.toContain(PREAMBLE_TENETS);
+    expect(rendered.content).not.toContain(preambleV2.PREAMBLE_TENETS);
+  },
+);
 
 type LoadedMemorySnapshot = {
   readonly shared: ProjectPartitionSnapshot;

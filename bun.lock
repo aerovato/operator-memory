@@ -19,11 +19,11 @@
     },
     "packages/claude-code": {
       "name": "@aerovato/operator-claude-code",
-      "version": "0.1.0",
+      "version": "0.2.0",
     },
     "packages/codex": {
       "name": "@aerovato/operator-codex",
-      "version": "0.2.1",
+      "version": "0.3.0",
     },
     "packages/core": {
       "name": "@aerovato/operator-core",
@@ -35,7 +35,7 @@
     },
     "packages/deepseek": {
       "name": "@aerovato/operator-deepseek",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "devDependencies": {
         "@aerovato/operator-core": "workspace:*",
         "@deepseek-ai/cordis": "4.0.4",
@@ -64,7 +64,7 @@
     },
     "packages/helper": {
       "name": "@aerovato/operator-helper",
-      "version": "1.9.0",
+      "version": "1.10.0",
       "bin": {
         "operator-helper": "dist/index.js",
       },
@@ -108,7 +108,7 @@
     },
     "packages/opencode-v2": {
       "name": "@aerovato/operator-opencode-v2",
-      "version": "2.2.1",
+      "version": "2.3.0",
       "devDependencies": {
         "@aerovato/operator-core": "workspace:*",
         "@opencode/plugin": "2.0.14",
@@ -130,7 +130,7 @@
     },
     "packages/pi": {
       "name": "@aerovato/operator-pi",
-      "version": "1.1.1",
+      "version": "1.2.0",
       "devDependencies": {
         "@aerovato/operator-core": "workspace:*",
       },

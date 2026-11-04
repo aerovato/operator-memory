@@ -1,7 +1,9 @@
 import type { MemorySnapshot } from "./memory/load.ts";
 import type { IndexDocument, ProjectPartitionSnapshot } from "./memory/project.ts";
 import type { UserPartitionSnapshot } from "./memory/user.ts";
-import { PREAMBLE_PROMPT, PREAMBLE_TENETS } from "./prompts/preamble.ts";
+import { selectPreambleVersion } from "./preamble-rollout.ts";
+import * as preambleV1 from "./prompts/preamble-v1.ts";
+import * as preambleV2 from "./prompts/preamble-v2.ts";
 import { getErrorMessage } from "./utils.ts";
 
 const SHARED_ROOT = ".operator-shared";
@@ -24,6 +26,8 @@ type LoadedMemorySnapshot = {
 };
 
 export function renderPreamble(memory: MemorySnapshot): RenderedPreamble {
+  const { PREAMBLE_PROMPT, PREAMBLE_TENETS } =
+    selectPreambleVersion() === "2.0" ? preambleV2 : preambleV1;
   if (!memory.shared.ok || !memory.user.ok || !memory.private.ok) {
     return {
       content: `${PREAMBLE_PROMPT}\n\n${renderLoadDiagnostic(memory)}`,
