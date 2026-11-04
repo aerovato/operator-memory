@@ -12,7 +12,8 @@
     ".codex-plugin",
     "hooks",
     "dist",
-    "skills"
+    "skills",
+    "assets"
   ],
   "keywords": [
     "codex",

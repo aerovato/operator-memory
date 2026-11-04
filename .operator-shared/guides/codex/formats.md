@@ -1,6 +1,6 @@
 # Codex Plugin File Formats
 
-Last Updated: September 27, 2026
+Last Updated: November 4, 2026
 
 Concrete file formats for plugin creation, verified directly against the Codex Rust source (`codex-rs`). Field names are wire names (camelCase); optional unless stated.
 
@@ -15,6 +15,8 @@ Path-valued fields (`skills`, `apps`, `hooks`) accept a `./`-prefixed path strin
 `hooks` additionally accepts an inline hooks-file object or a list of them (see `hooks/hooks.json` below).
 
 `interface` carries presentation metadata: `displayName`, `shortDescription`, `longDescription`, `developerName`, `category`, `capabilities` (array), `websiteURL`, `privacyPolicyURL`, `termsOfServiceURL`, `brandColor`, `composerIcon`, `logo`, `logoDark`, `screenshots` (array), `defaultPrompt`.
+
+Use `interface.displayName` for the product title and `interface.developerName` for publisher casing; identifiers such as plugin `name` and marketplace `name` are separate. Supply plugin-root-relative `logo` and `composerIcon` assets for listing and composer branding, and include those files in the published package. Npm package metadata alone does not populate this interface.
 
 When `skills` is omitted, discovery defaults to `<root>/skills` (recursive for the legacy format).
 
@@ -109,9 +111,12 @@ Top level: `name` (required), `interface.displayName`, `plugins` (required). Eac
 
 `SKILL.md` frontmatter: `name` (must match the directory name; defaults to it; max 64 chars), `description` (required), `short-description` (optional).
 
-Optional `agents/openai.yaml` per skill:
+Optional `agents/openai.yaml` per skill separates the human-readable title from the stable folder/frontmatter identifier:
 
 ```yaml
+interface:
+  display_name: Initialize the Operator User Partition
+  short_description: Initialize and configure the Operator User Partition.
 policy:
   allow_implicit_invocation: false
 ```
