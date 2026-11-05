@@ -1,6 +1,6 @@
 # Claude Code Commands
 
-Last Updated: November 3, 2026
+Last Updated: November 4, 2026
 
 How the three Operator command intents surface on Claude Code. Plugin commands and skills are markdown files; there is no code-level command registration in the settings-hook pathway (the mod API adds one — see [`mods.md`](./mods.md)).
 
@@ -36,6 +36,8 @@ Shared execution contract from the reference implementation applies: check Helpe
 
 ## Skills
 
+The current official skills reference documents `name` as the command segment for plugin skills, with the directory as fallback; this differs from the v2.1.287 basename-only probe recorded above. Operator sets both to the same identifier, so its current commands are unaffected. The documented frontmatter has no separate Codex-style human-readable display-title field. Do not use a prose title as `name` while assuming invocation stays unchanged.
+
 Plugin skills live in `skills/<name>/SKILL.md` with `name` and `description` frontmatter; `references/`, `examples/`, and `scripts/` subfolders hold supporting material. Skill names and descriptions occupy context every turn (the "context cost" of a plugin); full text loads only on invocation. Keep the three Operator skill descriptions short.
 
 SessionStart can return `reloadSkills: true` so skills installed during a session are usable immediately — relevant only if Operator ever installs skills at runtime; Helper setup writes Brain files, not skills, so this is likely unnecessary.
@@ -45,3 +47,5 @@ SessionStart can return `reloadSkills: true` so skills installed during a sessio
 - `/help` and the `/` autocomplete list installed commands with their plugin label
 - `/plugin` Installed tab and `claude plugin list` show installed plugins and versions
 - `claude plugin details <name>` reports a plugin's always-on context cost — worth checking that the Operator plugin stays cheap (thin skill descriptions; no heavyweight agents)
+
+- [Current skill frontmatter and command naming](https://code.claude.com/docs/en/skills#frontmatter-reference)

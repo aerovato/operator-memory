@@ -45,7 +45,7 @@ Restart the harness, then run `/operator:user-init` in a new conversation to beg
 
 Users interact with Operator through the harness commands `/operator:user-init`, `/operator:project-init`, and `/operator:index`. These commands guide the working agent, which uses Operator Helper for setup, status, and validation.
 
-Run each Operator command in a new conversation so the agent can focus on that operation with a clean working context. Initialization preserves existing content. Project setup configures `.operator/` in the global Git ignore but does not automatically untrack files already committed.
+Run each Operator command in a new conversation so the agent can focus on that operation with a clean working context. Claude Code installation enables auto-update for the Operator marketplace in Claude’s user settings while preserving unrelated settings. Initialization preserves existing content. Project setup configures `.operator/` in the global Git ignore but does not automatically untrack files already committed.
 
 The direct user-facing Helper operation is adapter installation:
 

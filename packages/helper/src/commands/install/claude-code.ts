@@ -1,9 +1,13 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+
 import { Effect } from "effect";
 
-import type { CliContext } from "../../utils.ts";
-import { type ProcessResult, runProcess } from "../common.ts";
+import { type CliContext, getErrorMessage, isRecord } from "../../utils.ts";
+import { type ProcessResult, readOptionalFile, runProcess } from "../common.ts";
 
-const PLUGIN_ID = "operator@operator-memory";
+const MARKETPLACE_NAME = "operator-memory";
+const PLUGIN_ID = `operator@${MARKETPLACE_NAME}`;
 
 export const installClaudeCode = Effect.fn("installClaudeCode")(function* (context: CliContext) {
   const helper = yield* runProcess("operator-helper", ["help"], context.cwd, null);
@@ -32,11 +36,69 @@ export const installClaudeCode = Effect.fn("installClaudeCode")(function* (conte
     };
   }
 
+  const updateFailure = yield* enableAutoUpdate(context);
+  if (updateFailure !== null) return updateFailure;
+
   return {
     exitCode: 0,
-    output: "✓ Claude Code plugin installed and enabled\nStart a new Claude Code session.",
+    output:
+      "✓ Claude Code plugin installed and enabled\n✓ Operator marketplace auto-update enabled\nStart a new Claude Code session.",
   };
 });
+
+function enableAutoUpdate(
+  context: CliContext,
+): Effect.Effect<{ readonly exitCode: number; readonly output: string } | null> {
+  return Effect.promise(async () => {
+    const configDirectory = process.env.CLAUDE_CONFIG_DIR || join(context.home, ".claude");
+    const path = join(configDirectory, "settings.json");
+    try {
+      const content = await readOptionalFile(path);
+      const settings: unknown = content === null ? {} : JSON.parse(content);
+      if (!isRecord(settings)) {
+        return {
+          exitCode: 1,
+          output: `✗ Could not enable Claude Code auto-update: ${path} must contain a JSON object`,
+        };
+      }
+      const marketplaces =
+        settings.extraKnownMarketplaces === undefined ? {} : settings.extraKnownMarketplaces;
+      if (!isRecord(marketplaces)) {
+        return {
+          exitCode: 1,
+          output:
+            "✗ Could not enable Claude Code auto-update: extraKnownMarketplaces must be an object",
+        };
+      }
+      const marketplace =
+        marketplaces[MARKETPLACE_NAME] === undefined
+          ? { source: { source: "github", repo: "aerovato/operator-memory" } }
+          : marketplaces[MARKETPLACE_NAME];
+      if (!isRecord(marketplace)) {
+        return {
+          exitCode: 1,
+          output:
+            "✗ Could not enable Claude Code auto-update: the operator-memory marketplace entry must be an object",
+        };
+      }
+      const updated = {
+        ...settings,
+        extraKnownMarketplaces: {
+          ...marketplaces,
+          [MARKETPLACE_NAME]: { ...marketplace, autoUpdate: true },
+        },
+      };
+      await mkdir(configDirectory, { recursive: true });
+      await writeFile(path, `${JSON.stringify(updated, null, 2)}\n`);
+      return null;
+    } catch (error) {
+      return {
+        exitCode: 1,
+        output: `✗ Could not enable Claude Code auto-update: ${getErrorMessage(error)}`,
+      };
+    }
+  });
+}
 
 function isInstalledAndEnabled(output: string): boolean {
   try {

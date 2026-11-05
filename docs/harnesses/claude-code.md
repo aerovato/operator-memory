@@ -8,7 +8,7 @@ Requires Claude Code `v2.1.287` or newer, Node.js 20 or newer, and the [Helper](
 operator-helper install claude-code
 ```
 
-Helper registers the marketplace from `aerovato/operator-memory`, installs `operator@operator-memory` from npm through Claude's native installer, and verifies it is enabled. Claude owns the package download and cache. Start a new Claude Code process after installation.
+Helper registers the marketplace from `aerovato/operator-memory`, installs `operator@operator-memory` from npm through Claude's native installer, and verifies it is enabled. Helper also enables auto-update for the Operator marketplace in your user settings (`CLAUDE_CONFIG_DIR/settings.json`, default `~/.claude/settings.json`), preserving unrelated settings. Claude owns the package download and cache. Start a new Claude Code process after installation.
 
 ### Verify
 
@@ -44,7 +44,7 @@ Or use Claude's native update command:
 claude plugin update operator@operator-memory
 ```
 
-Then restart Claude Code. Third-party marketplace auto-update is off by default; enable it in Claude's `/plugin` marketplace settings if wanted.
+Then restart Claude Code. Helper enables marketplace auto-update each time you run the install command, including when you previously disabled it. Claude checks for updates in the background and notifies you when an update is ready. You can disable auto-update afterward in `/plugin` → Marketplaces.
 
 ### Troubleshooting
 

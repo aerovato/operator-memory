@@ -22,6 +22,8 @@ The plugin injects the preamble into the main system prompt and subagent task pr
 
 ## Update
 
+Helper enables auto-update for the Operator marketplace during installation, including on repeat installs. Disable it afterward in `/plugin` → Marketplaces if desired.
+
 Rerun `operator-helper install claude-code` or use `claude plugin update operator@operator-memory`, then restart Claude Code.
 
 See the [Claude Code guide](https://github.com/aerovato/operator-memory/blob/main/docs/harnesses/claude-code.md) for verification, updates, and troubleshooting. For local development, run `bun run preview:claude-code` from the workspace root.
