@@ -44,6 +44,33 @@ The server registers one typed plugin RPC contract. Its `status` method loads th
 
 OpenCode 2 owns plugin update checks and installation through `opencode plugin check` and `opencode plugin update`. Operator does not mutate OpenCode's package cache or auto-update its own plugin. Helper's `install opencode` remains the installation path.
 
+## Context Management
+
+Opt-in request-view reduction for long sessions. Disabled by default; vanilla preamble and command behavior is unchanged while disabled. Requires an initialized Brain: without one the feature stays off and records one refusal receipt per session.
+
+All keys live under `operator.contextManagement` in the plugin entry's `options`. Absent means the defaults (disabled); a present block with a wrong-typed value fails loudly with an error toast, never a silent fallback:
+
+```jsonc
+{
+  "operator": {
+    "contextManagement": {
+      "enabled": false,
+      "ratio": 0.8,
+      "hardCapTokens": 250000,
+      "keepRecentTurns": 3,
+      "compactOnComplete": true,
+      "compactFloorTokens": 32000
+    }
+  }
+}
+```
+
+`ratio` trims past that fraction of the model's declared window, `hardCapTokens` trims past that absolute size and backstops an unknown window, `keepRecentTurns` excludes the most recent assistant turns from trimming, `compactOnComplete` compacts at the end of successful runs, and `compactFloorTokens` skips end-of-run compaction below that size.
+
+Trim replaces bulky completed tool input and output with omission notices and stores the originals on disk, recoverable in the same session through the `operator:read_omitted` tool. Pending, running, and errored tool calls, user messages, and the injected preamble are never trimmed. Every trim and compaction appends one JSON line to `~/.operator/state/context-log/<sessionID>.log`; failures and refusals are recorded in the same file, never silent.
+
+A host-reported failed compaction (`session.compaction.failed`) arms a per-session backoff: new requests are suppressed for ten minutes, then only real growth past the failure-point estimate re-arms. A compaction attempt running (or `session.compaction.ended`) clears the backoff. Requests are also single-flight: a second admission while one request is outstanding with an unknown outcome is skipped. The shared runtime lives on `globalThis` so a host bundle re-import on config change keeps dedup and backoff state instead of refiring. None of this stops a host-side retry loop already in progress — that needs the server stopped and the stuck inbox row deleted — it only stops our plugin from feeding it.
+
 ## Differences From Reference
 
 Pathway selections: bundled-core resolution, transform injection as an appended system text part, slash commands, status UI, and harness-native updates. All are accepted reference pathways; there are no behavioral deviations. The appended system part versus a prepended synthetic user message is a documented placement choice within the transform pathway.

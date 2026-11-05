@@ -5,6 +5,13 @@
   "description": "Harness-agnostic runtime core for Operator Memory",
   "type": "module",
   "exports": {
+    "./context/notices": "./src/context/notices.ts",
+    "./context/tokens": "./src/context/tokens.ts",
+    "./context/trim": "./src/context/trim.ts",
+    "./context/store": "./src/context/store.ts",
+    "./context/receipts": "./src/context/receipts.ts",
+    "./context/triggers": "./src/context/triggers.ts",
+    "./context/compaction": "./src/context/compaction.ts",
     "./memory/frontmatter": "./src/memory/frontmatter.ts",
     "./memory/load": "./src/memory/load.ts",
     "./preamble": "./src/preamble.ts",
@@ -13,6 +20,7 @@
     "./templates/catalog": "./src/templates/catalog.ts"
   },
   "dependencies": {
+    "gpt-tokenizer": "^4.0.0",
     "yaml": "^2.9.0"
   }
 }
