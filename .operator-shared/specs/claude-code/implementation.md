@@ -1,6 +1,6 @@
 # Claude Code Binding
 
-Last Updated: November 3, 2026
+Last Updated: November 4, 2026
 
 ## Scope
 
@@ -29,7 +29,7 @@ The agent executes Helper and follows the [setup contract](../commands.md) in th
 
 ## Installation And Preview
 
-`operator-helper install claude-code` verifies Helper availability on `PATH`, registers the static repository marketplace from `aerovato/operator-memory`, and delegates plugin installation, refresh, and enabled-state verification to Claude. The marketplace's npm source names `@aerovato/operator-claude-code`; Claude owns the package download and cache. Helper must not fabricate a local marketplace, run npm, or stage adapter files. Repeated installation updates the adapter. Native removal uses `claude plugin uninstall operator@operator-memory`.
+`operator-helper install claude-code` verifies Helper availability on `PATH`, registers the static repository marketplace from `aerovato/operator-memory`, and delegates plugin installation, refresh, and enabled-state verification to Claude. The marketplace entry declares the full product title, publisher, description, and documentation/repository links so these are available before npm installation. After native installation and enabled-state verification, Helper merges `autoUpdate: true` into `extraKnownMarketplaces.operator-memory` in user `settings.json` (`CLAUDE_CONFIG_DIR`, default `~/.claude`), preserving unrelated settings and marketplace fields. Every install enables auto-update, including an existing false value. Invalid JSON or non-object settings/marketplace entries are reported without replacement; configuration failures return non-zero. Users may disable auto-update afterward through Claude. The marketplace's npm source names `@aerovato/operator-claude-code`; Claude owns the package download and cache. Helper must not fabricate a local marketplace, run npm, or stage adapter files. Repeated installation updates the adapter. Native removal uses `claude plugin uninstall operator@operator-memory`.
 
 `bun run preview:claude-code` builds and links Helper, builds the adapter, and launches Claude with the local package through `--plugin-dir`, without registering a marketplace or installing the plugin into the user's profile. A fresh process loads updated memory and plugin code.
 

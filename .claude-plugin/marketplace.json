@@ -10,7 +10,14 @@
       "source": {
         "source": "npm",
         "package": "@aerovato/operator-claude-code"
-      }
+      },
+      "displayName": "Operator Memory",
+      "description": "Self-improving context engine for coding agents.",
+      "author": {
+        "name": "Aerovato Research"
+      },
+      "homepage": "https://github.com/aerovato/operator-memory/blob/main/docs/harnesses/claude-code.md",
+      "repository": "https://github.com/aerovato/operator-memory"
     }
   ]
 }

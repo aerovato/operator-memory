@@ -16,6 +16,7 @@ import type { CliContext, CliResult } from "../src/utils.ts";
 const marketplaceSource = "https://github.com/aerovato/operator-memory.git";
 const originalPath = process.env.PATH;
 const originalCodexHome = process.env.CODEX_HOME;
+const originalClaudeConfig = process.env.CLAUDE_CONFIG_DIR;
 let directory: string;
 let context: CliContext;
 let record: string;
@@ -27,6 +28,7 @@ beforeEach(() => {
   record = join(directory, "record");
   process.env.PATH = bin;
   delete process.env.CODEX_HOME;
+  delete process.env.CLAUDE_CONFIG_DIR;
   process.env.OPERATOR_TEST_RECORD = record;
   context = {
     cwd: directory,
@@ -42,6 +44,11 @@ afterEach(() => {
     delete process.env.CODEX_HOME;
   } else {
     process.env.CODEX_HOME = originalCodexHome;
+  }
+  if (originalClaudeConfig === undefined) {
+    delete process.env.CLAUDE_CONFIG_DIR;
+  } else {
+    process.env.CLAUDE_CONFIG_DIR = originalClaudeConfig;
   }
   delete process.env.OPERATOR_TEST_RECORD;
   fs.rmSync(directory, { recursive: true, force: true });
@@ -127,7 +134,8 @@ test.runIf(process.platform !== "win32")(
     const result = await execute(["install", "claude-code"], "4.5.6");
     expect(result).toEqual({
       exitCode: 0,
-      output: "✓ Claude Code plugin installed and enabled\nStart a new Claude Code session.",
+      output:
+        "✓ Claude Code plugin installed and enabled\n✓ Operator marketplace auto-update enabled\nStart a new Claude Code session.",
     });
     expect(fs.readFileSync(record, "utf8")).toBe(
       "helper|help\n"
@@ -136,10 +144,78 @@ test.runIf(process.platform !== "win32")(
         + "claude|plugin update operator@operator-memory\n"
         + "claude|plugin list --json\n",
     );
+    expect(JSON.parse(fs.readFileSync(join(directory, ".claude/settings.json"), "utf8"))).toEqual({
+      extraKnownMarketplaces: {
+        "operator-memory": {
+          source: { source: "github", repo: "aerovato/operator-memory" },
+          autoUpdate: true,
+        },
+      },
+    });
     expect(await execute(["install", "claude-code"], "4.5.6")).toEqual(result);
     expect(fs.existsSync(join(directory, ".operator-helper"))).toBe(false);
   },
 );
+
+test.runIf(process.platform !== "win32")(
+  "enables Claude auto-update while preserving user settings and other marketplaces",
+  async () => {
+    claudeExecutables('[{"id":"operator@operator-memory","enabled":true}]');
+    const configDirectory = join(directory, "custom-claude-config");
+    process.env.CLAUDE_CONFIG_DIR = configDirectory;
+    fs.mkdirSync(configDirectory);
+    const config = join(configDirectory, "settings.json");
+    const existing = {
+      model: "opus",
+      permissions: { deny: ["Bash(rm:*)"] },
+      extraKnownMarketplaces: {
+        personal: { source: { source: "directory", path: "/my/plugins" }, autoUpdate: false },
+        "operator-memory": {
+          source: { source: "github", repo: "aerovato/operator-memory", ref: "main" },
+          autoUpdate: false,
+        },
+      },
+    };
+    fs.writeFileSync(config, JSON.stringify(existing));
+
+    expect((await execute(["install", "claude-code"], "4.5.6")).exitCode).toBe(0);
+    expect(JSON.parse(fs.readFileSync(config, "utf8"))).toEqual({
+      ...existing,
+      extraKnownMarketplaces: {
+        ...existing.extraKnownMarketplaces,
+        "operator-memory": {
+          ...existing.extraKnownMarketplaces["operator-memory"],
+          autoUpdate: true,
+        },
+      },
+    });
+    const first = fs.readFileSync(config, "utf8");
+    expect((await execute(["install", "claude-code"], "4.5.6")).exitCode).toBe(0);
+    expect(fs.readFileSync(config, "utf8")).toBe(first);
+    expect(fs.existsSync(join(directory, ".claude/settings.json"))).toBe(false);
+  },
+);
+
+test
+  .runIf(process.platform !== "win32")
+  .each([
+    "{",
+    "[]",
+    '{"extraKnownMarketplaces":[]}',
+    '{"extraKnownMarketplaces":{"operator-memory":false}}',
+  ])("preserves invalid Claude settings instead of replacing them: %s", async content => {
+  claudeExecutables('[{"id":"operator@operator-memory","enabled":true}]');
+  const configDirectory = join(directory, ".claude");
+  fs.mkdirSync(configDirectory);
+  const config = join(configDirectory, "settings.json");
+  fs.writeFileSync(config, content);
+
+  const result = await execute(["install", "claude-code"], "4.5.6");
+
+  expect(result.exitCode).toBe(1);
+  expect(result.output).toContain("Could not enable Claude Code auto-update:");
+  expect(fs.readFileSync(config, "utf8")).toBe(content);
+});
 
 test("the repository marketplace points at the Claude Code npm package", () => {
   const manifest = JSON.parse(
@@ -147,7 +223,15 @@ test("the repository marketplace points at the Claude Code npm package", () => {
   );
   expect(manifest.name).toBe("operator-memory");
   expect(manifest.plugins).toEqual([
-    { name: "operator", source: { source: "npm", package: "@aerovato/operator-claude-code" } },
+    expect.objectContaining({
+      name: "operator",
+      displayName: "Operator Memory",
+      description: expect.any(String),
+      author: { name: "Aerovato Research" },
+      homepage:
+        "https://github.com/aerovato/operator-memory/blob/main/docs/harnesses/claude-code.md",
+      source: { source: "npm", package: "@aerovato/operator-claude-code" },
+    }),
   ]);
 });
 

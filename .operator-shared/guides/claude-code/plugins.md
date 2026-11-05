@@ -1,6 +1,6 @@
 # Claude Code Plugins
 
-Last Updated: November 3, 2026
+Last Updated: November 4, 2026
 
 Packaging, distribution, installation, and updates for the Operator plugin.
 
@@ -21,14 +21,19 @@ operator/
 
 `.claude-plugin/plugin.json`. Fields Operator needs:
 
-- `name` (required) — kebab-case, must match `^[a-z][a-z0-9]*(-[a-z0-9]+)*$`; `operator` is likely too generic for marketplaces — plan a unique name and record it in the binding spec
+- `name` (required) — kebab-case identifier; Operator uses `operator`, giving `/operator:<skill>` command names
+- `displayName` — human-readable UI title, independent of the identifier; Operator uses `Operator Memory`
 - `version` — semver, defaults `0.1.0`
 - `description` — 50-200 characters, marketplace display
 - `author`, `homepage`, `repository` (string or `{type, url, directory}`), `license` (SPDX, `BSD-3-Clause`)
 - `keywords`
 - Component path fields — string path or inline object: `commands`, `agents`, `hooks` (default `./hooks/hooks.json`), `skills`, `outputStyles`, `mcpServers` (default `./.mcp.json`), `lspServers`
-- `defaultEnabled` — start disabled if true
+- `defaultEnabled` — starts enabled when true; documented default is true
 - `userConfig` — typed options surfaced in `/plugin` Configure options; values reach hooks via `${user_config.*}` (exec form) or `CLAUDE_PLUGIN_OPTION_<KEY>`
+
+For npm and other remotely fetched plugin sources, pre-install listings can read only the marketplace entry, not the package manifest. Put `displayName`, `description`, and `author` in the entry for a complete pre-install listing. Entry display fields override package fields after installation.
+
+`icon` is supported in the package manifest for Anthropic directory listings, but Claude Code does not read it for its own UI. The field is not valid in marketplace entries. Do not copy Codex `interface.logo`, `composerIcon`, or skill `agents/openai.yaml` conventions into this adapter.
 
 Relative paths must start with `./`. Components are auto-discovered from their conventional directories even without explicit fields.
 
@@ -44,15 +49,15 @@ Relative paths must start with `./`. Components are auto-discovered from their c
 
 A marketplace is a repo or JSON file with `.claude-plugin/marketplace.json` listing plugins and sources. Accepted plugin sources include GitHub/git repos (with `#ref` pinning), npm packages, local directories, direct URLs, and `command` sources. Anthropic reserves official marketplace names (`claude-plugins-official`, etc.); third-party marketplaces cannot use them.
 
-For Operator: a `aerovato/operator` marketplace repository (GitHub) whose `marketplace.json` points at the plugin — the same shape as the Codex local-marketplace flow. npm is also a source type, matching the workspace's npm publishing pipeline; choose per the release spec.
+Operator uses the existing `aerovato/operator-memory` GitHub repository and its `.claude-plugin/marketplace.json`, with an npm plugin source naming `@aerovato/operator-claude-code`. Omitting the npm source version resolves `latest`; it does not require a catalog commit for each npm release.
 
 ## Installation
 
 In session: `/plugin install <name>@<marketplace>` (opens review UI), or the `/plugin` Discover tab. From the shell, scriptable:
 
 ```bash
-claude plugin marketplace add aerovato/operator
-claude plugin install <plugin-name>@aerovato/operator
+claude plugin marketplace add aerovato/operator-memory
+claude plugin install operator@operator-memory
 ```
 
 Scopes: user (`~/.claude/settings.json`, all projects), project (`.claude/settings.json`, committed; collaborators still install once with `--scope project`), local (`.claude/settings.local.json`). Scope precedence: local > project > user. Plugins land under `~/.claude/plugins/`.
@@ -65,12 +70,16 @@ Direct npm installation syntax exists (`claude plugin install <package>@npm`, wi
 
 ## Updates
 
-- Marketplaces auto-update by default only for Anthropic official ones; third-party marketplaces are off by default (user can enable per marketplace in `/plugin`)
-- `claude plugin update <name>@<marketplace>` updates one plugin; `claude plugin marketplace update <name>` refreshes a listing
-- `${CLAUDE_PLUGIN_ROOT}` changes across updates; persistent state belongs in `${CLAUDE_PLUGIN_DATA}`
-- The running session keeps loaded versions until `/reload-plugins`
+Documented November 4, 2026:
 
-Native update exists (`claude plugin update`), but it is marketplace-driven and off by default for third parties; Helper's automatic update check remains the portable path per the reference implementation. Record the division in the binding spec.
+- Operator's third-party marketplace has auto-update off by default. Enable it through `/plugin` → Marketplaces, or the supported `autoUpdate` setting on its `extraKnownMarketplaces` entry. Helper enables this preference in user settings after installation and verification, including when a previous value was false; later user changes remain effective until Helper installation runs again.
+- In interactive sessions, the background pass runs after the first message with a random delay of up to ten minutes. It refreshes enabled marketplaces and updates their installed plugins on disk. Environment and managed controls may suppress it.
+- A completed background update shows `Plugin updated: <name> · Run /reload-plugins to apply`. The running session retains loaded versions until reload or restart; Operator's process-lifetime memory cache makes restart the supported refresh route for its memory.
+- `claude plugin update operator@operator-memory` updates the plugin explicitly. The Installed tab offers Update now; the Marketplaces tab offers Update marketplace. Shell `claude plugin marketplace update` with no name refreshes catalogs only.
+- Cache replacement normally compares the plugin manifest version first, then the marketplace entry version. Operator already synchronizes package and plugin manifest versions during release preparation and validates them in CI.
+- `${CLAUDE_PLUGIN_ROOT}` changes across updates; persistent state belongs in `${CLAUDE_PLUGIN_DATA}`.
+
+Operator's launch-time `operator-helper version` subprocess checks Helper, not the adapter. The adapter discards that subprocess result; it is not an adapter outdated-version notice.
 
 ## Dependencies and policy
 
@@ -81,3 +90,10 @@ Native update exists (`claude plugin update`), but it is marketplace-driven and 
 ## Reference examples
 
 In `<reference>/claude-code-docs/plugins/`: `learning-output-style` and `explanatory-output-style` (minimal SessionStart context injection), `hookify` (command-plugin structure with Python handlers), `plugin-dev` (authoring toolkit with manifest and frontmatter references).
+
+## Sources
+
+- [Plugin manifest reference](https://code.claude.com/docs/en/plugins/manifest-reference)
+- [Marketplace reference](https://code.claude.com/docs/en/plugins/marketplace-reference)
+- [Plugin loading and updates](https://code.claude.com/docs/en/plugins/loading)
+- [Install and manage plugins](https://code.claude.com/docs/en/plugins/install)
