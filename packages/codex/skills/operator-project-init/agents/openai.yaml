@@ -1,4 +1,4 @@
 interface:
-  display_name: Initialize the Operator Project Brain
+  display_name: "Operator: Initialize Project Brain"
 policy:
   allow_implicit_invocation: false

@@ -1,4 +1,4 @@
 interface:
-  display_name: Initialize the Operator User Partition
+  display_name: "Operator: Initialize/Modify User Partition"
 policy:
   allow_implicit_invocation: false

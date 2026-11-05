@@ -1,6 +1,6 @@
 # Codex Adapter
 
-Last Updated: November 4, 2026
+Last Updated: November 5, 2026
 
 Codex CLI and Codex Desktop use the dependency-free `@aerovato/operator-codex` legacy plugin package. Shared memory rendering remains in Helper; the adapter only binds Codex lifecycle events to `operator-helper preamble`. Behavioral deviations are recorded against [`../reference/implementation.md`](../reference/implementation.md), not other bindings.
 
@@ -23,7 +23,7 @@ If Helper cannot render a non-empty preamble, the hook emits a concise `systemMe
 
 Codex plugins cannot register arbitrary slash commands. The adapter exposes the three Operator workflows as explicitly invoked plugin skills: `$operator-user-init`, `$operator-project-init`, and `$operator-index`. They may also be selected through Codex's skills picker. Implicit invocation is disabled. Codex requires each skill name to match its folder name, and colons are invalid in Windows folder names, so these skill names use hyphens rather than the canonical command namespace.
 
-Skill display titles describe the full workflow independently of the stable skill identifiers. The plugin presents as Operator Memory by Aerovato Research and uses the bundled Aerovato Research profile image for listing and composer branding.
+Skill display titles lead with `Operator:` for discovery and are independent of the stable skill identifiers: `Operator: Initialize/Modify User Partition`, `Operator: Initialize Project Brain`, and `Operator: Refresh Project Index`. The plugin presents as Operator Memory by Aerovato Research and uses the bundled Aerovato Research profile image for listing and composer branding.
 
 Each skill directs the agent to check Helper's version, upgrade when outdated, then run the corresponding workflow operation. If Helper cannot start, the agent repairs it and retries the failed command; non-zero setup results supply their guide and failure details. Helper output is working context for the agent and is not reproduced for the user. Skills do not duplicate Helper filesystem, Git, status, guide, lint, or installation logic.
 
