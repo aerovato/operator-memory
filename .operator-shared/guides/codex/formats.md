@@ -1,6 +1,6 @@
 # Codex Plugin File Formats
 
-Last Updated: November 4, 2026
+Last Updated: November 5, 2026
 
 Concrete file formats for plugin creation, verified directly against the Codex Rust source (`codex-rs`). Field names are wire names (camelCase); optional unless stated.
 
@@ -115,7 +115,7 @@ Optional `agents/openai.yaml` per skill separates the human-readable title from 
 
 ```yaml
 interface:
-  display_name: Initialize the Operator User Partition
+  display_name: "Operator: Initialize/Modify User Partition"
   short_description: Initialize and configure the Operator User Partition.
 policy:
   allow_implicit_invocation: false
