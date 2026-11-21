@@ -1,6 +1,6 @@
 # Commands
 
-Last Updated: November 3, 2026
+Last Updated: November 21, 2026
 
 Agent-assisted configuration of User Instructions, the Project Brain, and the Project Index. Deterministic work lives in `operator-helper`; phased agent work lives in emitted guides; harness commands orchestrate both.
 
@@ -15,7 +15,7 @@ Adapter registration and injection obligations are specified in [`reference/impl
 Every maintained harness exposes these commands with the same intent and, where supported, the same names. Concrete bindings document unavoidable naming differences. Execution stays in the current conversation; Operator never switches sessions automatically. User guidance should recommend starting each command in a new conversation so the agent can focus on setup or indexing with clean working context. This is workflow guidance, not a requirement to refresh the preamble after agent-authored changes.
 
 - `/operator:user-init` — `user init`; follow the User Setup guide in its output with the user
-- `/operator:project-init` — `project init`; follow the Project Setup guide in its output; after confirmation, offer to index in the current conversation or via `/operator:index` in a new conversation
+- `/operator:project-init` — `project init`; follow the Project Setup guide in its output, including automatic indexing where applicable
 - `/operator:index` — `index init`; follow the Project Index Setup guide with the user
 
 Each command hands the agent instructions in the current conversation without executing Helper in the adapter. The agent first runs `operator-helper version` and, when an update is available, must run `operator-helper upgrade` before continuing. It then runs the corresponding workflow operation. If Helper cannot start, the agent repairs its installation and retries the failed command without asking the user to reinvoke the harness command. If the version check or upgrade fails, the agent diagnoses and retries it. Non-zero results from a running setup operation retain their guide and failure details. Agents never invoke harness commands themselves.
@@ -36,13 +36,13 @@ Phases: assess and repair both core files (`operator.md`, `catalog.md`); customi
 
 `/operator:project-init` runs Project init, then the agent follows the guide in its output with the user.
 
-Project setup establishes partition scaffolding and placement rules. It does not populate the Project Index.
+Project setup establishes partition scaffolding, placement rules, and essential project context. Greenfield projects default to Private unless a sharing policy already exists; the agent offers sharing in the final report. The agent configures Operator Instructions from existing project sources and interviews the user only when the project's intent or essential context is unclear.
 
-The Project Setup guide classifies the repository once as **greenfield** (new, empty, or template) or **existing** (substantive code and/or agent-facing docs). Greenfield runs stay light: prefer all-private Shared policy, optional minimal instructions, and skip migration. Existing projects keep the full path, including migration.
+The Project Setup guide classifies the repository once as **greenfield** (new, empty, or template) or **existing** (substantive code and/or agent-facing docs). When one agent can handle the codebase, it runs `index init`, writes the index, and lints it in the same conversation without separate plan approval or final confirmation. Projects without code skip indexing. Large projects get an offer to run `/operator:index` separately as a next step.
 
-After the user confirms setup, the agent always offers indexing as the final step, never deferring it: index in the current conversation (the agent runs `index init` itself and follows the Project Index Setup guide), or run `/operator:index` in a new conversation. Small and medium codebases, including greenfield, are recommended to index now; large codebases are recommended a new conversation for clean context while still offering to index here.
+Migration is offered after instruction configuration and before indexing. The agent offers eligible existing agent-facing docs, skips migration for greenfield projects, and asks before deleting originals from instruction import or migration. For structured questions, it uses the harness's inline question tool or equivalent, regardless of its name, and asks directly otherwise. User-facing documentation may be copied into specs but is never removed.
 
-Project setup asks whether to migrate existing agent-facing documentation into the Project Brain when the shape is existing and candidates exist. Migrated agent-facing docs that are scattered, thin, or too narrow are reshaped into Operator-style focused documents. User-facing documentation may be copied into specs but is never removed.
+The final report has three sections: actions and configuration, questions about optional changes and corrections, and next steps. No confirmation is required. The next steps are separate indexing for code that has not been indexed and a concrete bootstrap step for greenfield projects, as applicable.
 
 Deterministic setup initializes Private only. The agent creates `.operator-shared/` after the user chooses content to publish. When Shared is active and lacks `README.md`, the agent copies the canonical contributor-facing README template without replacing existing content.
 
@@ -50,7 +50,7 @@ Deterministic setup initializes Private only. The agent creates `.operator-share
 
 `/operator:index` runs `index init`, then the agent follows the guide in its output with the user.
 
-Project Index population is intentionally separate from Project Setup. Index structure and maintenance behavior are specified in the Project Index guidance embedded in the fixed preamble.
+Standalone Project Index Setup retains its approval flow. Project Setup uses the same guide for automatic indexing with the exceptions specified above. Index structure and maintenance behavior are specified in the Project Index guidance embedded in the fixed preamble.
 
 ## Canonical Guides
 

@@ -1,8 +1,17 @@
 export const PROJECT_OPERATOR_TEMPLATE = `# {Private|Shared} Operator Instructions
 
+## Overview
+
+- Project purpose and current scope
+
+## Architecture
+
+- Major components, how they fit together, and boundaries that matter
+
 ## Workflow
 
 - Fill:
+  - Build and verification commands
   - Workflow rules if any
   - Plan / proceed / approval norms?
   - Ask vs act workflows?
