@@ -3,7 +3,7 @@ import { file, $ as shell, write } from "bun";
 
 const root = resolve(import.meta.dirname, "..");
 const $ = shell.cwd(root);
-const packages = ["opencode-v2", "pi", "deepseek", "codex", "claude-code", "helper"] as const;
+const packages = ["helper", "opencode-v2", "pi", "deepseek", "codex", "claude-code"] as const;
 
 export async function publishAll(bump: string | undefined): Promise<void> {
   if (bump !== "major" && bump !== "minor" && bump !== "patch") {
