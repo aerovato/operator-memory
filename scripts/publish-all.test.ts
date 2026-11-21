@@ -6,12 +6,12 @@ const mocks = vi.hoisted(() => ({ shell: vi.fn(), file: vi.fn(), write: vi.fn() 
 vi.mock("bun", () => ({ $: { cwd: () => mocks.shell }, file: mocks.file, write: mocks.write }));
 
 const versions: Record<string, [string, string]> = {
+  helper: ["1.9.0", "1.10.0"],
   "opencode-v2": ["2.2.1", "2.3.0"],
   pi: ["1.1.1", "1.2.0"],
   deepseek: ["0.2.1", "0.3.0"],
   codex: ["0.2.1", "0.3.0"],
   "claude-code": ["0.1.0", "0.2.0"],
-  helper: ["1.9.0", "1.10.0"],
 };
 const calls: string[][] = [];
 const bumped = new Set<string>();
@@ -97,7 +97,7 @@ test("bumps all packages in one PR commit and pushes individual same-commit tags
   );
   expect(pushes).toHaveLength(6);
   expect(pushes.every(call => call.length === 4)).toBe(true);
-  expect(pushes.at(-1)).toEqual(["git", "push", "origin", "refs/tags/helper@v1.10.0"]);
+  expect(pushes[0]).toEqual(["git", "push", "origin", "refs/tags/helper@v1.10.0"]);
   expect(mocks.write).toHaveBeenCalledWith(
     expect.stringContaining(".claude-plugin/plugin.json"),
     expect.stringContaining('"version": "0.2.0"'),
