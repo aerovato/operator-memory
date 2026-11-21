@@ -18,7 +18,6 @@ The plugin injects the preamble into the main system prompt and subagent task pr
 
 - `/operator:user-init` — Configure the User Partition.
 - `/operator:project-init` — Configure the Project Brain.
-- `/operator:index` — Build or refresh the Project Index.
 
 ## Update
 

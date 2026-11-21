@@ -34,7 +34,6 @@ DeepSeek command names use hyphens:
 
 - `/operator-user-init`
 - `/operator-project-init`
-- `/operator-index`
 
 Run each in a new conversation. See [Getting Started](../getting-started.md#appendix-commands) for what each command does. Profiles without DeepSeek's interactive command service still receive the Operator preamble but do not expose these commands.
 

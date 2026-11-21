@@ -1,6 +1,6 @@
 # Kiro Adapter Implementation
 
-Last Updated: November 3, 2026
+Last Updated: November 21, 2026
 
 How Operator binds the [reference adapter implementation](../reference/implementation.md) to Kiro IDE and CLI V3. The adapter is distributed through Helper as hook, steering, and skill files; there is no separate Kiro package. Core owns memory loading and rendering through Helper. Command meaning and setup workflows stay in [Commands](../commands.md).
 
@@ -40,7 +40,6 @@ Three explicitly invoked skills expose the Operator workflows:
 
 - `/operator-user-init`
 - `/operator-project-init`
-- `/operator-index`
 
 Each supplies the reference command instructions: check Helper's version, upgrade when outdated, run the corresponding workflow operation, and handle failures directly. The agent executes Helper in the current conversation. Skill descriptions restrict use to explicit user invocation; hyphenated names are the Kiro-compatible command names.
 
@@ -48,7 +47,7 @@ Helper output remains agent working context. Skills do not duplicate Helper's se
 
 ## Installation and Updates
 
-`operator-helper install kiro` is available from Helper `1.8.0`, requires Helper on `PATH`, and installs one hook, one always-included steering file, and three skill entry files under ordinary `$HOME/.kiro/`.
+`operator-helper install kiro` is available from Helper `1.8.0`, requires Helper on `PATH`, and installs one hook, one always-included steering file, and two setup skill entry files under ordinary `$HOME/.kiro/`.
 
 These five files are plugin-owned. Installation and reinstallation overwrite them intentionally; user modifications are at the user's risk. No edit-preservation or disabled-hook-preservation policy is required.
 
@@ -69,7 +68,7 @@ Behavioral differences:
 
 ## Verification
 
-Helper tests cover installed hook configuration, the exact approved steering prompt and frontmatter, all three skills, removal of the retired repair skill without deleting adjacent content, replacement of a stale plugin file, repeat installation, and the Helper-on-`PATH` prerequisite. `bun run check packages/helper` validates the package.
+Helper tests cover installed hook configuration, the approved steering prompt and frontmatter, both setup skills, removal of retired Operator-owned skill files without deleting adjacent content, repeat installation, and the Helper-on-`PATH` prerequisite. `bun run check packages/helper` validates the package.
 
 Runtime experiments verified main-agent hook injection, inherited steering in built-in subagents, absence of parent hook output in those subagents, full skill-body activation, and ordinary-home discovery despite `KIRO_HOME`. CLI sessions explicitly selected `--v3` and confirmed `engine: "v3"`; the CLI binary's `2.27.1` version is not the selected engine version.
 

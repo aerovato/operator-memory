@@ -24,7 +24,7 @@ read_if: Working in packages/codex or changing Codex plugin packaging, preamble 
 - `hooks/hooks.json` - Stable `SessionStart` and `SubagentStart` command-hook definitions with unlimited context output.
 - `src/hook.ts` - Typed lifecycle input validation, filtering, Helper preamble execution, unchanged successful output, and user-visible blocking failure output.
 - `scripts/build.ts` - Clean minified Node ESM launcher build.
-- `skills/operator-user-init/`, `skills/operator-project-init/`, `skills/operator-index/` - Explicit-only Operator workflow skills and Codex invocation policy.
+- `skills/operator-user-init/`, `skills/operator-project-init/` - Explicit-only Operator setup skills and Codex invocation policy.
 - `test/commands.test.ts` - Executes the declared hook commands through native shells, checking paths with spaces, stdin/stdout/stderr, and success/failure exit codes.
 - `test/hook.test.ts` - Session-source filtering, subagent injection, working-directory forwarding, unchanged output, and failure coverage.
 - `test/skills.test.ts` - Skill naming, single-operation contract, and explicit-invocation policy coverage.

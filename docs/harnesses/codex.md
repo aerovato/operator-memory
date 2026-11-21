@@ -28,7 +28,6 @@ Codex plugins cannot register slash commands. The Operator workflows are plugin 
 
 - `$operator-user-init`
 - `$operator-project-init`
-- `$operator-index`
 
 See [Getting Started](../getting-started.md#appendix-commands) for what each workflow does.
 

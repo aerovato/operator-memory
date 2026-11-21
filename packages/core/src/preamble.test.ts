@@ -275,7 +275,8 @@ test("renders component warnings for an existing empty project partition", () =>
   const preamble = renderPreamble(memory);
 
   expect(preamble).not.toContain("Ask the user to run /operator:project-init");
-  expect(preamble).toContain("ask the user to run /operator:index");
+  expect(preamble).toContain("offer to build the Project Index directly");
+  expect(preamble).not.toContain("/operator:index");
   expect(preamble).toContain("You must create and maintain a catalog.md");
   expect(preamble.indexOf(PREAMBLE_TENETS)).toBeLessThan(preamble.indexOf("<operator-warning>"));
 });

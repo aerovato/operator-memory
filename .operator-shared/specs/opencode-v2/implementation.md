@@ -1,6 +1,6 @@
 # OpenCode V2 Adapter Implementation
 
-Last Updated: November 3, 2026
+Last Updated: November 21, 2026
 
 How `@aerovato/operator-opencode-v2` binds the general adapter contract as the default OpenCode integration. V2 is an incompatible plugin platform and therefore remains a separate package; the unversioned npm package and source directory still belong to legacy V1. Behavioral deviations are recorded against [`../reference/implementation.md`](../reference/implementation.md), not other bindings.
 
@@ -26,7 +26,7 @@ The TUI bundle must compile JSX with OpenTUI's Solid build transform and keep `s
 
 ## Commands
 
-Register `operator:user-init`, `operator:project-init`, and `operator:index`. Each command admits instructions for the agent to check the Helper version, upgrade when outdated, run the corresponding workflow operation, and handle failures in the current conversation.
+Register `operator:user-init` and `operator:project-init`. Each command admits instructions for the agent to check the Helper version, upgrade when outdated, run the corresponding workflow operation, and handle failures in the current conversation.
 
 ## TUI Status
 

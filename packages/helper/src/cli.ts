@@ -48,7 +48,6 @@ ${renderTable([
   ["user init", "Initialize User Partition and print the setup guide"],
   ["project status", "Show Project Private, Shared, Git ignore, and tracking status"],
   ["project init", "Initialize project partitions and print the setup guide"],
-  ["index init", "Show Project Index status and print the setup guide"],
   ["index lint", "Check Project Index structure and frontmatter"],
   ["memory check", "Check that all Operator memory can be loaded"],
   ["preamble", "Render the Operator preamble"],

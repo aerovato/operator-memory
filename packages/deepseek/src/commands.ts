@@ -2,11 +2,7 @@ import type { Context } from "@deepseek-ai/cordis";
 import type {} from "@deepseek-ai/dsh-commands";
 import { createUserMessage } from "@deepseek-ai/dsh-llm";
 
-export const OPERATOR_COMMAND_NAMES = [
-  "operator-user-init",
-  "operator-project-init",
-  "operator-index",
-] as const;
+export const OPERATOR_COMMAND_NAMES = ["operator-user-init", "operator-project-init"] as const;
 
 const commands = {
   "operator-user-init": {
@@ -20,12 +16,6 @@ const commands = {
     operation: "project init",
     guide:
       "Follow the Project Setup guide in its output, including when initialization reports failures.",
-  },
-  "operator-index": {
-    description: "Build or refresh the Operator Project Index",
-    operation: "index init",
-    guide:
-      "Follow the Project Index Setup guide in its output, including when inspection reports failures.",
   },
 } as const;
 

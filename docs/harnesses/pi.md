@@ -26,7 +26,6 @@ Secondary signal: the footer shows `· Operator Active (vX.Y.Z)`; local builds s
 
 - `/operator:user-init`
 - `/operator:project-init`
-- `/operator:index`
 
 Run each in a new conversation. See [Getting Started](../getting-started.md#appendix-commands) for what each command does.
 

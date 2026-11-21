@@ -2,7 +2,6 @@ import { CATALOG_TEMPLATE } from "@aerovato/operator-core/templates/catalog";
 import { PROJECT_INDEX_TEMPLATE } from "@aerovato/operator-core/templates/project-index";
 import { PROJECT_SUBINDEX_TEMPLATE } from "@aerovato/operator-core/templates/project-subindex";
 
-import { PROJECT_INDEX_SETUP_TEMPLATE } from "./templates/project/index-setup.ts";
 import { PROJECT_OPERATOR_TEMPLATE } from "./templates/project/operator.ts";
 import { PROJECT_SETUP_TEMPLATE } from "./templates/project/setup.ts";
 import { PROJECT_SHARED_README_TEMPLATE } from "./templates/project/shared-readme.ts";
@@ -18,7 +17,6 @@ export enum TemplatePath {
   ProjectSubindex = "project/subindex.md",
   ProjectCatalog = "project/catalog.md",
   ProjectSetup = "project/setup.md",
-  ProjectIndexSetup = "project/index-setup.md",
   ProjectSharedReadme = "project/shared-readme.md",
 }
 
@@ -31,7 +29,6 @@ const TEMPLATES = {
   [TemplatePath.ProjectSubindex]: PROJECT_SUBINDEX_TEMPLATE,
   [TemplatePath.ProjectCatalog]: CATALOG_TEMPLATE,
   [TemplatePath.ProjectSetup]: PROJECT_SETUP_TEMPLATE,
-  [TemplatePath.ProjectIndexSetup]: PROJECT_INDEX_SETUP_TEMPLATE,
   [TemplatePath.ProjectSharedReadme]: PROJECT_SHARED_README_TEMPLATE,
 } satisfies Record<TemplatePath, string>;
 

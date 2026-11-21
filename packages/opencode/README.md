@@ -26,10 +26,9 @@ Do not install this package directly unless you are integrating Operator with Op
 
 - `/operator:user-init` initializes or revises user-global instructions.
 - `/operator:project-init` initializes project setup and guides Private and Shared knowledge.
-- `/operator:index` builds or refreshes the Project Index.
 - `/operator:repair` diagnoses and repairs loading problems.
 
-Run each Operator command in a new conversation so the agent can focus on setup, indexing, or repair with a clean working context.
+Run each Operator command in a new conversation.
 
 ### Documentation
 

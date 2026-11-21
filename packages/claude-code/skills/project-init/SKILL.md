@@ -9,8 +9,6 @@ disable-model-invocation: true
 1. Run `operator-helper version`. If an update is available, run `operator-helper upgrade` before continuing.
 2. Run `operator-helper project init` and follow the emitted Project Setup guide, including when initialization reports failures.
 
-For a new conversation to set up the Project Index, tell the user to invoke `/operator:index`.
-
 ## Recovery
 
 - If Helper cannot start, install or repair the npm package `@aerovato/operator-helper` globally and retry the failed command.
