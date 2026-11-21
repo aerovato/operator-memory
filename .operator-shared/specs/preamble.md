@@ -72,7 +72,7 @@ Inject full catalog bodies when present in Shared then Private order. Catalogs a
 - If the `~/.operator/user` directory does not exist, tell the agent to ask for `/operator:user-init` when the user would benefit from cross-project user memory, but not when working without user memory intentionally.
 - If the User Partition exists but `catalog.md` is missing, tell the agent to create and maintain a User Catalog. This warning is independent of project-catalog warnings.
 - If neither project partition root exists, tell the agent to ask for `/operator:project-init` before significant project work, but not when the user is merely exploring.
-- If a Project Brain exists but no index files are discovered, tell the agent to ask for `/operator:index` before project work when the project is not empty.
+- If a Project Brain exists but neither partition has a main index, tell the agent to offer to build it directly when there is project code and Project Init is not already running.
 - If a Project Brain exists but neither catalog exists, tell the agent to create and maintain a catalog for non-empty brain partitions.
 
 Warnings are conditional injection, not part of the fixed prompt.

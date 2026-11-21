@@ -2,7 +2,6 @@ import { Effect, Path } from "effect";
 
 import { inspectPath, PathKindError } from "../../filesystem.ts";
 import { renderTable } from "../../output.ts";
-import { readTemplate, TemplatePath } from "../../templates.ts";
 import type { CliContext } from "../../utils.ts";
 import { fileFailure } from "../common.ts";
 
@@ -41,7 +40,11 @@ For Agents: Run \`operator-helper project init\` and follow the guide in its out
     Effect.catch(error => Effect.succeed(fileFailure(error))),
     Effect.map(result => ({
       ...result,
-      output: `${result.output}\n\nFollow the agent instructions below to build or refresh the Project Index.\n\n${readTemplate(TemplatePath.ProjectIndexSetup)}`,
+      output: `${result.output}
+
+# Refresh the Project Index
+
+Refresh the Project Index using the guidance in the Operator preamble, then run \`operator-helper index lint\`. Tell the user this command has been retired and recommend updating their Operator plugin. They can ask the agent directly to refresh the index in the future.`,
     })),
   ),
 );

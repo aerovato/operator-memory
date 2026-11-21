@@ -23,7 +23,7 @@ operator-helper install opencode-v1
 
 Registers missing OpenCode `config.command` entries for `operator:user-init`, `operator:project-init`, `operator:index`, and `operator:repair`. Existing user-defined commands, including commands with Operator names, remain authoritative.
 
-Command orchestration and repair follow the shared [`commands.md`](../commands.md) contract.
+This command surface is frozen. The current setup contract applies to maintained adapters.
 
 ## Status UI
 

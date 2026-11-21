@@ -1,17 +1,22 @@
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { expect, test } from "vitest";
 
 const skills = [
   { name: "user-init", command: "user init" },
   { name: "project-init", command: "project init" },
-  { name: "index", command: "index init" },
 ] as const;
 
-test("does not ship the retired repair skill", async () => {
-  await expect(
-    readFile(resolve(import.meta.dirname, "../skills/repair/SKILL.md"), "utf8"),
-  ).rejects.toMatchObject({ code: "ENOENT" });
+test("ships only the setup skills", async () => {
+  const directories = await readdir(resolve(import.meta.dirname, "../skills"), {
+    withFileTypes: true,
+  });
+  expect(
+    directories
+      .filter(directory => directory.isDirectory())
+      .map(directory => directory.name)
+      .sort(),
+  ).toEqual(skills.map(skill => skill.name).sort());
 });
 
 test.each(skills)(

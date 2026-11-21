@@ -14,6 +14,6 @@ Start a fresh Codex session after installation. Codex reviews plugin hooks on st
 
 The plugin injects the Operator preamble into new and cleared sessions, reinjects it after context compaction, and injects it into delegated subagents. Resumed and forked sessions keep their existing context.
 
-The three Operator workflows are available as explicitly invoked skills: `$operator-user-init`, `$operator-project-init`, and `$operator-index`. Codex plugins do not register slash commands; invoke the skills by name.
+Operator setup is available as explicitly invoked skills: `$operator-user-init` and `$operator-project-init`. Codex plugins do not register slash commands; invoke the skills by name.
 
 Codex can refresh the Git marketplace in the background. Request an update through its marketplace upgrade action or rerun `operator-helper install codex`, then start a fresh session. Changed hook definitions require renewed trust.

@@ -7,7 +7,6 @@ import { registerCommands } from "../src/commands.ts";
 test.each([
   ["operator:user-init", "user init", "User Setup"],
   ["operator:project-init", "project init", "Project Setup"],
-  ["operator:index", "index init", "Project Index Setup"],
 ] as const)("hands %s to the agent without executing Helper", async (name, operation, guide) => {
   const definitions: CommandDefinition[] = [];
   const prompt = vi.fn();
@@ -50,13 +49,12 @@ test("preserves existing user commands", async () => {
   const context = {
     command: {
       list: () =>
-        Promise.resolve({ data: [{ name: "operator:index", description: "User command" }] }),
+        Promise.resolve({ data: [{ name: "operator:user-init", description: "User command" }] }),
       transform: async (callback: (editor: CommandEditor) => void) =>
         callback({ add: definition => definitions.push(definition) }),
     },
   } as unknown as Context;
   await registerCommands(context);
 
-  expect(definitions.map(definition => definition.name)).not.toContain("operator:index");
-  expect(definitions).toHaveLength(2);
+  expect(definitions.map(definition => definition.name)).toEqual(["operator:project-init"]);
 });

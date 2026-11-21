@@ -28,7 +28,6 @@ Secondary signal: the optional TUI status indicator shows `Operator Ready (vX.Y.
 
 - `/operator:user-init`
 - `/operator:project-init`
-- `/operator:index`
 - `/operator:repair`
 
 Run each in a new conversation. See [Getting Started](../getting-started.md#appendix-commands) for what each command does.

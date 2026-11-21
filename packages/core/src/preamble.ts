@@ -87,7 +87,7 @@ Neither .operator/catalog.md nor .operator-shared/catalog.md exists. You must cr
     if (!hasMainIndex(loaded)) {
       warnings.push(
         `<operator-warning>
-Neither .operator/index/index.md nor .operator-shared/index/index.md exists. If the project is not in an empty state, ask the user to run /operator:index to initialize a project index before performing any work.
+Neither .operator/index/index.md nor .operator-shared/index/index.md exists. If there is project code and the user is not already running Project Init, offer to build the Project Index directly.
 </operator-warning>`,
       );
     }

@@ -58,7 +58,7 @@ test("routes help, version, and invalid commands", async () => {
   const help = await executeCli(["help"], context);
   expect(help.output).toMatch(/^user status\s+Show User Partition status$/m);
   expect(help.output).toMatch(/^project init\s+Initialize project partitions and print/m);
-  expect(help.output).toMatch(/^index init\s+Show Project Index status and print/m);
+  expect(help.output).not.toMatch(/^index init\s/m);
   expect(help.output).not.toMatch(/^index status\s/m);
   expect(help.output).not.toMatch(/^user guide\s/m);
   expect(help.output).toMatch(/^index lint\s+Check Project Index structure/m);
@@ -276,7 +276,9 @@ test("renders main index status without listing subindexes", async () => {
   expect(result.output).not.toContain("Description:");
   expect(result.output).not.toContain("Read If:");
   expect(result.output).not.toContain("nested/api.md");
-  expect(result.output).toContain("# Project Index Setup");
+  expect(result.output).toContain("# Refresh the Project Index");
+  expect(result.output).toContain("run `operator-helper index lint`");
+  expect(result.output).toContain("recommend updating their Operator plugin");
   expect(await executeCli(["index", "init"], context)).toEqual(result);
 });
 
@@ -284,17 +286,17 @@ test("reports a missing Project Brain without creating files", async () => {
   const result = await executeCli(["index", "status"], context);
   expect(result.exitCode).toBe(0);
   expect(result.output).toContain("Project Brain Missing");
-  expect(result.output).toContain("# Project Index Setup");
+  expect(result.output).toContain("# Refresh the Project Index");
   expect(fs.existsSync(resolvePath("/project/.operator"))).toBe(false);
 });
 
-test("prints the index setup guide when main index inspection fails", async () => {
+test("prints the compatibility prompt when main index inspection fails", async () => {
   fs.mkdirSync(resolvePath("/project/.operator/index/index.md"), { recursive: true });
 
   const result = await executeCli(["index", "init"], context);
   expect(result.exitCode).toBe(1);
   expect(result.output).toContain("Expected a file, found directory");
-  expect(result.output).toContain("# Project Index Setup");
+  expect(result.output).toContain("# Refresh the Project Index");
 });
 
 test("checks full memory loading and reports partition errors independently", async () => {

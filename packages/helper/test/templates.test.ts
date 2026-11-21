@@ -48,6 +48,4 @@ test("setup guides embed seeds and do not point at disk templates", () => {
   expect(projectGuide).toContain(readTemplate(TemplatePath.ProjectOperator).trimEnd());
   expect(projectGuide).toContain(readTemplate(TemplatePath.ProjectSharedReadme).trimEnd());
   expect(projectGuide).not.toContain("~/.operator/templates");
-
-  expect(readTemplate(TemplatePath.ProjectIndexSetup)).not.toContain("~/.operator/templates");
 });

@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { expect, test } from "vitest";
@@ -14,17 +14,18 @@ const skills = [
     directory: "operator-project-init",
     name: "operator-project-init",
   },
-  {
-    command: "operator-helper index init",
-    directory: "operator-index",
-    name: "operator-index",
-  },
 ] as const;
 
-test("does not ship the retired repair skill", async () => {
-  await expect(
-    readFile(resolve(import.meta.dirname, "../skills/operator-repair/SKILL.md"), "utf8"),
-  ).rejects.toMatchObject({ code: "ENOENT" });
+test("ships only the setup skills", async () => {
+  const directories = await readdir(resolve(import.meta.dirname, "../skills"), {
+    withFileTypes: true,
+  });
+  expect(
+    directories
+      .filter(directory => directory.isDirectory())
+      .map(directory => directory.name)
+      .sort(),
+  ).toEqual(skills.map(skill => skill.directory).sort());
 });
 
 test.each(skills)(

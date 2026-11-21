@@ -12,7 +12,7 @@ Helper writes the adapter into `~/.kiro`:
 
 - `hooks/operator-memory.json` — `SessionStart` hook that runs `operator-helper preamble`. Kiro adds its output to the agent's context.
 - `steering/operator-memory.md` — Always-included steering. If the hook did not inject the preamble, it tells the agent to run `operator-helper preamble` once itself.
-- `skills/operator-user-init/`, `skills/operator-project-init/`, `skills/operator-index/` — Operator commands as Kiro skills.
+- `skills/operator-user-init/`, `skills/operator-project-init/` — Operator setup commands as Kiro skills.
 
 Start a new Kiro session after installation.
 
@@ -32,7 +32,6 @@ Kiro invokes skills as slash commands:
 
 - `/operator-user-init`
 - `/operator-project-init`
-- `/operator-index`
 
 Run each in a new session. See [Getting Started](../getting-started.md#appendix-commands) for what each command does.
 

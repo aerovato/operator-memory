@@ -24,4 +24,4 @@ read_if: Working in packages/claude-code
 - `src/types.ts` — Structural subset of the mod API consumed by the adapter.
 - `test/register.test.ts` — Render caching, diagnostic passthrough, failure, subagent, and launch tests.
 - `test/skills.test.ts` — Explicit skill invocation and Helper workflow instruction checks.
-- `skills/user-init/SKILL.md`, `skills/project-init/SKILL.md`, `skills/index/SKILL.md` — Agent-driven User, Project, and Index workflows.
+- `skills/user-init/SKILL.md`, `skills/project-init/SKILL.md` — Agent-driven User and Project Setup.

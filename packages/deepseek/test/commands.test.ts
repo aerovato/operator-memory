@@ -13,19 +13,14 @@ type Definition = {
 };
 
 describe("DeepSeek Operator commands", () => {
-  test("registers the three hyphenated command names", () => {
+  test("registers the two hyphenated setup commands", () => {
     expect([...createRuntime().keys()]).toEqual(OPERATOR_COMMAND_NAMES);
-    expect(OPERATOR_COMMAND_NAMES).toEqual([
-      "operator-user-init",
-      "operator-project-init",
-      "operator-index",
-    ]);
+    expect(OPERATOR_COMMAND_NAMES).toEqual(["operator-user-init", "operator-project-init"]);
   });
 
   test.each([
     ["operator-user-init", "user init", "User Setup"],
     ["operator-project-init", "project init", "Project Setup"],
-    ["operator-index", "index init", "Project Index Setup"],
   ] as const)("hands %s to the agent without executing Helper", async (name, operation, guide) => {
     const invocation = createInvocation();
     await createRuntime().get(name)?.handler(invocation);
@@ -47,7 +42,9 @@ describe("DeepSeek Operator commands", () => {
     controller.abort();
     const invocation = createInvocation(controller.signal);
 
-    await expect(createRuntime().get("operator-index")?.handler(invocation)).rejects.toThrow();
+    await expect(
+      createRuntime().get("operator-project-init")?.handler(invocation),
+    ).rejects.toThrow();
     expect(invocation.agent.followup).not.toHaveBeenCalled();
   });
 });

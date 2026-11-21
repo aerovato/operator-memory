@@ -1,4 +1,4 @@
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 import { Effect } from "effect";
@@ -26,6 +26,23 @@ function writeKiroFiles(kiroHome: string): Effect.Effect<CliResult> {
     try {
       // Migration: remove the retired Operator-owned repair skill from existing installations.
       await rm(join(kiroHome, "skills", "operator-repair", "SKILL.md"), { force: true });
+      const indexSkill = join(kiroHome, "skills", "operator-index", "SKILL.md");
+      const indexSkillContent = await readFile(indexSkill, "utf8").catch((error: unknown) => {
+        if (
+          typeof error === "object"
+          && error !== null
+          && "code" in error
+          && error.code === "ENOENT"
+        )
+          return "";
+        throw error;
+      });
+      if (
+        indexSkillContent.startsWith("---\nname: operator-index\n")
+        && indexSkillContent.includes("and follow the emitted Project Index Setup guide")
+      ) {
+        await rm(indexSkill, { force: true });
+      }
 
       for (const file of KIRO_FILES) {
         const path = join(kiroHome, file.path);
