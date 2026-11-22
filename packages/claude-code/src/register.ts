@@ -39,6 +39,7 @@ export function register(on: On): void {
   });
 
   on("agent.spawn", async ($, event, next) => {
+    if (event.fork) return next(event);
     const text = await render($);
     return next(text === null ? event : { ...event, prompt: text + event.prompt });
   });

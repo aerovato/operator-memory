@@ -26,7 +26,7 @@ export interface Events {
     result: { sections: readonly PromptSection[] };
   };
   "agent.spawn": {
-    input: Readonly<{ prompt: string; [field: string]: unknown }>;
+    input: Readonly<{ prompt: string; fork: boolean; [field: string]: unknown }>;
     result: unknown;
   };
   "session.start": {
