@@ -38,6 +38,7 @@ Clone upstream repositories to the repository-root `references/<repo-name>/` dir
 
 - [`effect-smol/`](effect-smol.md) - Locally installed Effect v4 source tree used to verify implementation and testing patterns.
 - [`harnesses/codex.md`](harnesses/codex.md) - OpenAI Codex CLI source map: hooks, plugins, skills, trust, session identity.
+- [`harnesses/github-copilot/`](harnesses/github-copilot/overview.md) - GitHub Copilot CLI release materials, Copilot SDK, and VS Code Agent Host source maps and revision pins.
 - [`harnesses/pi.md`](harnesses/pi.md) - Pi agent monorepo map focused on the coding-agent extension system.
 - [`harnesses/deepseek-harness/`](harnesses/deepseek-harness/overview.md) - DeepSeek Harness reference monorepo: runtime, plugins, and distribution maps.
 - [`harnesses/claude-code/docs.md`](harnesses/claude-code/docs.md) - Official anthropics/claude-code repository map: plugin examples, mod/plugin engine TypeScript API, and configuration examples.

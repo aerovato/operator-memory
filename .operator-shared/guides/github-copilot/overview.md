@@ -11,6 +11,7 @@ Implementation reference for GitHub Copilot CLI and the VS Code **Copilot** sess
 - [Preamble and delegation](./injection.md) covers first-call delivery, context lifetime, subagents, and what remains to validate.
 - [Setup commands](./commands.md) covers explicit-only skills and native command alternatives.
 - [VS Code integration](./vscode.md) traces the runtime boundary, discovery and execution paths, and editor verification.
+- [Source index](../../index/harnesses/github-copilot/overview.md) records checkout pins and links to the relevant entry points.
 
 #### Choose the execution surface
 
