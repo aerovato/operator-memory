@@ -1,6 +1,6 @@
 # Claude Code Injection
 
-Last Updated: October 2, 2026
+Last Updated: November 22, 2026
 
 Context-injection surfaces relevant to Operator's preamble, ranked by fit. All details from live docs (October 2026) unless noted.
 
@@ -54,7 +54,7 @@ Fires when `CLAUDE.md` or `.claude/rules/*.md` loads. Observability only: hooks 
 - `prompt.compose` — fires whenever the engine renders a system prompt ("the call the engine makes for every prompt it sends"); resolves to ordered `sections` (`intro`, `tools`, `memory`, ...); hooks may append sections, and the engine places each cache mark. Appending a stable section is the transform pathway: re-sent on every model call, outside history, byte-stable per session. Plugin-added sections are named `<plugin>:<name>`; each section carries a `scope` of `shared` (cross-person cacheable) or `session` — Operator's preamble is per-person/per-project and must use `session`
 - No documented size cap on section text. The mods limits table caps hook time (10s own execution, excluding time inside mods API calls such as `$.process.run`, which itself allows 30s default / 10min max), UI `Text` children (10k), and `$.fs` (4 MiB) — nothing for prompt sections. Live-verified: a 36,009-character `session`-scoped section arrived fully intact, quoted verbatim from deep inside, no truncation
 - Model switches re-render through `prompt.compose` with a different `model` field; returning the same cached text keeps the section stable. Cadence across normal turns, `/clear`, and `/compact` is live-verified — compose fired before every model call in every state; a model switch invalidates the cache anyway, so cross-model stability is moot
-- Subagent coverage of `prompt.compose`: **live-disproved (v2.1.287)** — subagent system prompts are assembled from the agent definition, not the session compose pipeline. A foreground `Task` subagent cannot see compose-appended sections; background agents fire no compose at all; `PromptComposeInput` carries no `agentId`. Subagent injection uses the mod `agent.spawn` prompt rewrite (see [`mods.md`](./mods.md)); `SubagentStart` `additionalContext` is the recorded fallback
+- Subagent coverage of `prompt.compose`: **live-disproved (v2.1.287)** — subagent system prompts are assembled from the agent definition, not the session compose pipeline. A foreground `Task` subagent cannot see compose-appended sections; background agents fire no compose at all; `PromptComposeInput` carries no `agentId`. Operator uses the mod `agent.spawn` task rewrite for non-forked children. Full-history forks inherit the parent’s context and system prompt, so Operator skips the rewrite when the host supplies `fork: true`. See [`mods.md`](./mods.md) for the spawn hook and classic fallback.
 - The mod event `session.start` (not `classic.SessionStart`) fires once per loaded mod and does **not** re-fire after `/clear`, `/resume`, or `/branch` — do not use it as a render trigger. Live note: `/clear` emits `session.end` with reason `clear` and the next compose carries a **new** session ID; a process-lifetime render cache stays byte-stable across it regardless
 
 ## Instruction files

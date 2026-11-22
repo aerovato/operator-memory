@@ -44,7 +44,7 @@ describe("preamble injection", () => {
   it("coalesces concurrent compose and spawn renders and keeps the cached bytes", async () => {
     const { $, run, hook } = await harness();
     const next = vi.fn().mockResolvedValue({ agentId: "child" });
-    const event = Object.freeze({ prompt: "Task", model: "haiku", background: true });
+    const event = Object.freeze({ prompt: "Task", fork: false, model: "haiku", background: true });
     const compose = () => hook("prompt.compose")($, {}, async () => ({ sections: [] }));
 
     const [first] = await Promise.all([compose(), hook("agent.spawn")($, event, next)]);
@@ -60,15 +60,29 @@ describe("preamble injection", () => {
     expect(event.prompt).toBe("Task");
   });
 
+  it("hands full-history forks their original task without rendering a second preamble", async () => {
+    const { $, run, hook } = await harness();
+    const child = { agentId: "child" };
+    const next = vi.fn().mockResolvedValue(child);
+    const event = Object.freeze({ prompt: "Task", fork: true });
+
+    expect(await hook("agent.spawn")($, event, next)).toBe(child);
+    expect(next).toHaveBeenCalledExactlyOnceWith(event);
+    expect(run).not.toHaveBeenCalled();
+  });
+
   it("allows a subagent to trigger the first render", async () => {
     const { $, run, hook } = await harness();
     const next = vi.fn().mockResolvedValue({ agentId: "child" });
 
-    await hook("agent.spawn")($, { prompt: "Task" }, next);
+    await hook("agent.spawn")($, { prompt: "Task", fork: false }, next);
     await hook("prompt.compose")($, {}, async () => ({ sections: [] }));
 
     expect(run).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith({ prompt: "<operator>memory</operator>\n\nTask" });
+    expect(next).toHaveBeenCalledWith({
+      prompt: "<operator>memory</operator>\n\nTask",
+      fork: false,
+    });
   });
 
   it("passes canonical diagnostic output through unchanged", async () => {
@@ -78,10 +92,10 @@ describe("preamble injection", () => {
 
     const result = await hook("prompt.compose")($, {}, async () => ({ sections: [] }));
     const next = vi.fn().mockResolvedValue({ agentId: "child" });
-    await hook("agent.spawn")($, { prompt: "Task" }, next);
+    await hook("agent.spawn")($, { prompt: "Task", fork: false }, next);
 
     expect(result.sections[0]?.text).toBe(diagnostic);
-    expect(next).toHaveBeenCalledWith({ prompt: `${diagnostic}Task` });
+    expect(next).toHaveBeenCalledWith({ prompt: `${diagnostic}Task`, fork: false });
     expect($.ui.log).not.toHaveBeenCalled();
   });
 
@@ -92,7 +106,7 @@ describe("preamble injection", () => {
     const original = { sections: [] };
     const compose = () => hook("prompt.compose")($, {}, async () => original);
     const next = vi.fn().mockResolvedValue({ agentId: "child" });
-    const event = Object.freeze({ prompt: "Task" });
+    const event = Object.freeze({ prompt: "Task", fork: false });
 
     const [result] = await Promise.all([compose(), hook("agent.spawn")($, event, next)]);
     await compose();

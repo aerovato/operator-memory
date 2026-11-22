@@ -1,6 +1,6 @@
 # Claude Code Binding
 
-Last Updated: November 21, 2026
+Last Updated: November 22, 2026
 
 ## Scope
 
@@ -11,7 +11,7 @@ Runtime injection, commands, Helper installation, release automation, and user-f
 - Use the Helper subprocess and transform pathways from the [reference implementation](../reference/implementation.md). Render `operator-helper preamble` with `$.session.cwd()` lazily once per process, coalescing concurrent requests. Cache successful output and failures without invalidation across `/clear`, `/resume`, or `/branch`.
 - Keep rendering in Helper: core requires Node APIs unavailable in Claude's mod runtime. Do not introduce a core portability abstraction for this adapter.
 - Append the unchanged successful output as `operator:preamble` with `session` scope through `prompt.compose`. Diagnostic output is canonical successful output; do not inspect it or invent a fallback.
-- Subagents receive the same cached bytes prepended to their `agent.spawn` task prompt. This reaches the first user message rather than the subagent system prompt; the parent retains its original tool-call prompt. No settings-hook fallback is implemented.
+- Non-forked subagents receive the same cached bytes prepended to their `agent.spawn` task prompt. The preamble reaches the child's first user message, and the parent retains its original tool-call prompt. Full-history Agent forks reuse the parent’s context and keep their task prompt unchanged. No settings-hook fallback is implemented.
 - Unexpected Helper failures inject nothing and emit one visible recovery cue per process. Compose cannot block a model call; proceeding without injection is an accepted binding consequence.
 - Start one fire-and-forget `operator-helper version` check at runtime launch. An update-check failure does not prevent injection.
 
