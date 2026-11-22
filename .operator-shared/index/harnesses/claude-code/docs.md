@@ -11,6 +11,21 @@ read_if: Porting the Operator plugin to Claude Code, designing its manifest, hoo
 
 - `references/claude-code-docs/` — clone of `github.com/anthropics/claude-code` (shallow, git-ignored)
 
+## Source checkout
+
+- Upstream: https://github.com/anthropics/claude-code.git
+- Destination: `references/claude-code-docs/`
+- Commit: `6160717d8994f236ab381cf534fc1cde5347c12f`
+- Tracking branch: `main`
+
+Clone only when needed, from the Operator repository root:
+
+```sh
+git clone --no-checkout --depth 1 --branch main https://github.com/anthropics/claude-code.git references/claude-code-docs
+git -C references/claude-code-docs fetch --depth 1 origin 6160717d8994f236ab381cf534fc1cde5347c12f
+git -C references/claude-code-docs switch --detach 6160717d8994f236ab381cf534fc1cde5347c12f
+```
+
 ## Architecture
 
 - Three plugin-relevant corpora:

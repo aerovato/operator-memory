@@ -60,13 +60,19 @@ Runtime code uses portable Node APIs. Bun owns workspace management, dependency 
 - Keep brain documents short and concise; split long documents with explicit links when useful.
 - Keep specifications focused primarily on expected behavior and current scope.
 
+## Reference Sources
+
+- Clone or refresh reference source trees **only when the current task requires source inspection**. Consult the relevant guides and indexes first, reuse existing checkouts, and never clone the full collection for a narrow task.
+- Every shared index covering a Git-ignored source tree must contain, or link to its owning source subindex's `Source checkout` section containing, the upstream URL, exact local destination, full commit hash, tracking branch, and commands to obtain the pinned source. Each checkout has one canonical mapping and pin; narrower subindexes link to that owner.
+- Reference refreshes update the owning checkout pin and affected indexes and guides together. Checkout pins identify source snapshots; behavioral verification pins change only after reverification. Source-index usage, refreshes, and contributor publishing follow [Contributing](../CONTRIBUTING.md#reference-sources-and-indexes).
+
 ## Harness Adapters
 
 Unqualified OpenCode support, development, and reference guidance target V2. V1 is frozen: retain its adapter contract, runtime, tests, and Helper installation/recovery route, but no development guides, indexes, or release/development plumbing. Package names and source directories remain unchanged.
 
 Follow this workflow in order when implementing a harness adapter:
 
-1. Research the harness. If source code is available, clone it to the repository-root `references/<repo-name>` directory (Git-ignored) and add subindexes for the clone to the Shared Project Index under `index/harnesses/`.
+1. Research the harness using the existing guides and indexes. When source inspection is needed, reuse its checkout or clone only that repository to the mapped repository-root `references/` destination (Git-ignored). Add source mappings and shared subindexes when introducing a new public harness reference.
 2. Create guides under `.operator-shared/guides/<harness>/` following the [harness guide standard](./specs/reference/guides.md), based on the official documentation and, when available, the cloned source code. Cite real file paths from a clone as `references/<repo-name>/...`.
 3. Read the adapter contract in `.operator-shared/specs/reference/implementation.md` and the other harnesses' `implementation.md` documents, then determine the implementation pathway for the target harness.
 4. Implement the adapter, recording the binding and any deviations in `.operator-shared/specs/<harness>/implementation.md`.

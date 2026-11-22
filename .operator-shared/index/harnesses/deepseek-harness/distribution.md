@@ -7,6 +7,8 @@ read_if: Packaging, installing, updating, composing, previewing, or testing a De
 
 ## Coverage
 
+Checkout pin and commands: [source overview](overview.md#source-checkout).
+
 - `references/deepseek-harness/packages/boot/`, `packages/bundle/`, `packages/sdk/`, `packages/host/`, `packages/client/`, `packages/acp/`, `packages/api/`
 - `references/deepseek-harness/apps/`, `python/`, and focused profile documentation
 

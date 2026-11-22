@@ -16,6 +16,21 @@ read_if: Verifying Effect v4 APIs, examples, testing patterns, or source convent
 
 - `references/effect-smol/`
 
+## Source checkout
+
+- Upstream: https://github.com/Effect-TS/effect-smol.git
+- Destination: `references/effect-smol/`
+- Commit: `3a1128c7684e04d34d9f541f77adaac38a513056`
+- Tracking branch: `main`
+
+Clone only when needed, from the Operator repository root:
+
+```sh
+git clone --no-checkout --depth 1 --branch main https://github.com/Effect-TS/effect-smol.git references/effect-smol
+git -C references/effect-smol fetch --depth 1 origin 3a1128c7684e04d34d9f541f77adaac38a513056
+git -C references/effect-smol switch --detach 3a1128c7684e04d34d9f541f77adaac38a513056
+```
+
 ## Architecture
 
 - Mutable upstream Effect v4 reference checkout installed locally for shared Effect guide and implementation work.

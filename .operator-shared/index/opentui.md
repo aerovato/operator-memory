@@ -9,6 +9,21 @@ read_if: Working on Operator's OpenCode V2 TUI build, JSX reactivity, or rendere
 
 - `references/opentui/` (Git-ignored upstream source)
 
+## Source checkout
+
+- Upstream: https://github.com/anomalyco/opentui.git
+- Destination: `references/opentui/`
+- Commit: `4b1474e009bf78365a7a4866e83a9e522533ef42`
+- Tracking branch: `main`
+
+Clone only when needed, from the Operator repository root:
+
+```sh
+git clone --no-checkout --depth 1 --branch main https://github.com/anomalyco/opentui.git references/opentui
+git -C references/opentui fetch --depth 1 origin 4b1474e009bf78365a7a4866e83a9e522533ef42
+git -C references/opentui switch --detach 4b1474e009bf78365a7a4866e83a9e522533ef42
+```
+
 ## Architecture
 
 - The Solid package supplies the JSX runtime, Bun transform plugin, and reconciler used by OpenCode V2's terminal UI. Default Bun JSX compilation does not preserve reactive text expressions; the Solid build plugin compiles them into tracked insertions.

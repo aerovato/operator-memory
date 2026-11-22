@@ -7,7 +7,7 @@ read_if: Implementing Operator for VS Code Copilot or tracing plugin discovery, 
 
 ## Coverage
 
-- `references/vscode/`, focusing on Copilot plugin authoring and implementation. See the [checkout pin](overview.md#references-index).
+- `references/vscode/`, focusing on Copilot plugin authoring and implementation. See the [checkout pin and commands](overview.md#vs-code).
 
 ## Architecture
 

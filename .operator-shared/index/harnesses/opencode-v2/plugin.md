@@ -7,6 +7,8 @@ read_if: Researching OpenCode v2 plugin domains, hooks, in-process SDK hosting, 
 
 ## Coverage
 
+Checkout pin and commands: [source overview](monorepo.md#source-checkout).
+
 - `references/opencode-v2/packages/plugin/`
 - `references/opencode-v2/packages/sdk/`
 - `references/opencode-v2/packages/client/` (plugin-relevant parts)

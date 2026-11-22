@@ -9,6 +9,21 @@ read_if: Preparing or implementing an Operator adapter for DeepSeek Harness, or 
 
 - `references/deepseek-harness/` — Shallow clone of `deepseek-ai/deepseek-harness`.
 
+## Source checkout
+
+- Upstream: https://github.com/deepseek-ai/deepseek-harness.git
+- Destination: `references/deepseek-harness/`
+- Commit: `639ed015397290b3745d163aafe02ffee4aa3f84`
+- Tracking branch: `master`
+
+Clone only when needed, from the Operator repository root:
+
+```sh
+git clone --no-checkout --depth 1 --branch master https://github.com/deepseek-ai/deepseek-harness.git references/deepseek-harness
+git -C references/deepseek-harness fetch --depth 1 origin 639ed015397290b3745d163aafe02ffee4aa3f84
+git -C references/deepseek-harness switch --detach 639ed015397290b3745d163aafe02ffee4aa3f84
+```
+
 ## Architecture
 
 - pnpm/TypeScript monorepo using vendored Cordis. Each capability is composed as a plugin with service injection, typed events, scoped registrations, and reversible effects; packages group service definitions, providers, and consumers.

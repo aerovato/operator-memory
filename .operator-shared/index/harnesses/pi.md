@@ -9,6 +9,21 @@ read_if: Porting the Operator plugin to Pi, researching Pi extensions, skills, c
 
 - `references/pi/` (shallow clone of `earendil-works/pi`, formerly `badlogic/pi-mono`)
 
+## Source checkout
+
+- Upstream: https://github.com/earendil-works/pi.git
+- Destination: `references/pi/`
+- Commit: `7d8ab31a477ecc07b36f56ffcae58c79307a68be`
+- Tracking branch: `main`
+
+Clone only when needed, from the Operator repository root:
+
+```sh
+git clone --no-checkout --depth 1 --branch main https://github.com/earendil-works/pi.git references/pi
+git -C references/pi fetch --depth 1 origin 7d8ab31a477ecc07b36f56ffcae58c79307a68be
+git -C references/pi switch --detach 7d8ab31a477ecc07b36f56ffcae58c79307a68be
+```
+
 ## Architecture
 
 - Pi agent toolkit monorepo: npm workspaces (not Bun), TypeScript, Biome, Vitest, `tsgo` typechecking.

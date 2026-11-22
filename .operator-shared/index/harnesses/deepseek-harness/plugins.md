@@ -7,6 +7,8 @@ read_if: Implementing a DeepSeek Harness plugin, setup command, agent-scoped reg
 
 ## Coverage
 
+Checkout pin and commands: [source overview](overview.md#source-checkout).
+
 - `references/deepseek-harness/packages/interaction/`, `packages/hooks/`, `packages/skill/`, `packages/subagent/`, `packages/extensions/`, `packages/preset/`, `packages/mcp/`
 - Related Cordis authoring references under `references/deepseek-harness/docs/`
 

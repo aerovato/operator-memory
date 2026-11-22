@@ -9,6 +9,21 @@ read_if: Building the Operator Codex adapter or researching Codex hook execution
 
 - `references/codex` — openai/codex shallow clone, Rust workspace under `codex-rs/`.
 
+## Source checkout
+
+- Upstream: https://github.com/openai/codex.git
+- Destination: `references/codex/`
+- Commit: `5b1d6560181680f95cde95c14ed042acc02248ed`
+- Tracking branch: `main`
+
+Clone only when needed, from the Operator repository root:
+
+```sh
+git clone --no-checkout --depth 1 --branch main https://github.com/openai/codex.git references/codex
+git -C references/codex fetch --depth 1 origin 5b1d6560181680f95cde95c14ed042acc02248ed
+git -C references/codex switch --detach 5b1d6560181680f95cde95c14ed042acc02248ed
+```
+
 ## Architecture
 
 - Rust workspace; `core` owns session/turn orchestration and hook dispatch, `hooks` is the hook engine, `core-plugins`/`plugin` own manifests and install layout, `ext/skills` owns skill discovery and prompt catalog, `tui` is the terminal client, `app-server*` the JSON-RPC client protocol.

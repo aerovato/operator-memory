@@ -7,6 +7,8 @@ read_if: Designing DeepSeek Harness preamble injection, session scoping, failure
 
 ## Coverage
 
+Checkout pin and commands: [source overview](overview.md#source-checkout).
+
 - `references/deepseek-harness/packages/core/`, `packages/context/`, `packages/llm/`, `packages/session/`, `packages/compaction/`
 - Focused runtime references under `references/deepseek-harness/docs/subsystems/`
 

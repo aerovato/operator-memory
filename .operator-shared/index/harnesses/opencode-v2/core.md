@@ -7,6 +7,8 @@ read_if: Researching OpenCode v2 core services, session execution, plugins, tool
 
 ## Coverage
 
+Checkout pin and commands: [source overview](monorepo.md#source-checkout).
+
 - `references/opencode-v2/packages/core/`
 
 ## Architecture

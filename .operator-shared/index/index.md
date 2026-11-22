@@ -34,7 +34,7 @@ read_if: Working anywhere in the committed Operator Memory project
 
 ### `references/` - Git-ignored third-party source trees
 
-Clone upstream repositories to the repository-root `references/<repo-name>/` directory. Public harness and library source maps:
+Each owning source subindex below records its upstream URL, local destination, full commit pin, tracking branch, and pinned checkout commands. Obtain only the checkouts required by the current task; [Contributing](../../CONTRIBUTING.md#reference-sources-and-indexes) explains index usage and refreshes. Public harness and library source maps:
 
 - [`effect-smol/`](effect-smol.md) - Locally installed Effect v4 source tree used to verify implementation and testing patterns.
 - [`harnesses/codex.md`](harnesses/codex.md) - OpenAI Codex CLI source map: hooks, plugins, skills, trust, session identity.

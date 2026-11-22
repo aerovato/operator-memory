@@ -7,7 +7,7 @@ read_if: Implementing Copilot plugin format, hooks or install behavior, or check
 
 ## Coverage
 
-- `references/copilot-cli/` and `references/copilot-sdk/`. See the [checkout pins](overview.md#references-index).
+- `references/copilot-cli/` and `references/copilot-sdk/`. See the [checkout pins and commands](overview.md#source-checkout).
 
 ## Architecture
 
