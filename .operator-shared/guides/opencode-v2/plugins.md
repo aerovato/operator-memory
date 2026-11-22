@@ -2,7 +2,7 @@
 
 Last Updated: November 3, 2026
 
-Verified from https://opencode.ai/v2/docs/build/plugins/ and `<reference>/opencode-v2/` source. Hooks detail in [`hooks.md`](hooks.md), sessions and messaging in [`sessions.md`](sessions.md), TUI plugins in [`tui.md`](tui.md), installation and local development in [`installation.md`](installation.md).
+Verified from https://opencode.ai/v2/docs/build/plugins/ and `references/opencode-v2/` source. Hooks detail in [`hooks.md`](hooks.md), sessions and messaging in [`sessions.md`](sessions.md), TUI plugins in [`tui.md`](tui.md), installation and local development in [`installation.md`](installation.md).
 
 This directory is the canonical OpenCode development guide, targeting V2. Its package names are `@opencode/plugin`, `@opencode/client`, and `@opencode/sdk`. For the frozen legacy adapter contract only, see [`../../specs/opencode/implementation.md`](../../specs/opencode/implementation.md).
 
@@ -22,7 +22,7 @@ export default Plugin.define({
 })
 ```
 
-Two parallel variants share the same interfaces: `@opencode/plugin` (Promise) and `@opencode/plugin/effect` (Effect). Effect plugin domains must extend the corresponding API client interface from `@opencode/client/effect/api` and only add plugin-context functions. Source: `<reference>/opencode-v2/packages/plugin/src/promise/` and `effect/`.
+Two parallel variants share the same interfaces: `@opencode/plugin` (Promise) and `@opencode/plugin/effect` (Effect). Effect plugin domains must extend the corresponding API client interface from `@opencode/client/effect/api` and only add plugin-context functions. Source: `references/opencode-v2/packages/plugin/src/promise/` and `effect/`.
 
 `ctx` is essentially an OpenCode server client plus plugin-only methods (transforms, hooks, registrations, options). `ctx.location` carries `directory`, optional `workspaceID`, and `project` (`id`, `directory`, `canonical`) — the plugin instance's location, not the location of every session it observes. `ctx.options` holds values passed via the object config form.
 

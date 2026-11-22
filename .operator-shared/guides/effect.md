@@ -1,6 +1,6 @@
 # Effect
 
-Last Updated: August 16, 2026
+Last Updated: November 22, 2026
 
 This codebase uses Effect for typed, composable TypeScript services, schemas, and workflows.
 
@@ -8,8 +8,8 @@ This codebase uses Effect for typed, composable TypeScript services, schemas, an
 
 Use the current Effect v4 / effect-smol source, not memory or older Effect v2/v3 examples.
 
-1. If `.operator-shared/references/effect-smol` is missing, clone `https://github.com/Effect-TS/effect-smol` there.
-2. Search `.operator-shared/references/effect-smol` for exact APIs, examples, tests, and naming patterns before answering or implementing Effect-specific code.
+1. When the task requires Effect source inspection, reuse the existing checkout or obtain it using the [Effect source index's pinned checkout commands](../index/effect-smol.md#source-checkout).
+2. Search `references/effect-smol` for exact APIs, examples, tests, and naming patterns before answering or implementing Effect-specific code.
 3. Also inspect existing repo code for local house style before introducing new patterns.
 4. Prefer answers and implementations backed by specific source files or nearby repo examples.
 
@@ -24,7 +24,7 @@ Use the current Effect v4 / effect-smol source, not memory or older Effect v2/v3
 - Keep layer composition explicit. Avoid broad hidden provisioning that makes missing dependencies hard to see.
 - In tests, prefer the repo's existing Effect test helpers and live tests for filesystem, git, child process, locks, or timing behavior.
 - Do not introduce `any`, non-null assertions, unchecked casts, or older Effect APIs just to satisfy types.
-- Do not answer from memory. Verify against `.operator-shared/references/effect-smol` or nearby code first.
+- Do not answer from memory. Verify against `references/effect-smol` or nearby code first.
 
 ## Testing Patterns
 

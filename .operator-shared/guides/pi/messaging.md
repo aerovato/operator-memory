@@ -2,7 +2,7 @@
 
 Last Updated: September 15, 2026
 
-Verified from `<reference>/pi/packages/coding-agent/src/core/extensions/runner.ts`, `src/core/sdk.ts`, and `docs/session-format.md`. Extension authoring basics: [extensions.md](extensions.md).
+Verified from `references/pi/packages/coding-agent/src/core/extensions/runner.ts`, `src/core/sdk.ts`, and `docs/session-format.md`. Extension authoring basics: [extensions.md](extensions.md).
 
 ## Session model
 

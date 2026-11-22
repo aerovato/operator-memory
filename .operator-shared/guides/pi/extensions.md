@@ -2,7 +2,7 @@
 
 Last Updated: November 3, 2026
 
-Verified from `<reference>/pi/packages/coding-agent/docs/extensions.md` and `<reference>/pi/packages/coding-agent/src/core/extensions/`.
+Verified from `references/pi/packages/coding-agent/docs/extensions.md` and `references/pi/packages/coding-agent/src/core/extensions/`.
 
 ## Model
 

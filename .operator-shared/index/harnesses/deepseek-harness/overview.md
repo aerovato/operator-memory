@@ -1,13 +1,28 @@
 ---
 description: DeepSeek Harness reference monorepo architecture and navigation to runtime, plugin, and distribution source maps
-read_if: Preparing or implementing an Operator adapter for DeepSeek Harness, or navigating reference/deepseek-harness
+read_if: Preparing or implementing an Operator adapter for DeepSeek Harness, or navigating references/deepseek-harness
 ---
 
 # DeepSeek Harness
 
 ## Coverage
 
-- `reference/deepseek-harness/` — Shallow clone of `deepseek-ai/deepseek-harness`.
+- `references/deepseek-harness/` — Shallow clone of `deepseek-ai/deepseek-harness`.
+
+## Source checkout
+
+- Upstream: https://github.com/deepseek-ai/deepseek-harness.git
+- Destination: `references/deepseek-harness/`
+- Commit: `639ed015397290b3745d163aafe02ffee4aa3f84`
+- Tracking branch: `master`
+
+Clone only when needed, from the Operator repository root:
+
+```sh
+git clone --no-checkout --depth 1 --branch master https://github.com/deepseek-ai/deepseek-harness.git references/deepseek-harness
+git -C references/deepseek-harness fetch --depth 1 origin 639ed015397290b3745d163aafe02ffee4aa3f84
+git -C references/deepseek-harness switch --detach 639ed015397290b3745d163aafe02ffee4aa3f84
+```
 
 ## Architecture
 
@@ -16,7 +31,7 @@ read_if: Preparing or implementing an Operator adapter for DeepSeek Harness, or 
 - Agent-loop is a swappable plugin. It assembles prompts and tool schemas, commits model-visible inputs to a durable session log, and derives request history from that log. Extension points are divided among prompt assembly, agent events, tool execution, and direct human commands.
 - Start with `docs/architecture.md` and `docs/cordis-primer.md`. Use the focused maps below for package-level navigation; this tree is too large for a single file-by-file index.
 
-## `reference/deepseek-harness/` Index
+## `references/deepseek-harness/` Index
 
 - `AGENTS.md`, `CLAUDE.md` — Repository agent conventions; `CLAUDE.md` links to `AGENTS.md`.
 - `README.md`, `README.zh.md`, `CONTRIBUTING.md`, `SAFETY.md`, `LICENSE` — Project entry, policies, and license.

@@ -14,14 +14,29 @@ read_if: Verifying Effect v4 APIs, examples, testing patterns, or source convent
 
 ## Coverage
 
-- `.operator-shared/references/effect-smol/`
+- `references/effect-smol/`
+
+## Source checkout
+
+- Upstream: https://github.com/Effect-TS/effect-smol.git
+- Destination: `references/effect-smol/`
+- Commit: `3a1128c7684e04d34d9f541f77adaac38a513056`
+- Tracking branch: `main`
+
+Clone only when needed, from the Operator repository root:
+
+```sh
+git clone --no-checkout --depth 1 --branch main https://github.com/Effect-TS/effect-smol.git references/effect-smol
+git -C references/effect-smol fetch --depth 1 origin 3a1128c7684e04d34d9f541f77adaac38a513056
+git -C references/effect-smol switch --detach 3a1128c7684e04d34d9f541f77adaac38a513056
+```
 
 ## Architecture
 
 - Mutable upstream Effect v4 reference checkout installed locally for shared Effect guide and implementation work.
 - Its source, tests, platform packages, documentation, and workspace tooling are maintained upstream; consult the guide before using it.
 
-## `.operator-shared/references/effect-smol/` Index
+## `references/effect-smol/` Index
 
 - `packages/` - Effect runtime and platform package sources, tests, and examples.
 - `ai-docs/`, `cookbooks/`, `migration/` - Usage, migration, and agent-oriented documentation.

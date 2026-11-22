@@ -7,8 +7,10 @@ read_if: Implementing a DeepSeek Harness plugin, setup command, agent-scoped reg
 
 ## Coverage
 
-- `reference/deepseek-harness/packages/interaction/`, `packages/hooks/`, `packages/skill/`, `packages/subagent/`, `packages/extensions/`, `packages/preset/`, `packages/mcp/`
-- Related Cordis authoring references under `reference/deepseek-harness/docs/`
+Checkout pin and commands: [source overview](overview.md#source-checkout).
+
+- `references/deepseek-harness/packages/interaction/`, `packages/hooks/`, `packages/skill/`, `packages/subagent/`, `packages/extensions/`, `packages/preset/`, `packages/mcp/`
+- Related Cordis authoring references under `references/deepseek-harness/docs/`
 
 ## Architecture
 
@@ -17,7 +19,7 @@ read_if: Implementing a DeepSeek Harness plugin, setup command, agent-scoped reg
 - Subagents use a provider registry and distinct in-process/fork/remote implementations. Agent presets compose per-session plugin trees, rather than changing the global profile.
 - `extensions/` is the harness's agent-authored dynamic plugin facility; it is not the only route for installing a conventional Cordis plugin.
 
-## `reference/deepseek-harness/packages/interaction/` Index
+## `references/deepseek-harness/packages/interaction/` Index
 
 - `README.md` — Human interaction package map.
 
@@ -32,41 +34,41 @@ read_if: Implementing a DeepSeek Harness plugin, setup command, agent-scoped reg
 - `permission-presets/` — Session permission choices.
 - `user-approval/`, `user-questions/`, `tool-ask-user/` — Approval and human question services and tool.
 
-## `reference/deepseek-harness/packages/hooks/` Index
+## `references/deepseek-harness/packages/hooks/` Index
 
 - `hook-protocol/src/` — Shared external hook wire types, matching, dispatch, and runner; large package.
 - `hooks-claude-code/`, `hooks-codex/` — Host-side adapters for external hook configurations.
 
-## `reference/deepseek-harness/packages/skill/` Index
+## `references/deepseek-harness/packages/skill/` Index
 
 - `skill/`, `skill-filesystem/` — Skill registry and filesystem provider.
 - `tool-skill/`, `tool-workspace-dependencies/` — Model-facing skill invocation and workspace dependency guidance.
 - `skill-office/`, `skill-badge/` — Specialized skill content and presentation.
 
-## `reference/deepseek-harness/packages/subagent/` Index
+## `references/deepseek-harness/packages/subagent/` Index
 
 - `subagent/src/` — Provider contract, child identity, continuation lifecycle, catalog, and client views; large package.
 - `subagent-spawn-in-process/`, `subagent-fork-in-process/`, `subagent-in-process-driver/` — Local child creation and execution.
 - `subagent-acp/`, `subagent-dsh-sdk/`, `subagent-codex/`, `subagent-claude-code/` — Out-of-process delegated-agent providers.
 - `tool-subagent/`, `tool-subagent-control/` — Model-facing delegation and child management.
 
-## `reference/deepseek-harness/packages/extensions/` Index
+## `references/deepseek-harness/packages/extensions/` Index
 
 - `cordis-host-runner/src/` — Dynamic Host plugin definitions, activation lifecycle, registry, and runtime inspection.
 - `cordis-client-runner/src/`, `ui-cordis/src/` — Browser-side dynamic plugin activation and UI.
 - `tool-cordis/src/` — Model-facing dynamic plugin controls and inspection.
 
-## `reference/deepseek-harness/packages/preset/` Index
+## `references/deepseek-harness/packages/preset/` Index
 
 - `agent-preset-registry/src/` — Preset definitions, per-agent composition, scope mounting, and session selection.
 - `agent-preset/` — Shipped agent preset configurations and reusable skills.
 - `persona/` — Persona contributions.
 
-## `reference/deepseek-harness/packages/mcp/` Index
+## `references/deepseek-harness/packages/mcp/` Index
 
 - `mcp-client/src/`, `mcp-resources/src/` — MCP tool transport and resource integration.
 
-## `reference/deepseek-harness/docs/` Index — Plugin authoring references
+## `references/deepseek-harness/docs/` Index — Plugin authoring references
 
 - `cordis-primer.md`, `cordis-tutorial/` — Framework service injection, events, waterfall, loader, and effects.
 - `architecture.md`, `capability-seams.md`, `module-graph.md` — Composition, service/provider/consumer split, and dependency graph.

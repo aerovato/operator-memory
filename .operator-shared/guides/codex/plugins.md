@@ -106,7 +106,7 @@ Publishing a plugin makes its listing discoverable on Web surfaces, but installi
 
 - [Plugin submission](https://developers.openai.com/plugins/deploy/submission)
 - [Desktop-only submission](https://developers.openai.com/plugins/deploy/desktop-only)
-- `<reference>/codex/codex-rs/core-plugins/src/manager.rs`, `marketplace_upgrade.rs`, `loader.rs`, `store.rs` — background Git upgrade, revision gating, source refresh, and manifest-version comparison.
+- `references/codex/codex-rs/core-plugins/src/manager.rs`, `marketplace_upgrade.rs`, `loader.rs`, `store.rs` — background Git upgrade, revision gating, source refresh, and manifest-version comparison.
 - [Plugin architecture](https://developers.openai.com/plugins/concepts/plugins)
 - [Package your plugin](https://developers.openai.com/plugins/build/plugins)
 - [Plugins](https://learn.chatgpt.com/docs/plugins)

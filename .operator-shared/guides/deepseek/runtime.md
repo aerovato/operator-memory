@@ -2,7 +2,7 @@
 
 Last Updated: October 1, 2026
 
-Read with [`overview.md`](overview.md). Sources below are relative to `<reference>/deepseek-harness/`.
+Read with [`overview.md`](overview.md). Sources below are relative to `references/deepseek-harness/`.
 
 ## Agent and Session Identity
 

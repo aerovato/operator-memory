@@ -89,7 +89,7 @@ Operator's launch-time `operator-helper version` subprocess checks Helper, not t
 
 ## Reference examples
 
-In `<reference>/claude-code-docs/plugins/`: `learning-output-style` and `explanatory-output-style` (minimal SessionStart context injection), `hookify` (command-plugin structure with Python handlers), `plugin-dev` (authoring toolkit with manifest and frontmatter references).
+In `references/claude-code-docs/plugins/`: `learning-output-style` and `explanatory-output-style` (minimal SessionStart context injection), `hookify` (command-plugin structure with Python handlers), `plugin-dev` (authoring toolkit with manifest and frontmatter references).
 
 ## Sources
 

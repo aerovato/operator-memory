@@ -9,7 +9,22 @@ read_if: Porting the Operator plugin to Claude Code, designing its manifest, hoo
 
 ## Coverage
 
-- `reference/claude-code-docs/` — clone of `github.com/anthropics/claude-code` (shallow, git-ignored)
+- `references/claude-code-docs/` — clone of `github.com/anthropics/claude-code` (shallow, git-ignored)
+
+## Source checkout
+
+- Upstream: https://github.com/anthropics/claude-code.git
+- Destination: `references/claude-code-docs/`
+- Commit: `6160717d8994f236ab381cf534fc1cde5347c12f`
+- Tracking branch: `main`
+
+Clone only when needed, from the Operator repository root:
+
+```sh
+git clone --no-checkout --depth 1 --branch main https://github.com/anthropics/claude-code.git references/claude-code-docs
+git -C references/claude-code-docs fetch --depth 1 origin 6160717d8994f236ab381cf534fc1cde5347c12f
+git -C references/claude-code-docs switch --detach 6160717d8994f236ab381cf534fc1cde5347c12f
+```
 
 ## Architecture
 
@@ -20,7 +35,7 @@ read_if: Porting the Operator plugin to Claude Code, designing its manifest, hoo
 - Operator-relevant mod events glimpsed in the type declarations: `session.start`, `prompt.section` (named prompt sections, e.g. memory), `prompt.context` (context blocks), `prompt.compose`, `command.run`/`command.describe`, `plugin.register`, `tool.call`/`tool.check`. These are the programmatic injection and command surfaces; `mods/types/claude-code.d.ts` is the canonical contract.
 - The mod layering/seating model matters for Operator: `sec-default` seats outermost and keeps org-managed hooks, settings, and policy out of reach of installed plugins.
 
-## `reference/claude-code-docs/` Index
+## `references/claude-code-docs/` Index
 
 ### Repository root
 

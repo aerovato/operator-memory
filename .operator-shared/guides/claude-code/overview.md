@@ -2,7 +2,7 @@
 
 Last Updated: November 21, 2026
 
-Implementation reference for porting Operator Memory to Claude Code. Primary sources: the official `anthropics/claude-code` repository (cloned locally under `<reference>/claude-code-docs/`) and the live documentation at `code.claude.com/docs`, retrieved October 2, 2026.
+Implementation reference for porting Operator Memory to Claude Code. Primary sources: the official `anthropics/claude-code` repository (cloned locally under `references/claude-code-docs/`) and the live documentation at `code.claude.com/docs`, retrieved October 2, 2026.
 
 ## Scope
 

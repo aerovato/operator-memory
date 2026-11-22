@@ -2,7 +2,7 @@
 
 Last Updated: September 24, 2026
 
-Verified from https://opencode.ai/v2/docs/build/plugins/cli/ and `<reference>/opencode-v2/packages/plugin/src/tui/`. Replaces the V1 `tui.json` plugin layer and V1 `client.tui` APIs.
+Verified from https://opencode.ai/v2/docs/build/plugins/cli/ and `references/opencode-v2/packages/plugin/src/tui/`. Replaces the V1 `tui.json` plugin layer and V1 `client.tui` APIs.
 
 CLI plugins extend the terminal: commands, routes, slots, Markdown renderers, notifications, and local state. They run in the terminal client against the connected (possibly remote) server; the main server plugin is separate.
 

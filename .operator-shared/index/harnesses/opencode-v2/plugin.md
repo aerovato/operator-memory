@@ -7,18 +7,20 @@ read_if: Researching OpenCode v2 plugin domains, hooks, in-process SDK hosting, 
 
 ## Coverage
 
-- `reference/opencode-v2/packages/plugin/`
-- `reference/opencode-v2/packages/sdk/`
-- `reference/opencode-v2/packages/client/` (plugin-relevant parts)
+Checkout pin and commands: [source overview](monorepo.md#source-checkout).
+
+- `references/opencode-v2/packages/plugin/`
+- `references/opencode-v2/packages/sdk/`
+- `references/opencode-v2/packages/client/` (plugin-relevant parts)
 
 ## Architecture
 
 - V2 plugin package `@opencode/plugin` has two parallel versions: Effect and Promise. Every Effect domain extends the corresponding API client interface from `@opencode/client/effect/api` and adds only plugin-context functions; never redefine client interface functions.
 - V2 SDKs are separate from V1 SDK versions; `@opencode/sdk` runs the assembled Server HTTP router in memory (no listener, no network hop) with Promise and Effect APIs plus a Workerd entrypoint for Cloudflare Durable Objects.
-- Plugin lifecycle contract lives in `reference/opencode-v2/specs/v2/catalog-config-plugin-lifecycle.md`.
+- Plugin lifecycle contract lives in `references/opencode-v2/specs/v2/catalog-config-plugin-lifecycle.md`.
 - Reference clone tracks `origin/dev` (updated October 20, 2026). Local source loading fingerprints and watches imported files; package loading and local-directory loading are separate paths.
 
-## `reference/opencode-v2/packages/plugin/` Index
+## `references/opencode-v2/packages/plugin/` Index
 
 ### `src/`
 
@@ -32,7 +34,7 @@ read_if: Researching OpenCode v2 plugin domains, hooks, in-process SDK hosting, 
 - `effect/`, `promise/` — Parallel plugin domains for agent, provider, model, command, RPC, session, tools, and other contexts
 - `tui/` — TUI plugin surface: `context.ts`, `plugin.ts`, `solid.ts`
 
-## `reference/opencode-v2/packages/sdk/` Index
+## `references/opencode-v2/packages/sdk/` Index
 
 ### `src/`
 

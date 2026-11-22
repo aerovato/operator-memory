@@ -7,16 +7,31 @@ read_if: Navigating OpenCode reference source or choosing a focused OpenCode sub
 
 ## Coverage
 
-- `reference/opencode-v2/` (tracking branch `dev`; fetched and pulled October 20, 2026)
+- `references/opencode-v2/` (tracking branch `dev`; fetched and pulled October 20, 2026)
+
+## Source checkout
+
+- Upstream: https://github.com/anomalyco/opencode.git
+- Destination: `references/opencode-v2/`
+- Commit: `d8148796dc74a342c96c7b4febf03dc664e1058c`
+- Tracking branch: `dev`
+
+Clone only when needed, from the Operator repository root:
+
+```sh
+git clone --no-checkout --depth 1 --branch dev https://github.com/anomalyco/opencode.git references/opencode-v2
+git -C references/opencode-v2 fetch --depth 1 origin d8148796dc74a342c96c7b4febf03dc664e1058c
+git -C references/opencode-v2 switch --detach d8148796dc74a342c96c7b4febf03dc664e1058c
+```
 
 ## Architecture
 
-- OpenCode V2 development monorepo (root package version `2.1.0` at last pull): TypeScript/Bun + Turborepo. Packages live under `reference/opencode-v2/packages/` and services under `reference/opencode-v2/services/`. The clone now tracks `origin/dev`, not the older `v2` branch.
+- OpenCode V2 development monorepo (root package version `2.1.0` at last pull): TypeScript/Bun + Turborepo. Packages live under `references/opencode-v2/packages/` and services under `references/opencode-v2/services/`. The clone now tracks `origin/dev`, not the older `v2` branch.
 - V2 is a substantial re-architecture of V1: the old `packages/opencode` main app is split into `core` (runtime services), `server` (HTTP API), `cli`, and `tui`. Session execution, plugins, and permissions moved into `packages/core/src`.
 - Canonical OpenCode development navigation starts here; the SDK and plugin packages are `@opencode/sdk` and `@opencode/plugin`.
 - `specs/v2/` holds authoritative V2 cross-module contracts; protocol endpoint definitions assembled by Server `HttpApi` own HTTP operations, `schema` owns public domain shapes.
 
-## `reference/opencode-v2/` Index
+## `references/opencode-v2/` Index
 
 ### Subindexes
 

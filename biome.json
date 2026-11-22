@@ -11,7 +11,7 @@
       "**",
       "!.operator",
       "!.operator-shared",
-      "!reference",
+      "!references",
       "!node_modules",
       "!dist",
       "!bun.lock",
