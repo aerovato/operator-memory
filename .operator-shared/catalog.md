@@ -55,6 +55,9 @@ Repository-wide Operator product knowledge published with the project.
 
 ### `guides/`
 
+- `github-copilot/`
+  - Description: Source-grounded GitHub Copilot CLI and VS Code Copilot guides for plugins, hooks, preamble injection, delegation, setup skills, and native installation.
+  - Read If: Researching, designing, or implementing Operator support for GitHub Copilot CLI or VS Code Copilot.
 - `antigravity/`
   - Description: Google Antigravity native reference guides — packaging/install, hook API/runtime/identity, dedicated injection/compaction guide, delegation, and workflow skills; authoritative behavior first, verification notes below.
   - Read If: Preparing or implementing Antigravity support, assessing model/subagent injection, or checking native plugin installation and command behavior.
