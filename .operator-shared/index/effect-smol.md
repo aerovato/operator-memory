@@ -14,14 +14,14 @@ read_if: Verifying Effect v4 APIs, examples, testing patterns, or source convent
 
 ## Coverage
 
-- `.operator-shared/references/effect-smol/`
+- `references/effect-smol/`
 
 ## Architecture
 
 - Mutable upstream Effect v4 reference checkout installed locally for shared Effect guide and implementation work.
 - Its source, tests, platform packages, documentation, and workspace tooling are maintained upstream; consult the guide before using it.
 
-## `.operator-shared/references/effect-smol/` Index
+## `references/effect-smol/` Index
 
 - `packages/` - Effect runtime and platform package sources, tests, and examples.
 - `ai-docs/`, `cookbooks/`, `migration/` - Usage, migration, and agent-oriented documentation.

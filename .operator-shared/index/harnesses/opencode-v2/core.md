@@ -7,15 +7,15 @@ read_if: Researching OpenCode v2 core services, session execution, plugins, tool
 
 ## Coverage
 
-- `reference/opencode-v2/packages/core/`
+- `references/opencode-v2/packages/core/`
 
 ## Architecture
 
 - V2 core runtime: hosts nearly all domain services — sessions, agents, tools, plugins, permissions, config, database, filesystem, VCS, skills, MCP, and Effect infrastructure. The V1 `packages/opencode` app no longer exists; `server`, `cli`, and `tui` are thin consumers of core.
-- Session behavior is governed by `reference/opencode-v2/specs/v2/session.md` and `tools.md`; consult those before changing session admission, execution, or tool laws.
+- Session behavior is governed by `references/opencode-v2/specs/v2/session.md` and `tools.md`; consult those before changing session admission, execution, or tool laws.
 - Reference clone tracks `origin/dev` (updated October 20, 2026). Configured local plugin directories and imported local dependencies have native watches and reload support.
 
-## `reference/opencode-v2/packages/core/` Index
+## `references/opencode-v2/packages/core/` Index
 
 ### `src/session/` — Session lifecycle and execution
 

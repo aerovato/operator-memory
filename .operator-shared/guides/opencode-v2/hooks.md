@@ -2,7 +2,7 @@
 
 Last Updated: October 20, 2026
 
-Verified from https://opencode.ai/v2/docs/build/plugins/ and `<reference>/opencode-v2/packages/plugin/src/promise/session.ts`.
+Verified from https://opencode.ai/v2/docs/build/plugins/ and `references/opencode-v2/packages/plugin/src/promise/session.ts`.
 
 Register a hook on its domain and dispose the returned `Registration` when no longer needed. Multiple plugins can register the same hook; OpenCode runs them in plugin order and later hooks see earlier hooks' changes.
 
@@ -48,7 +48,7 @@ await ctx.session.hook("context", (event) => {
 })
 ```
 
-Source shape (`<reference>/opencode-v2/packages/plugin/src/promise/session.ts`, `SessionContext`): readonly `sessionID`, `agent`, `model` (`{ providerID, id, variant? }`); mutable `system: SystemPart[]`, `messages: Message[]`, `tools` map, and `options` (typed generation keys plus provider options).
+Source shape (`references/opencode-v2/packages/plugin/src/promise/session.ts`, `SessionContext`): readonly `sessionID`, `agent`, `model` (`{ providerID, id, variant? }`); mutable `system: SystemPart[]`, `messages: Message[]`, `tools` map, and `options` (typed generation keys plus provider options).
 
 Rules:
 
@@ -57,7 +57,7 @@ Rules:
 - `options` starts empty per call (these are request overrides, not resolved settings). Overrides beat model defaults, which beat route defaults.
 - Provider options use semantic protocol names (for example `reasoningEffort` for OpenAI Responses) and merge recursively for objects; arrays and scalars replace.
 - Deleting an override or setting `undefined` falls back to configured defaults.
-- Built-in provider system prompts are themselves implemented this way (`<reference>/opencode-v2/packages/core/src/plugin/system-prompt.ts` rewrites `event.system[0]` when the agent has no custom system prompt).
+- Built-in provider system prompts are themselves implemented this way (`references/opencode-v2/packages/core/src/plugin/system-prompt.ts` rewrites `event.system[0]` when the agent has no custom system prompt).
 
 ### `model.request`
 

@@ -2,7 +2,7 @@
 
 Last Updated: October 3, 2026
 
-Source: local shallow clone of `deepseek-ai/deepseek-harness` at `<reference>/deepseek-harness/`. Operator's adapter requirements live in [`reference/implementation.md`](../../specs/reference/implementation.md), [`preamble.md`](../../specs/preamble.md), and [`commands.md`](../../specs/commands.md); the implemented binding is [`deepseek/implementation.md`](../../specs/deepseek/implementation.md).
+Source: local shallow clone of `deepseek-ai/deepseek-harness` at `references/deepseek-harness/`. Operator's adapter requirements live in [`reference/implementation.md`](../../specs/reference/implementation.md), [`preamble.md`](../../specs/preamble.md), and [`commands.md`](../../specs/commands.md); the implemented binding is [`deepseek/implementation.md`](../../specs/deepseek/implementation.md).
 
 ## Guide Map
 
@@ -16,4 +16,4 @@ DeepSeek Harness is a Node/TypeScript Cordis plugin tree, not a monolithic exten
 
 Neither persistence nor command naming blocks an adapter. Operator prefers out-of-history injection and `/operator:*` names, but the reference contract fully accepts persisted context and similar hyphenated slash names without requiring a deviation or separate approval. DeepSeek's documented prompt seams persist model-visible text in Session history, and its command grammar rejects `:`; use the accepted pathways rather than inventing unsupported middleware or aliases. Implementation still needs to verify lifecycle behavior and subagent coverage. Out-of-process delegated children have their own runtime and cannot be assumed to inherit a Host plugin.
 
-Sources: `<reference>/deepseek-harness/docs/architecture.md`, `docs/cordis-primer.md`, `packages/core/agent-loop/README.md`, `packages/interaction/commands/src/index.ts`.
+Sources: `references/deepseek-harness/docs/architecture.md`, `docs/cordis-primer.md`, `packages/core/agent-loop/README.md`, `packages/interaction/commands/src/index.ts`.

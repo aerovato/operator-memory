@@ -1,5 +1,5 @@
-# OpenCode and Claude Code source code
-/reference/
+# Local reference source checkouts
+/references/
 
 node_modules/
 
@@ -22,7 +22,6 @@ coverage/
 .env
 .env.*.local
 .cache/
-/.operator-shared/references/
 /.opencode/opencode.json
 /.opencode/tui.json
 

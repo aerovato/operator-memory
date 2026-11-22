@@ -7,8 +7,8 @@ read_if: Designing DeepSeek Harness preamble injection, session scoping, failure
 
 ## Coverage
 
-- `reference/deepseek-harness/packages/core/`, `packages/context/`, `packages/llm/`, `packages/session/`, `packages/compaction/`
-- Focused runtime references under `reference/deepseek-harness/docs/subsystems/`
+- `references/deepseek-harness/packages/core/`, `packages/context/`, `packages/llm/`, `packages/session/`, `packages/compaction/`
+- Focused runtime references under `references/deepseek-harness/docs/subsystems/`
 
 ## Architecture
 
@@ -16,7 +16,7 @@ read_if: Designing DeepSeek Harness preamble injection, session scoping, failure
 - Prompt assembly combines ordered sections, dynamic contexts, variables, and tool schemas per step. Agent-loop commits model-visible content as session events; requests derive immutable history from the session surface. A prompt contribution is not an out-of-band model transform.
 - Session history, fork/resume, persistence, and compaction are separate layers. Subagent lifecycle and provider implementations are indexed in [DeepSeek Harness Plugins](plugins.md).
 
-## `reference/deepseek-harness/packages/core/` Index
+## `references/deepseek-harness/packages/core/` Index
 
 - `README.md` — Group ownership and package navigation.
 
@@ -47,7 +47,7 @@ read_if: Designing DeepSeek Harness preamble injection, session scoping, failure
 - `tools/src/` — Typed tool definitions, registration, execution, schemas, and presentation; large package.
 - `agent-default-model/`, `agent-tool-presentation/` — Default model selection and tool presentation.
 
-## `reference/deepseek-harness/packages/context/` Index
+## `references/deepseek-harness/packages/context/` Index
 
 - `README.md` — Context contributor map.
 - `agent-instructions/src/index.ts`, `agent-instructions/src/files.ts`, `agent-instructions/src/state.ts` — Instruction-file contributor, discovery, and session-facing state.
@@ -56,7 +56,7 @@ read_if: Designing DeepSeek Harness preamble injection, session scoping, failure
 - `session-reference/` — Session citation and reference projection.
 - `time-context/`, `tmux-context/` — Runtime time and terminal context.
 
-## `reference/deepseek-harness/packages/llm/` Index
+## `references/deepseek-harness/packages/llm/` Index
 
 - `llm/src/` — Model request/response types, adapter registration, streaming, and call preparation; large package.
 - `llm-deepseek/`, `llm-deepseek-account/`, `llm-deepseek-api-key/`, `llm-pi-ai/` — Provider implementations and credentials; large provider trees.
@@ -64,7 +64,7 @@ read_if: Designing DeepSeek Harness preamble injection, session scoping, failure
 - `token-meter/` — Token estimation and request usage projection.
 - `deepseek-llm-api-extensions/`, `plugin-package-inventory-deepseek/` — DeepSeek wire extensions and provider metadata.
 
-## `reference/deepseek-harness/packages/session/` Index
+## `references/deepseek-harness/packages/session/` Index
 
 - `session-persistence/`, `session-persistence-jsonl/` — Persistence API and JSONL backend; large storage implementation.
 - `session-format/`, `session-format-catalog/`, `session-format-v0-to-v1/`, `session-format-v1-to-v2/`, `session-format-v2-to-v3/`, `session-format-v3-to-v4/` — Versioned session encoding and adjacent migrations.
@@ -72,13 +72,13 @@ read_if: Designing DeepSeek Harness preamble injection, session scoping, failure
 - `session-log-deepseek/`, `session-stats/`, `session-telemetry/`, `session-telemetry-otel/`, `session-turn-outline/` — Log views, usage, telemetry, and turn projections.
 - `session-title/`, `session-title-llm/`, `session-title-first-prompt-llm/`, `session-title-all-prompts-llm/` — Title providers and selection.
 
-## `reference/deepseek-harness/packages/compaction/` Index
+## `references/deepseek-harness/packages/compaction/` Index
 
 - `compaction/`, `compaction-basic/` — Compaction service and summarizing provider.
 - `command-compact/` — Interactive compaction command.
 - `compaction-image-offload/`, `compaction-tool-result-pruner/` — Image offload and tool-result reduction.
 
-## `reference/deepseek-harness/docs/subsystems/` Index — Runtime API references
+## `references/deepseek-harness/docs/subsystems/` Index — Runtime API references
 
 - `core.md`, `system-prompt.md`, `session.md`, `conversation.md` — Lifecycle events, prompt registrations, durable messages, and projected conversation.
 - `llm-streaming.md`, `tools.md`, `scope.md` — Model adapter, tool dispatch, and scoped service/event API.

@@ -2,7 +2,7 @@
 
 Last Updated: September 15, 2026
 
-Verified from `<reference>/pi/packages/coding-agent/docs/packages.md`. Distribution model for extensions, skills, prompt templates, and themes.
+Verified from `references/pi/packages/coding-agent/docs/packages.md`. Distribution model for extensions, skills, prompt templates, and themes.
 
 ## Sources
 

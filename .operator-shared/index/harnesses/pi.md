@@ -1,19 +1,19 @@
 ---
 description: Pi agent monorepo (earendil-works/pi) map focused on the coding-agent extension system; other packages lightly indexed
-read_if: Porting the Operator plugin to Pi, researching Pi extensions, skills, commands, or preamble injection points, or navigating reference/pi packages. Guides with verified injection and packaging detail live in `../../../guides/pi/`.
+read_if: Porting the Operator plugin to Pi, researching Pi extensions, skills, commands, or preamble injection points, or navigating references/pi packages. Guides with verified injection and packaging detail live in `../../../guides/pi/`.
 ---
 
 # Pi Monorepo
 
 ## Coverage
 
-- `reference/pi/` (shallow clone of `earendil-works/pi`, formerly `badlogic/pi-mono`)
+- `references/pi/` (shallow clone of `earendil-works/pi`, formerly `badlogic/pi-mono`)
 
 ## Architecture
 
 - Pi agent toolkit monorepo: npm workspaces (not Bun), TypeScript, Biome, Vitest, `tsgo` typechecking.
 - Build order encodes layering: `chord` → `tui` → `telemetry` → `ai` → `agent` → `session-backends/sqlite-node` → `protocol` → `client` → `server` → `coding-agent`.
-- Repo `AGENTS.md` (auto-injected when reading files under `reference/pi/`) enforces strict repo rules: erasable-only TypeScript syntax, no inline imports, `npm run check` after code changes, never `npm run build`/`npm test` unless asked, `./test.sh` for non-e2e tests, explicit-path git staging only.
+- Repo `AGENTS.md` (auto-injected when reading files under `references/pi/`) enforces strict repo rules: erasable-only TypeScript syntax, no inline imports, `npm run check` after code changes, never `npm run build`/`npm test` unless asked, `./test.sh` for non-e2e tests, explicit-path git staging only.
 
 ## Operator Port Injection Points
 
@@ -31,7 +31,7 @@ Pi has no plugin RPC layer; everything is an in-process TypeScript **extension**
 - Long-lived resources must not start in the factory; defer to `session_start`, close in `session_shutdown` (fires on quit, `/reload`, and session replacement).
 - Config dir: `~/.pi/agent/` global; `~/.pi/` also holds skills, prompt templates, themes.
 
-## `reference/pi/` Index
+## `references/pi/` Index
 
 - `AGENTS.md`, `CONTRIBUTING.md`, `SECURITY.md` — Repo agent rules, contributor gate, security policy.
 - `README.md` — Package table and monorepo overview.

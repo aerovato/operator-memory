@@ -79,9 +79,3 @@ Repository-wide Operator product knowledge published with the project.
 - `pi/`
   - Description: Pi extension authoring, injection semantics, and package installation guides.
   - Read If: Porting the Operator plugin to Pi or researching Pi extensions or packages.
-
-### `references/`
-
-- `effect-smol/`
-  - Description: Locally installed, Git-ignored Effect v4 reference source tree used by the Effect guide.
-  - Read If: Verifying Effect APIs, examples, tests, or source conventions.

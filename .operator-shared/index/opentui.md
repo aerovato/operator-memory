@@ -7,13 +7,13 @@ read_if: Working on Operator's OpenCode V2 TUI build, JSX reactivity, or rendere
 
 ## Coverage
 
-- `reference/opentui/` (Git-ignored upstream source)
+- `references/opentui/` (Git-ignored upstream source)
 
 ## Architecture
 
 - The Solid package supplies the JSX runtime, Bun transform plugin, and reconciler used by OpenCode V2's terminal UI. Default Bun JSX compilation does not preserve reactive text expressions; the Solid build plugin compiles them into tracked insertions.
 
-## `reference/opentui/` Index
+## `references/opentui/` Index
 
 - `README.md`, `AGENTS.md`, `LICENSE`, `package.json`, `bun.lock` — Ditto
 - `.github/`, `scripts/` — Upstream automation and build scripts; directory-only.

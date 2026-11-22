@@ -2,11 +2,11 @@
 
 Last Updated: October 20, 2026
 
-Verified from https://opencode.ai/v2/docs/build/plugins/ and `<reference>/opencode-v2/` source.
+Verified from https://opencode.ai/v2/docs/build/plugins/ and `references/opencode-v2/` source.
 
 ## Durable Session Core
 
-V2 sessions are event-sourced with a projected message model. Behavior contracts live in `<reference>/opencode-v2/specs/v2/session.md` (prompt admission, execution, instructions, compaction, recovery) and `<reference>/opencode-v2/specs/v2/event-stream-architecture.md`. Runtime implementation: `<reference>/opencode-v2/packages/core/src/session/`.
+V2 sessions are event-sourced with a projected message model. Behavior contracts live in `references/opencode-v2/specs/v2/session.md` (prompt admission, execution, instructions, compaction, recovery) and `references/opencode-v2/specs/v2/event-stream-architecture.md`. Runtime implementation: `references/opencode-v2/packages/core/src/session/`.
 
 ## Projected Messages
 

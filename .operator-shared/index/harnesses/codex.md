@@ -3,11 +3,11 @@ description: OpenAI Codex CLI reference source map focused on hooks, plugins, sk
 read_if: Building the Operator Codex adapter or researching Codex hook execution, plugin packaging, skill invocation, hook trust, or thread identity
 ---
 
-# Codex (reference/codex)
+# Codex (references/codex)
 
 ## Coverage
 
-- `reference/codex` — openai/codex shallow clone, Rust workspace under `codex-rs/`.
+- `references/codex` — openai/codex shallow clone, Rust workspace under `codex-rs/`.
 
 ## Architecture
 

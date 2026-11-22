@@ -14,7 +14,7 @@ Rules for `.operator-shared/guides/<harness>/` so every guide directly drives an
 ## Completeness
 
 - Guides must be complete enough that the implementing agent does not need to consult the harness's official documentation or source code. Cover every implementation-relevant behavior: discovery paths, protocols, limits, failure modes, and discrepancies.
-- When harness source code is available, use it. Cloned source is the strongest verification form — stronger than documentation or release notes — and cited file paths from `reference/<repo-name>/` anchor claims to real code. Verify documented claims against source where possible; when documentation and source disagree, source wins and the discrepancy is recorded.
+- When harness source code is available, use it. Cloned source is the strongest verification form — stronger than documentation or release notes — and cited file paths from `references/<repo-name>/` anchor claims to real code. Verify documented claims against source where possible; when documentation and source disagree, source wins and the discrepancy is recorded.
 - Leave no room for interpretation. If documentation answers an implementor's question, state it; if undocumented, verify it and state the result. Open questions appear only as explicitly labeled unestablished boundaries.
 - Where multiple implementation pathways exist, present each one's facilities and limitations. Guides never select the pathway — that decision belongs to the user in the plan. Guides may rank practicality and identify dead ends.
 - State hard boundaries as explicit prohibitions attached to the fact they guard, for example "do not invent hook fields" or "do not claim unverified coverage".

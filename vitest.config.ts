@@ -7,7 +7,7 @@ export default defineConfig({
       "packages/*/test/**/*.test.ts",
       "scripts/**/*.test.ts",
     ],
-    exclude: ["reference/**", "**/node_modules/**", "**/dist/**"],
+    exclude: ["references/**", "**/node_modules/**", "**/dist/**"],
     passWithNoTests: true,
   },
 });

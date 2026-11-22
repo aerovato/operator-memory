@@ -32,14 +32,11 @@ read_if: Working anywhere in the committed Operator Memory project
 - `opencode/` - Frozen legacy adapter, runtime, and tests; directory-only coverage, no development or releases.
 - [`pi/`](pi.md) - Published Pi extension adapter package.
 
-### `references/` - Git-ignored third-party source references
+### `references/` - Git-ignored third-party source trees
+
+Clone upstream repositories to the repository-root `references/<repo-name>/` directory. Public harness and library source maps:
 
 - [`effect-smol/`](effect-smol.md) - Locally installed Effect v4 source tree used to verify implementation and testing patterns.
-
-### `reference/` - Git-ignored harness and library source clones
-
-Indexed by subindexes under `index/harnesses/`; clone the upstream repository to `reference/<repo-name>` to use them:
-
 - [`harnesses/codex.md`](harnesses/codex.md) - OpenAI Codex CLI source map: hooks, plugins, skills, trust, session identity.
 - [`harnesses/pi.md`](harnesses/pi.md) - Pi agent monorepo map focused on the coding-agent extension system.
 - [`harnesses/deepseek-harness/`](harnesses/deepseek-harness/overview.md) - DeepSeek Harness reference monorepo: runtime, plugins, and distribution maps.
