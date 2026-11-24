@@ -3,27 +3,25 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { platform } from "node:os";
 
-export type PreambleVersion = "1.1" | "2.0";
-
-// Keep this namespace and bucketing stable across package and prompt versions.
-const ROLLOUT_NAMESPACE = "operator-preamble-rollout-v1:";
+// Infrastructure for A/B testing preambles. No test is active, so every machine receives the
+// same version. To run a test, add the candidate version to the union and assign it with
+// `isRolloutAssigned` and `readMachineIdentity`.
+export type PreambleVersion = "2.0";
 
 export function selectPreambleVersion(): PreambleVersion {
-  if (process.env.OPERATOR_PREAMBLE_BETA === "1") {
-    return "2.0";
-  }
-
-  const machineId = readMachineId();
-  if (machineId === null) {
-    return "1.1";
-  }
-
-  const bucket =
-    createHash("sha256").update(`${ROLLOUT_NAMESPACE}${machineId}`).digest().readUInt32BE(0) % 100;
-  return bucket < 20 ? "2.0" : "1.1";
+  return "2.0";
 }
 
-function readMachineId(): string | null {
+// Returns whether `identity` belongs to the assigned `percentage` (0-100) of a stable hash
+// split. The same identity and percentage always give the same result. Keep the hash input
+// unchanged for the duration of an active rollout.
+export function isRolloutAssigned(identity: string, percentage: number): boolean {
+  return createHash("sha256").update(identity).digest().readUInt32BE(0) % 100 < percentage;
+}
+
+// Returns the OS machine identity in trimmed lowercase, or null when it is missing, invalid,
+// unreadable, or unsupported. Never persist, transmit, or inject it into model context.
+export function readMachineIdentity(): string | null {
   try {
     switch (platform()) {
       case "linux": {
