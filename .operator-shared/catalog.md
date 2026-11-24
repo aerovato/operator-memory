@@ -26,7 +26,7 @@ Repository-wide Operator product knowledge published with the project.
   - Description: Contributor checklist for shipping an adapter package — package shape, Helper integration, documentation, and release automation. Maintainer release duties live in the private partition.
   - Read If: Shipping an adapter package or cutting a first release.
 - `preamble.md`
-  - Description: Preamble composition, injection order, instruction authority, catalogs and index injection, all-or-nothing diagnostics, and conditional warnings.
+  - Description: Preamble composition, injection order, instruction authority, catalogs and index injection, all-or-nothing diagnostics, conditional warnings, and retained A/B bucketing.
   - Read If: Changing preamble composition, authority, warnings, or diagnostics.
 - `commands.md`
   - Description: Command contract for User Init and Project Init, their setup guides, and legacy index invocation compatibility.

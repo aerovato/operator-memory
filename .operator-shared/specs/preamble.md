@@ -1,6 +1,6 @@
 # Preamble
 
-Last Updated: November 4, 2026
+Last Updated: November 24, 2026
 
 The preamble gives the agent fixed Operator guidance and available durable Memory. Prefer a synthetic model-call contribution rendered once and held immutable for the session so its prefix remains cacheable. Persisted lifecycle injection and re-rendering are also fully acceptable, even when a non-persisted route exists; choose what fits the harness. A load failure produces the diagnostic instead of partial memory. Do not refresh on every turn merely to track Brain edits. See [`reference/implementation.md`](./reference/implementation.md) for adapter pathways.
 
@@ -12,13 +12,15 @@ How a harness injects and caches the preamble is adapter-specific; see [`referen
 
 ### Versioned Rollout
 
-Fixed guidance and tenets are paired versions: v1.1 retains the previous preamble; v2.0 contains the revised context-maintenance guidance. Their opening XML tags carry matching `version` attributes. Memory, diagnostics, and warnings remain shared.
+Fixed guidance and tenets are a paired version: v2.0 is the only preamble. Their opening XML tags carry matching `version` attributes. Memory, diagnostics, and warnings remain shared.
 
-Core assigns approximately 80% of machines to v1.1 and 20% to v2.0. `OPERATOR_PREAMBLE_BETA=1` always selects v2.0 before machine identification; other values do not override assignment. Selection applies when rendering, without replacing already-injected session content.
+Core retains `selectPreambleVersion`, `isRolloutAssigned`, and `readMachineIdentity` as infrastructure for A/B testing preambles. No test is active: `PreambleVersion` is `"2.0"`, selection returns it without reading machine identity, and no environment override exists. Selection applies when rendering, without replacing already-injected session content.
 
-Machine identity comes from Linux `/etc/machine-id`, macOS `IOPlatformUUID`, or Windows `HKLM\SOFTWARE\Microsoft\Cryptography` `MachineGuid` in the 64-bit registry view. Normalize to trimmed lowercase, hash `operator-preamble-rollout-v1:` followed by the identity using SHA-256, interpret the first four digest bytes as an unsigned big-endian integer, and take modulo 100. Buckets 0–19 receive v2.0; 20–99 receive v1.1. The namespace and algorithm must remain stable across package and preamble updates, projects, harnesses, and user accounts sharing the same OS identity. OS reinstallations or cloned identities can change or duplicate assignment.
+`isRolloutAssigned(identity, percentage)` hashes the identity with SHA-256, interprets the first four digest bytes as an unsigned big-endian integer, takes modulo 100, and returns true below `percentage` (0–100). The same identity and percentage always give the same result; keep the hash input unchanged for the duration of an active rollout.
 
-Missing, invalid, unreadable, or unsupported machine identity selects v1.1. Machine identity is never persisted, transmitted, or injected into model context. Selection does not write to the filesystem.
+`readMachineIdentity` reads Linux `/etc/machine-id`, macOS `IOPlatformUUID`, or Windows `HKLM\SOFTWARE\Microsoft\Cryptography` `MachineGuid` in the 64-bit registry view and returns it trimmed and lowercase. OS reinstallations or cloned identities can change or duplicate assignment.
+
+Missing, invalid, unreadable, or unsupported machine identity yields no bucket. Machine identity is never persisted, transmitted, or injected into model context. Selection does not write to the filesystem.
 
 ### Sections
 

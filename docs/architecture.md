@@ -28,9 +28,7 @@ Everything else — specifications, plans, research, guides — stays on disk an
 
 ### Preamble Versions
 
-Operator assigns approximately 80% of machines to preamble v1.1 and 20% to the revised v2.0. Assignment is derived locally from the OS machine identifier and stays consistent across projects, harnesses, and Operator updates. If the identifier is unavailable, Operator uses v1.1. The identifier is never transmitted or included in the preamble.
-
-Set `OPERATOR_PREAMBLE_BETA=1` in the environment of the harness or Helper process to always use v2.0 for newly rendered preambles. Guidance and tenets carry matching version attributes.
+Operator renders preamble v2.0 for every machine. Guidance and tenets carry matching version attributes.
 
 ### The Maps
 
