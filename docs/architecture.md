@@ -34,8 +34,8 @@ Operator renders preamble v2.0 for every machine. Guidance and tenets carry matc
 
 Two map types route the agent, because source navigation and durable knowledge are different concerns:
 
-- Partition Catalogs map the Brain. Each entry states what a document covers and when to open it. Catalogs map Brain knowledge; indexes map code.
-- Project Indexes map the codebase. Every index document carries a description and a `read_if` condition; the main index enters the preamble and subindexes are opened when their condition matches the task.
+- Partition Catalogs map the Brain. Each entry states what a document covers and when to open it. Catalogs map Brain knowledge; indexes map the project.
+- Project Indexes map the project content: code, documents, and other files. Every index document carries a description and a `read_if` condition; the main index enters the preamble and subindexes are opened when their condition matches the task.
 
 Freeform documents — everything else in a partition — are read through catalog guidance, never pulled in by automatic selection.
 
