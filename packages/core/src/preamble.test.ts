@@ -1,19 +1,49 @@
-import { expect, test } from "vitest";
+import { beforeEach, expect, test, vi } from "vitest";
 
 import type { MemorySnapshot } from "./memory/load.ts";
 import type { ProjectPartitionSnapshot } from "./memory/project.ts";
 import type { UserPartitionSnapshot } from "./memory/user.ts";
 import { renderPreamble as renderMemoryPreamble } from "./preamble.ts";
+import { selectPreambleVersion } from "./preamble-rollout.ts";
 import { PREAMBLE_PROMPT, PREAMBLE_TENETS } from "./prompts/preamble-v2.ts";
+import { PREAMBLE_PROMPT_V21 } from "./prompts/preamble-v2-1.ts";
 import { CATALOG_TEMPLATE } from "./templates/catalog.ts";
 import { PROJECT_INDEX_TEMPLATE } from "./templates/project-index.ts";
 import { PROJECT_SUBINDEX_TEMPLATE } from "./templates/project-subindex.ts";
 import { failure, success } from "./utils.ts";
 
+vi.mock("./preamble-rollout.ts", () => ({ selectPreambleVersion: vi.fn() }));
+
+beforeEach(() => {
+  vi.mocked(selectPreambleVersion).mockReturnValue("2.0");
+});
+
 test("embeds core document templates in fixed guidance", () => {
   expect(PREAMBLE_PROMPT).toContain(PROJECT_INDEX_TEMPLATE.trimEnd());
   expect(PREAMBLE_PROMPT).toContain(PROJECT_SUBINDEX_TEMPLATE.trimEnd());
   expect(PREAMBLE_PROMPT).toContain(CATALOG_TEMPLATE.trimEnd());
+  expect(PREAMBLE_PROMPT_V21).toContain(PROJECT_INDEX_TEMPLATE.trimEnd());
+  expect(PREAMBLE_PROMPT_V21).toContain(PROJECT_SUBINDEX_TEMPLATE.trimEnd());
+  expect(PREAMBLE_PROMPT_V21).toContain(CATALOG_TEMPLATE.trimEnd());
+});
+
+test("renders the v2.1 candidate for assigned machines", () => {
+  const memory: LoadedMemorySnapshot = {
+    shared: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
+    user: { exists: false, operatorInstructions: null, catalog: null },
+    private: { exists: true, operatorInstructions: null, catalog: "catalog", indexes: [] },
+  };
+  vi.mocked(selectPreambleVersion).mockReturnValue("2.1");
+
+  const preamble = renderPreamble(memory);
+
+  expect(preamble).toContain('<operator-guidance version="2.1">');
+  expect(preamble).toContain('<operator-tenets version="2.1">');
+  expect(preamble).not.toContain('version="2.0"');
+  expect(preamble).toContain(
+    "If the project has substantive content and the user is not already running Project Init",
+  );
+  expect(preamble).toContain("- `assets/` — Binary files such as images and fonts");
 });
 
 test("renders fixed v2.0 guidance and the missing-catalog warning for empty memory", () => {

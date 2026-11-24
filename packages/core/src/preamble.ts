@@ -2,7 +2,29 @@ import type { MemorySnapshot } from "./memory/load.ts";
 import type { IndexDocument, ProjectPartitionSnapshot } from "./memory/project.ts";
 import type { UserPartitionSnapshot } from "./memory/user.ts";
 import { PREAMBLE_PROMPT, PREAMBLE_TENETS } from "./prompts/preamble-v2.ts";
+import { PREAMBLE_PROMPT_V21, PREAMBLE_TENETS_V21 } from "./prompts/preamble-v2-1.ts";
+import { type PreambleVersion, selectPreambleVersion } from "./preamble-rollout.ts";
 import { getErrorMessage } from "./utils.ts";
+
+type PreambleText = {
+  readonly prompt: string;
+  readonly tenets: string;
+  readonly missingIndexCondition: string;
+};
+
+// v2.0 stays byte-frozen as the control for the v2.1 rollout.
+const PREAMBLES: Record<PreambleVersion, PreambleText> = {
+  "2.0": {
+    prompt: PREAMBLE_PROMPT,
+    tenets: PREAMBLE_TENETS,
+    missingIndexCondition: "there is project code",
+  },
+  "2.1": {
+    prompt: PREAMBLE_PROMPT_V21,
+    tenets: PREAMBLE_TENETS_V21,
+    missingIndexCondition: "the project has substantive content",
+  },
+};
 
 const SHARED_ROOT = ".operator-shared";
 const PRIVATE_ROOT = ".operator";
@@ -21,9 +43,10 @@ type LoadedMemorySnapshot = {
 };
 
 export function renderPreamble(memory: MemorySnapshot): RenderedPreamble {
+  const preamble = PREAMBLES[selectPreambleVersion()];
   if (!memory.shared.ok || !memory.user.ok || !memory.private.ok) {
     return {
-      content: `${PREAMBLE_PROMPT}\n\n${renderLoadDiagnostic(memory)}`,
+      content: `${preamble.prompt}\n\n${renderLoadDiagnostic(memory)}`,
       loaded: false,
     };
   }
@@ -33,7 +56,7 @@ export function renderPreamble(memory: MemorySnapshot): RenderedPreamble {
     user: memory.user.value,
     private: memory.private.value,
   };
-  const sections = [PREAMBLE_PROMPT];
+  const sections = [preamble.prompt];
   const warnings: string[] = [];
 
   const instructions = renderInstructions(loaded);
@@ -83,13 +106,13 @@ Neither .operator/catalog.md nor .operator-shared/catalog.md exists. You must cr
     if (!hasMainIndex(loaded)) {
       warnings.push(
         `<operator-warning>
-Neither .operator/index/index.md nor .operator-shared/index/index.md exists. If there is project code and the user is not already running Project Init, offer to build the Project Index directly.
+Neither .operator/index/index.md nor .operator-shared/index/index.md exists. If ${preamble.missingIndexCondition} and the user is not already running Project Init, offer to build the Project Index directly.
 </operator-warning>`,
       );
     }
   }
 
-  sections.push(PREAMBLE_TENETS);
+  sections.push(preamble.tenets);
   for (const warning of warnings) {
     sections.push(warning);
   }

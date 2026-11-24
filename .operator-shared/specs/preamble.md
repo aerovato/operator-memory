@@ -12,9 +12,13 @@ How a harness injects and caches the preamble is adapter-specific; see [`referen
 
 ### Versioned Rollout
 
-Fixed guidance and tenets are a paired version: v2.0 is the only preamble. Their opening XML tags carry matching `version` attributes. Memory, diagnostics, and warnings remain shared.
+Fixed guidance and tenets are a paired version; their opening XML tags carry matching `version` attributes. Memory, diagnostics, and warnings remain shared, except the missing-index warning's condition, which is part of the tested wording.
 
-Core retains `selectPreambleVersion`, `isRolloutAssigned`, and `readMachineIdentity` as infrastructure for A/B testing preambles. No test is active: `PreambleVersion` is `"2.0"`, selection returns it without reading machine identity, and no environment override exists. Selection applies when rendering, without replacing already-injected session content.
+An A/B test is active: v2.1 is assigned to 20 percent of machines and v2.0 to the rest. v2.0 is the control; the candidate lives in `prompts/preamble-v2-1.ts`. v2.1 differs only in index wording: the Project Index is described as a map of project content of any file type instead of a codebase, and the missing-index warning triggers on substantive project content instead of project code. The index template is shared by both versions and includes an `assets/` entry showing that non-text files are indexable.
+
+Core retains `selectPreambleVersion`, `isRolloutAssigned`, and `readMachineIdentity` as permanent infrastructure. `PreambleVersion` is `"2.0" | "2.1"`. Selection reads the machine identity on each render: a machine in the assigned 20 percent receives v2.1; any machine without a readable identity receives v2.0. Selection applies when rendering, without replacing already-injected session content.
+
+The `OPERATOR_PREAMBLE_BETA` environment variable is permanent infrastructure alongside the rollout split and is never retired, even when no test is active. When its value is exactly `1`, selection returns the candidate version without reading machine identity; any other value leaves the split in effect. Each new candidate version replaces the previous one behind the flag.
 
 `isRolloutAssigned(identity, percentage)` hashes the identity with SHA-256, interprets the first four digest bytes as an unsigned big-endian integer, takes modulo 100, and returns true below `percentage` (0–100). The same identity and percentage always give the same result; keep the hash input unchanged for the duration of an active rollout.
 

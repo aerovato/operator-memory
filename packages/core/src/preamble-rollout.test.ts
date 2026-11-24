@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { platform } from "node:os";
-import { beforeEach, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 
 import {
   isRolloutAssigned,
@@ -15,14 +15,44 @@ vi.mock("node:os", () => ({ platform: vi.fn() }));
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.stubEnv("OPERATOR_PREAMBLE_BETA", undefined);
   vi.mocked(platform).mockReturnValue("linux");
 });
 
-test("selects v2.0 without reading machine identity", () => {
-  expect(selectPreambleVersion()).toBe("2.0");
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
+test("the beta override bypasses machine identification", () => {
+  vi.stubEnv("OPERATOR_PREAMBLE_BETA", "1");
+  expect(selectPreambleVersion()).toBe("2.1");
   expect(platform).not.toHaveBeenCalled();
   expect(readFileSync).not.toHaveBeenCalled();
   expect(execFileSync).not.toHaveBeenCalled();
+});
+
+test.each(["", "0", "true", "01", " 1"])("does not treat %s as a beta override", value => {
+  vi.stubEnv("OPERATOR_PREAMBLE_BETA", value);
+  vi.mocked(readFileSync).mockReturnValue("000000000000000000000000000000a7");
+  expect(selectPreambleVersion()).toBe("2.0");
+  expect(readFileSync).toHaveBeenCalled();
+});
+
+// Frozen v2.1 bucket boundaries: this identity hashes to bucket 19, the last assigned at 20 percent.
+test("assigns v2.1 to the 20 percent rollout bucket", () => {
+  vi.mocked(readFileSync).mockReturnValue("000000000000000000000000000000b9");
+  expect(selectPreambleVersion()).toBe("2.1");
+});
+
+// This identity hashes to bucket 20, the first outside the rollout.
+test("keeps v2.0 outside the rollout bucket", () => {
+  vi.mocked(readFileSync).mockReturnValue("000000000000000000000000000000a7");
+  expect(selectPreambleVersion()).toBe("2.0");
+});
+
+test("keeps v2.0 without a readable machine identity", () => {
+  vi.mocked(readFileSync).mockReturnValue("");
+  expect(selectPreambleVersion()).toBe("2.0");
 });
 
 test.each([
