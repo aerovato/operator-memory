@@ -1,6 +1,6 @@
 # Commands
 
-Last Updated: November 21, 2026
+Last Updated: November 24, 2026
 
 Agent-assisted configuration of User Instructions, the Project Brain, and the Project Index. Deterministic work lives in `operator-helper`; phased agent work lives in emitted guides; harness commands orchestrate both.
 
@@ -39,7 +39,7 @@ Project setup establishes partition scaffolding, placement rules, and essential 
 
 Project Init is for first-time setup. On a rerun, the agent follows existing structure and policy, checks integrity lightly, skips completed phases, and initializes only missing pieces. It reports stale or damaged content without repairing or rebuilding it unasked.
 
-The Project Setup guide classifies the repository once as **greenfield** (new, empty, or template) or **existing** (substantive code and/or agent-facing docs). Straightforward indexing plans run automatically in the same conversation. For a large project or a plan with multiple subindexes, the agent presents the scope and waits for approval in chat. One subagent owns each index file, including the main index. The main agent plans coverage, links completed subindexes, and runs lint. If there is no project code or the harness cannot delegate, indexing is skipped.
+The Project Setup guide classifies the repository once as **greenfield** (new, empty, or template) or **existing** (substantive project content and/or agent-facing docs of any file type). Straightforward indexing plans run automatically in the same conversation. For a large project or a plan with multiple subindexes, the agent presents the scope and waits for approval in chat. One subagent owns each index file, including the main index. The main agent plans coverage, links completed subindexes, and runs lint. If there is nothing substantive to map or the harness cannot delegate, indexing is skipped.
 
 Migration is offered after instruction configuration and before indexing when eligible agent-facing docs exist. The agent asks before deleting originals from instruction import or migration. For structured questions, it uses the harness's inline question tool or equivalent, regardless of its name, and asks directly otherwise. User-facing documentation may be copied into specs but is never removed.
 
