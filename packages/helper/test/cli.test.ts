@@ -349,6 +349,21 @@ test("memory check accepts loadable partitions with missing core files and inval
   expect(result.output).toContain("No memory load failures detected.");
 });
 
+test("memory check reports an unparseable settings file without rewriting it", async () => {
+  seed({
+    "/home/.operator/settings.json": '{"preamble":{"beta":true},}',
+  });
+
+  const result = await executeCli(["memory", "check"], context);
+
+  expect(result.exitCode).toBe(1);
+  expect(result.output).toContain("✗ Settings: Error");
+  expect(result.output).toContain(`Path: ${resolvePath("/home/.operator/settings.json")}`);
+  expect(fs.readFileSync(resolvePath("/home/.operator/settings.json"), "utf8")).toBe(
+    '{"preamble":{"beta":true},}',
+  );
+});
+
 test("renders the canonical preamble for normal and failed memory loads", async () => {
   seed({
     "/project/.operator/operator.md": "private instructions",
