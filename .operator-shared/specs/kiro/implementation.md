@@ -53,7 +53,7 @@ These five files are plugin-owned. Installation and reinstallation overwrite the
 
 Migration: installation removes the retired plugin-owned `skills/operator-repair/SKILL.md` so existing installations stop exposing the removed command. The marked migration block removes only that entry file, preserves adjacent content, and succeeds when the file is already absent.
 
-Installation ignores `KIRO_HOME`. CLI binary `2.27.1`, running the V3 engine (`--v3`) with KAS `0.66.22`, ignores that override for global hooks, steering, and skills and discovers them under ordinary `$HOME/.kiro/`. Do not install duplicate copies into both directories.
+Installation ignores `KIRO_HOME`. V3 ignores that override for global hooks, steering, and skills and discovers them under ordinary `$HOME/.kiro/`. Do not install duplicate copies into both directories.
 
 Helper releases distribute adapter updates. Rerun `operator-helper install kiro` to refresh the files and start a new Kiro session to load them. There is no adapter status UI.
 
@@ -66,10 +66,3 @@ Behavioral differences:
 - Subagent loading is agent-driven through inherited steering, rather than automatic lifecycle injection. It depends on the agent following the instructions and being able to execute Helper. Each manual invocation renders memory for that workspace at invocation time.
 - Unexpected startup-hook execution failures cannot block the session. Kiro warns the user and proceeds; steering instructs the agent to stop if manual loading also fails. The reference permits visible failure where harness-level blocking is impossible.
 
-## Verification
-
-Helper tests cover installed hook configuration, the approved steering prompt and frontmatter, both setup skills, removal of retired Operator-owned skill files without deleting adjacent content, repeat installation, and the Helper-on-`PATH` prerequisite. `bun run check packages/helper` validates the package.
-
-Runtime experiments verified main-agent hook injection, inherited steering in built-in subagents, absence of parent hook output in those subagents, full skill-body activation, and ordinary-home discovery despite `KIRO_HOME`. CLI sessions explicitly selected `--v3` and confirmed `engine: "v3"`; the CLI binary's `2.27.1` version is not the selected engine version.
-
-Detailed verification of Kiro V3 injection behavior lives in [the injection verification guide](../../guides/kiro/injection.md). Harness API guidance lives in [the Kiro guides](../../guides/kiro/overview.md).

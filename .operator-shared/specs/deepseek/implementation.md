@@ -50,8 +50,3 @@ DeepSeek's native profile package operation owns updates. Profile processes must
 
 Pathway selections: bundled-Core resolution, persisted system-prompt contribution, DeepSeek-compatible hyphenated slash commands, availability-only Web indicator, and native profile package management. All are accepted reference pathways; there are no behavioral deviations.
 
-## Verification
-
-Focused tests cover Client indicator registration, concurrent render coalescing, stable per-Agent content, independent Agents, canonical diagnostics, fatal failures, agentless assemblies, instruction-based commands, cancellation, and independent Web/Desktop installation outcomes.
-
-The built bundle installs into clean Web and `sdk-minimal` profiles. Web starts with the Host plugin active without opening a browser; `sdk-minimal` starts and exits cleanly without an interactive command service.
