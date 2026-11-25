@@ -1,8 +1,8 @@
 # OpenCode V2 CLI (TUI) Plugin Development
 
-Last Updated: September 24, 2026
+Last Updated: November 25, 2026
 
-Verified from https://opencode.ai/v2/docs/build/plugins/cli/ and `references/opencode-v2/packages/plugin/src/tui/`. Replaces the V1 `tui.json` plugin layer and V1 `client.tui` APIs.
+Verified from https://opencode.ai/v2/docs/build/plugins/cli/ and `references/opencode-v2/packages/plugin/src/tui/`.
 
 CLI plugins extend the terminal: commands, routes, slots, Markdown renderers, notifications, and local state. They run in the terminal client against the connected (possibly remote) server; the main server plugin is separate.
 
@@ -97,6 +97,6 @@ Export `./tui` beside the main plugin entry; OpenCode loads it automatically for
 }
 ```
 
-CLI-only plugins are configured in the single global `~/.config/opencode/cli.json` (`{ "plugins": ["..."] }`) and remain active when connected to a remote server. V2 replaces the V1 layered `tui.json(c)` files; project-local client configuration no longer exists.
+CLI-only plugins are configured in the single global `~/.config/opencode/cli.json` (`{ "plugins": ["..."] }`) and remain active when connected to a remote server. Project-local client configuration does not exist.
 
 For prebuilt TUI bundles, use `@opentui/solid/bun-plugin` in `Bun.build({ plugins: [...] })` to compile TSX with Solid reactivity. Plain Bun JSX compilation evaluates status text at mount, so changes only appear after remount. Keep Solid and OpenTUI external to share the host renderer.

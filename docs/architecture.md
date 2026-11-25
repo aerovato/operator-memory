@@ -26,10 +26,6 @@ The preamble is the lightweight entrypoint. At the start of every conversation, 
 
 Everything else — specifications, plans, research, guides — stays on disk and is read deliberately when the task calls for it. Loading is deterministic: the same session start produces the same orientation, every time.
 
-### Preamble Versions
-
-Operator renders preamble v2.0 for every machine. Guidance and tenets carry matching version attributes.
-
 ### The Maps
 
 Two map types route the agent, because source navigation and durable knowledge are different concerns:
@@ -53,10 +49,3 @@ Operator relies on coherent documents and explicit maps instead:
 
 For the full argument against replay-based memory, see [Operator VS Other Plugins](comparison.md).
 
-### Failure Is Visible
-
-The Brain can go stale — after significant upstream changes or if the agent simply forgets to update. Operator keeps that failure in ordinary files: inspectable, correctable.
-
-### OpenCode
-
-The default OpenCode integration targets V2 through `@aerovato/operator-opencode-v2`. It injects session-cached context at the outgoing model boundary, exposes server-owned status through RPC to the TUI, and leaves package updates to OpenCode. The separate `@aerovato/operator-opencode` package supports legacy V1 only.

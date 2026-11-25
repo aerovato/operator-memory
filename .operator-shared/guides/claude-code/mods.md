@@ -1,6 +1,6 @@
 # Claude Code Mods
 
-Last Updated: November 22, 2026
+Last Updated: November 25, 2026
 
 The in-process mod API (Claude Code v2.1.287+): a plugin whose behavior is a JavaScript/TypeScript hooks module. For Operator this is the transform pathway that avoids the settings-hook 10k context cap.
 
@@ -38,12 +38,11 @@ Consequence for Operator: the mod cannot import `@aerovato/operator-core` in-pro
 - `turn.step` — each model request (streaming; async generator via `yield* next(e)`); can redirect the model or observe usage
 - `classic.<Event>` — every settings-hook event (e.g. `classic.SessionStart`) with the same JSON payload; a mod can absorb the settings-hook pathway in-process
 - `session.start`, `session.end`, `session.compact`, `command.run`, `command.describe`, `tool.call`, `tool.check`, `plugin.register`
+- `agent.spawn` — rewrites a non-forked subagent's `prompt` (also `description`, `subagentType`, `model`, `cwd`) before its model resolves; this is Operator's subagent seam, since `prompt.compose` does not fire for subagent system prompts. A pinned `fork` flag marks full-history forks, which inherit the parent's system prompt and history. See [injection](./injection.md) for cadence and coverage detail
 
 ## Mods API (`$`)
 
 `$.ui.log` (transcript line Claude does not read), `$.ui.ask`, `$.ui.invalidate`, `$.process.run`, `$.tool.register`, `$.session.version()`, model calls, timers, file access. A hook can only act outside its own code through `$`, which is what makes mods auditable (`claude plugin validate` lists events and calls).
-
-For Operator: a mod renders the preamble by running `operator-helper preamble` through `$.process.run` (helper subprocess pathway — the loader forbids npm deps and Node builtins, so bundled core in-process is not available) and injects via `prompt.context`/`prompt.section` — uncapped, in-process registration, no stdin/stdout parsing beyond the subprocess itself.
 
 ## Failure, ordering, policy
 
@@ -61,18 +60,3 @@ For Operator: a mod renders the preamble by running `operator-helper preamble` t
 ## Testing
 
 `claude plugin test mods/<name>` runs a mod's `tests/` against the real engine `$` and the mod's `on` chain; see `mods/diff/tests` and the mods README for the harness shape. Sample mods live in `anthropics/claude-code-playground` under `claude-code/mods`.
-
-Live PTY verification notes (v2.1.287): the TUI swallows multi-character pty writes (paste detection) — type character-by-character and send `\r` separately; the folder-trust dialog needs a down-arrow before Enter; `claude plugin validate` and `-p` mode need no PTY.
-
-## Binding direction (resolved)
-
-Injection over persistence, via a mod: `prompt.compose` appends a stable `operator:<section>` system-prompt section (`scope: 'session'`) carrying the preamble, rendered once through a Helper subprocess (`$.process.run(['operator-helper', 'preamble'])`, whose wait does not count against the hook's 10s own-execution limit) and cached — the transform pathway, uncapped, outside history, byte-stable by construction, reapplied on every model call including after compaction and model switches.
-
-Resolved open questions:
-
-- Size: no documented cap on prompt section text (only UI `Text` children, `$.fs`, `$.store`, and hook/API time are limited)
-- Model switches: `prompt.compose` re-renders per prompt with the active `model`; returning cached text stays stable and the engine places cache marks
-- Subagents: **disproved for compose, solved via `agent.spawn` (live-verified v2.1.287)** — `prompt.compose` does not fire for subagent system prompts (foreground `Task` subagent cannot see compose-appended sections; background agents fire no compose). An `agent.spawn` hook may rewrite `prompt` (also `description`, `subagentType`, `model`, `cwd`) before the subagent's model resolves; prepending the preamble there reaches the subagent, uncapped, in-process. The parent transcript keeps the original tool-call parameters, and the rewrite works cross-model. The hook supplies a pinned `fork` flag for full-history forks. Those children inherit the parent’s system prompt and history, so Operator leaves their task unchanged. `classic.SubagentStart` `additionalContext` (10k per-string cap) is the recorded fallback
-- Conversation boundaries: the mod `session.start` does not re-fire after `/clear`/`/resume`/`/branch`, so it is not a lazy-render trigger. `/clear` emits `session.end` with reason `clear` and creates a new session ID. Operator keeps its process-lifetime render cache unchanged across these boundaries.
-
-Settings hooks are not used for injection; the version floor (v2.1.287+) and org-policy restrictions (`allowManagedModsOnly`, `disableAllHooks`, `--bare`, `--safe-mode`) are documented limitations explained by the harness guide.

@@ -5,13 +5,6 @@ read_if: Working in packages/core or changing memory loading and preamble render
 
 # Operator Core Index
 
-## Guidelines
-
-- Index all files and directories covered by this subindex.
-- If a directory is large or low-value, only index the directory; do not list every file.
-- For each entry, provide a concise description of contents; do not provide descriptions for generic files like package.json or configs: describe with "Ditto".
-- **Maintain when files or layout in this area change.**
-
 ## Coverage
 
 - `packages/core/`

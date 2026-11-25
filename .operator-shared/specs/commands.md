@@ -1,6 +1,6 @@
 # Commands
 
-Last Updated: November 24, 2026
+Last Updated: November 25, 2026
 
 Agent-assisted configuration of User Instructions, the Project Brain, and the Project Index. Deterministic work lives in `operator-helper`; phased agent work lives in emitted guides; harness commands orchestrate both.
 
@@ -12,18 +12,36 @@ Adapter registration and injection obligations are specified in [`reference/impl
 
 ## Command Contract
 
-Every maintained harness exposes these commands with the same intent and, where supported, the same names. Concrete bindings document unavoidable naming differences. Execution stays in the current conversation; Operator never switches sessions automatically. User guidance should recommend starting each setup command in a new conversation. This is workflow guidance, not a requirement to refresh the preamble after agent-authored changes.
+Every maintained harness exposes these commands with the same intent and, where supported, the same names. Concrete bindings document unavoidable naming differences. Execution stays in the current conversation; Operator never switches sessions automatically. User guidance should recommend starting each setup command in a new conversation.
 
 - `/operator:user-init` — `user init`; follow the User Setup guide in its output with the user
 - `/operator:project-init` — `project init`; follow the Project Setup guide in its output, including automatic indexing where applicable
 
 Each command hands the agent instructions in the current conversation without executing Helper in the adapter. The agent first runs `operator-helper version` and, when an update is available, must run `operator-helper upgrade` before continuing. It then runs the corresponding workflow operation. If Helper cannot start, the agent repairs its installation and retries the failed command without asking the user to reinvoke the harness command. If the version check or upgrade fails, the agent diagnoses and retries it. Non-zero results from a running setup operation retain their guide and failure details. Agents never invoke harness commands themselves.
 
-The repair command has been removed; loading recovery is handled by the preamble diagnostic.
-
 Helper output is agent working context, not reproduced or specially formatted for the user. Adapters use dedicated commands where supported and explicitly invoked skills otherwise.
 
-Helper setup operations include the applicable guide in their output. Legacy guide subcommands are empty, successful compatibility no-ops while older adapters still call them.
+Helper setup operations include the applicable guide in their output.
+
+## Command Prompt
+
+Each registration supplies this prompt, substituting its command description, operation, and workflow instruction. For `user init` and `project init`, the workflow instruction is to follow the corresponding emitted setup guide, including on operation failure.
+
+```text
+# {command description}
+
+1. Run `operator-helper version`. If an update is available, run `operator-helper upgrade` before continuing.
+2. Run `operator-helper {operation}`. {workflow instruction}
+
+## Recovery
+
+- If Helper cannot start, install or repair the npm package `@aerovato/operator-helper` globally and retry the failed command.
+- If the version check or upgrade fails, diagnose the error and retry.
+- If `operator-helper {operation}` reports a failure, use its output to resolve it and rerun it as needed.
+- If you cannot resolve a problem, report the blocker.
+
+Use Helper output as working context. Do not reproduce it wholesale or reimplement Helper logic.
+```
 
 ## User Setup
 
@@ -49,15 +67,5 @@ Deterministic setup initializes Private only. The agent creates `.operator-share
 
 ## Project Index Maintenance
 
-After setup, users can ask the agent directly to refresh the index using the fixed preamble's Project Index guidance. The hidden Helper `index init` and `index status` routes remain callable for older plugins: they report main-index presence and emit a short refresh prompt that recommends updating the plugin. Project Init does not call these routes.
+After setup, users ask the agent directly to refresh the index; the agent follows the fixed preamble's Project Index guidance.
 
-## Canonical Guides
-
-The User Setup and Project Setup guides are defined under [`packages/helper/src/templates/`](../../packages/helper/src/templates/) and emitted by `user init` and `project init`.
-
-Index and catalog document syntax is taught in the fixed preamble from core templates. Setup guides require agents to follow those shapes. Helper init seeds destination files from the same in-package exports. The User Setup guide embeds the operator and catalog seeds; the Project Setup guide embeds the operator and Shared README seeds so agents do not read template files from disk.
-
-## Deferred
-
-- Setup for future Memory components
-- Additional harness integrations

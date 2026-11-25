@@ -1,6 +1,6 @@
 # Kiro Guide
 
-Last Updated: October 5, 2026
+Last Updated: November 25, 2026
 
 Official-documentation reference for Kiro, AWS's AI coding agent. Research was retrieved October 4, 2026 from `https://kiro.dev/docs` (indexed via `https://kiro.dev/llms.txt`; every page has a `.md` twin for clean Markdown). Undocumented behavior is not treated as fact.
 
@@ -31,18 +31,16 @@ Kiro Crew is a separate orchestration product with its own agent backends (Kiro 
 - [`steering.md`](./steering.md) - Steering scopes, inclusion modes, file references, AGENTS.md, and inherited subagent instructions.
 - [`skills.md`](./skills.md) - Agent Skills format, locations, activation, and slash commands.
 - [`powers.md`](./powers.md) - Agent Plugins packaging, manifests, and installation pathways.
-- [`subagents.md`](./subagents.md) - General subagent inheritance, injection limitations, and Operator's integration scope.
-- [`injection.md`](./injection.md) - Verified V3 injection behavior: main-agent hooks, subagent limitation, `KIRO_HOME` resolution defect, and custom-agent profile findings.
+- [`injection.md`](./injection.md) - Verified V3 injection behavior: main-agent hooks, subagent inheritance and its limitation, `KIRO_HOME` resolution defect, and custom-agent profile findings.
 
-## Facility Summary
+## Binding
 
-Operator-relevant facilities:
+The implemented binding is [`specs/kiro/implementation.md`](../../specs/kiro/implementation.md):
 
-- `SessionStart` hook (IDE, CLI V3, Web): a `command` action exiting 0 has its stdout added to the agent's context. Primary preamble injection point.
-- Always-included steering is necessary for subagent instructions. It is inherited context; executing Helper from those instructions is agent-driven loading, not automatic injection.
-- Global skills (`~/.kiro/skills/`) become `/skill-name` slash commands. Natural surface for setup workflows.
-- Hooks, steering, and skills are all plain files under `~/.kiro/` and `.kiro/` — no plugin installer or marketplace is required for local distribution; Powers are the marketplace-style packaging layer.
-- No documented general subagent injection hook exists. Operator uses general mechanisms and does not require custom agents.
+- A global `SessionStart` command hook runs `operator-helper preamble`; its stdout is added to the main agent's context.
+- Built-in subagents do not receive that hook output. An always-included steering file tells any agent missing the preamble to run Helper itself.
+- Setup workflows are explicitly invoked global skills, which Kiro exposes as `/skill-name` slash commands.
+- The adapter is plain files under `~/.kiro/` written by Helper; no package, plugin, or custom agent is involved.
 
 ## Primary Sources
 

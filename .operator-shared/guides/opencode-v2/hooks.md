@@ -1,6 +1,6 @@
 # OpenCode V2 Runtime Hooks
 
-Last Updated: October 20, 2026
+Last Updated: November 25, 2026
 
 Verified from https://opencode.ai/v2/docs/build/plugins/ and `references/opencode-v2/packages/plugin/src/promise/session.ts`.
 
@@ -70,25 +70,3 @@ Modify native provider `Request`/`Response`. Bodies are one-shot streams; clone 
 ### `retry`
 
 Override the retry decision for a provider failure after OpenCode classifies it: `event.decision = { retry: true, delay: 10_000 }`. `attempt` is the physical attempt (initial request is `1`). Built-in max attempts remain a hard limit; invalid delays fall back to the computed delay; context-overflow recovery is separate (it compacts instead of retrying).
-
-## Permission Hooks
-
-`ctx.permission.hook("evaluate", ...)` reviews decisions after configured rules, before the action runs or a prompt is published:
-
-```ts
-await ctx.permission.hook("evaluate", async (event) => {
-  event.effect = "allow" | "ask" | "deny"
-  event.message = "reason"
-})
-```
-
-Runs for `allow` and `ask`; an explicit configured `deny` is final and skips the hook. `message` appears in an escalated request or becomes the denial reason. Read-only fields: `sessionID`, `agent`, `action`, `resources`, `metadata`, optional `source` (`{ type: "tool", messageID, id }`).
-
-## Shell Hooks
-
-`ctx.shell.hook("create.before", ...)` mutates `command`, `cwd`, `timeout`, `shell`, `env` before execution. Replaces V1's `shell.env` hook.
-
-## Tool Hooks
-
-- `ctx.tool.hook("execute.before", ...)` — inspect or replace tool `input` before execution (`event.tool` is the effective name).
-- `ctx.tool.hook("execute.after", ...)` — inspect results (`event.status === "completed"`, mutable `event.result`) or failures (`"error"`, `event.error`).

@@ -50,7 +50,7 @@ Then restart Claude Code. Helper enables marketplace auto-update each time you r
 - No injection: check the Claude Code version, confirm the plugin is enabled, and ensure `operator-helper` is on `PATH`.
 - Hooks disabled: `disableAllHooks`, `--bare`, and `--safe-mode` prevent Operator's mod injection. Organization policies such as `allowManagedHooksOnly` and `allowManagedModsOnly` can restrict installed hooks or mods; check the applicable policy with your administrator.
 - Helper failure: Operator logs a recovery cue and injects nothing. Repair Helper's global installation and restart Claude Code.
-- Local plugin load failure: run `claude plugin validate <plugin-directory>` and launch with `claude --debug` for load diagnostics. For development, `bun run preview:claude-code` builds Helper and the adapter and launches the local plugin.
+- Local plugin load failure: run `claude plugin validate <plugin-directory>` and launch with `claude --debug` for load diagnostics.
 - Direct `<package>@npm` installation reports an account gate: use `operator-helper install claude-code`, which uses the repository marketplace's npm source instead.
 
 See [Troubleshooting](../troubleshooting.md) for partition and memory repair.

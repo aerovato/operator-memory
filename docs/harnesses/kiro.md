@@ -45,7 +45,7 @@ operator-helper install kiro
 
 ### Known Bugs and Limitations
 
-- `KIRO_HOME` is ignored in V3: hooks, steering, and skills still load from ordinary `~/.kiro`. Operator installs there accordingly. Verified with CLI binary `2.27.1`, the V3 engine (`--v3`), and KAS `0.66.22`.
+- `KIRO_HOME` is ignored in V3: hooks, steering, and skills still load from ordinary `~/.kiro`. Operator installs there accordingly.
 - No automatic subagent injection: Kiro has no subagent start hook. Subagents must follow the inherited Operator steering instructions and run `operator-helper preamble` themselves.
 - Hook failures do not block the session: a failed `SessionStart` command shows a warning to the user. The agent must follow the steering instructions to load Operator manually; if that command fails, it reports the failure and stops.
 

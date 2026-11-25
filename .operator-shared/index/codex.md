@@ -13,7 +13,7 @@ read_if: Working in packages/codex or changing Codex plugin packaging, preamble 
 
 - `@aerovato/operator-codex` is a dependency-free legacy-format Codex plugin because current Codex clients load lifecycle hooks only from that format.
 - One strictly typed, dependency-free launcher compiles to Node-compatible JavaScript and renders current memory through Helper for new or cleared sessions, post-compaction context, and delegated subagents; resume and fork retain prior injected history.
-- Three explicitly invoked plugin skills bind Codex-native interaction to one Helper operation for each setup and indexing workflow.
+- Two explicitly invoked plugin skills bind Codex-native interaction to one Helper operation for each setup workflow.
 - Local preview: `bun run build:codex && bun run preview:codex` generates a separate catalog under `.cache/codex-marketplace`, resets the prior `operator-local` registration through native removal, registers it via `codex plugin marketplace add` and installs or refreshes `aerovato@operator-local` through `codex plugin add`.
 
 ## `packages/codex/` Index

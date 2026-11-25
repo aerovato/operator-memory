@@ -45,4 +45,4 @@ Kiro supports the AGENTS.md standard: files at the workspace root, in subdirecto
 
 ## Team distribution
 
-Global steering is designed for MDM/Group Policy distribution to `~/.kiro/steering` — an documented install pathway for machine-wide or team-wide context that does not touch the repository.
+Global steering is designed for MDM/Group Policy distribution to `~/.kiro/steering` — a documented install pathway for machine-wide or team-wide context that does not touch the repository.

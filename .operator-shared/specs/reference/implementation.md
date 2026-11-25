@@ -1,6 +1,6 @@
 # Reference Implementation
 
-Last Updated: November 3, 2026
+Last Updated: November 25, 2026
 
 The complete adapter specification: what every harness adapter must do, and what the reference implementation looks like. Concrete bindings in `implementation.md` documents measure themselves against the Reference Implementation section, not against one another. A binding may deviate only through the accepted pathways defined here or through an explicitly recorded deviation.
 
@@ -21,7 +21,7 @@ Session, command, and UI behavior belong in the adapter, not core.
 #### Preamble injection
 
 - Resolve and inject the complete preamble for the active project root through one of the accepted pathways below
-- Prefer rendering once per session and applying the preamble outside persisted history when that fits the harness. Persisting the preamble is fully acceptable; non-persistence is a preference, not an adapter requirement or a reason to block implementation.
+- Render once per session and apply the preamble outside persisted history when that fits the harness; otherwise persist it.
 - Give subagents the same preamble as main agents
 - On load failure, inject the diagnostic preamble only; surface a human-visible recovery cue when the harness allows it
 
@@ -29,7 +29,7 @@ Composition, authority, warnings, and diagnostics are specified in [`preamble.md
 
 #### Commands
 
-Expose these command intents on every supported harness. Prefer the following colon-based names, but similar host-compatible names are fully acceptable, including names with dashes instead of colons. Alternate names do not require an exception or separate approval:
+Expose these command intents on every supported harness. Prefer the following colon-based names, but similar host-compatible names are fully acceptable, including names with dashes instead of colons.
 
 - `/operator:user-init` — User Setup
 - `/operator:project-init` — Project Setup
@@ -68,16 +68,16 @@ Both pathways produce identical output: the complete normal preamble or the cano
 
 ### Preamble Injection
 
-Required outcome: model calls carry the complete Operator preamble — normal or diagnostic — without partial Brain content. Both pathways below are fully acceptable. Prefer the transform pathway when it fits the harness, but do not treat persistence as a contract deviation or block an adapter over it. The transform pathway keeps one byte-stable render for the session; the persisted-context pathway may re-render at lifecycle boundaries:
+Required outcome: model calls carry the complete Operator preamble — normal or diagnostic — without partial Brain content. Prefer the transform pathway when it fits the harness. It keeps one byte-stable render for the session; the persisted-context pathway may re-render at lifecycle boundaries:
 
 - Transform pathway (preferred): an outgoing model-boundary context transform — a prepended synthetic user message or an appended system part — applied outside persisted history. It automatically reapplies after retries, tool turns, and compaction. Render lazily once per session, coalesce concurrent first renders, and cache the complete result so every call is byte-stable. Reference bindings: OpenCode V2, Pi.
-- Persisted-context pathway (fully accepted): lifecycle-hook output persisted into the conversation as developer context at session start, after compaction, and at subagent start. Each event renders current memory again, so later renders can reflect Brain changes made mid-session. This remains acceptable even if a non-persisted seam also exists; choose the pathway that fits the harness. Reference binding: Codex.
+- Persisted-context pathway: lifecycle-hook output persisted into the conversation as developer context at session start, after compaction, and at subagent start. Each event renders current memory again, so later renders can reflect Brain changes made mid-session. Reference binding: Codex.
 
 Cross-cutting rules under both pathways:
 
 - Subagents receive the same complete preamble as main agents, through the same mechanism where possible.
 - `resume` and `fork` skip reinjection only when the retained history provably already carries the preamble; the transform pathway needs no such check because it reapplies automatically.
-- Injected content is immutable for the session under the transform pathway; the persisted-context pathway trades that immutability for re-rendered currency and records this as an accepted consequence.
+- Injected content is immutable for the session under the transform pathway.
 
 ### Failure Semantics
 
@@ -87,27 +87,7 @@ Cross-cutting rules under both pathways:
 
 ### Commands
 
-Register `/operator:user-init` and `/operator:project-init` as dedicated commands that submit instructions to the agent in the current conversation. Preserve user-defined commands. Host-compatible slash names are acceptable; if command registration is unavailable, use user-selected skills. **The adapter must never execute Helper on behalf of the agent.**
-
-Each registration supplies this prompt, substituting its command description, operation, and workflow instruction:
-
-```text
-# {command description}
-
-1. Run `operator-helper version`. If an update is available, run `operator-helper upgrade` before continuing.
-2. Run `operator-helper {operation}`. {workflow instruction}
-
-## Recovery
-
-- If Helper cannot start, install or repair the npm package `@aerovato/operator-helper` globally and retry the failed command.
-- If the version check or upgrade fails, diagnose the error and retry.
-- If `operator-helper {operation}` reports a failure, use its output to resolve it and rerun it as needed.
-- If you cannot resolve a problem, report the blocker.
-
-Use Helper output as working context. Do not reproduce it wholesale or reimplement Helper logic.
-```
-
-- `user init`, `project init`: follow the corresponding emitted setup guide, including on operation failure.
+Register `/operator:user-init` and `/operator:project-init` as dedicated commands, or as explicitly invoked skills where command registration is unavailable. Each submits the [instruction prompt](../commands.md#command-prompt) to the agent in the current conversation. Preserve user-defined commands. **The adapter must never execute Helper on behalf of the agent.**
 
 ### Status UI
 
@@ -119,7 +99,7 @@ Helper owns installation and repair through `operator-helper install <harness>`.
 
 ### Runtime Shape
 
-Adapters stay thin. Rendering through bundled core or the Helper subprocess are both accepted. Dependency-free out-of-process hook processes are acceptable where the harness spawns plugins as untrusted subprocesses; in-process plugin factories are the norm elsewhere. Session, command, and UI behavior stay in the adapter; shared behavior stays in core and Helper.
+Adapters stay thin. Dependency-free out-of-process hook processes are acceptable where the harness spawns plugins as untrusted subprocesses; in-process plugin factories are the norm elsewhere. Session, command, and UI behavior stay in the adapter; shared behavior stays in core and Helper.
 
 ## Concrete Bindings
 

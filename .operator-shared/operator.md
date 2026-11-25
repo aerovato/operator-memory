@@ -55,7 +55,8 @@ Runtime code uses portable Node APIs. Bun owns workspace management, dependency 
 
 - Use backticks for code formatting.
 - Use bold only for important keywords or requirements, not list labels or headers.
-- Do not use Markdown tables or box-drawing diagrams.
+- Do not use Markdown tables.
+- Do not use box-drawing diagrams in place of a real visual such as a chart, flow graphic, or screenshot.
 - Do not hard-wrap Markdown prose at a column limit
 - Keep brain documents short and concise; split long documents with explicit links when useful.
 - Keep specifications focused primarily on expected behavior and current scope.

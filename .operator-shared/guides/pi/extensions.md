@@ -24,10 +24,7 @@ Verified from `references/pi/packages/coding-agent/docs/extensions.md` and `refe
 - `on(event, handler)` — full event union; handler receives `(event, ctx: ExtensionContext)`.
 - `registerTool(definition)` — TypeBox schema, `execute(toolCallId, params, signal, onUpdate, ctx)`, optional `renderCall`/`renderResult`, `promptSnippet`/`promptGuidelines` feed the default system prompt.
 - `registerCommand(name, { description, getArgumentCompletions, handler(args, ctx: ExtensionCommandContext) })`.
-- `registerShortcut(keyId, { handler })`, `registerFlag(name, { type, default })`, `getFlag(name)`.
 - `sendMessage` / `sendUserMessage` / `appendEntry` — see [messaging.md](messaging.md).
-- `registerMessageRenderer` / `registerEntryRenderer` / `registerMarkdownTransformer`.
-- `registerProvider(name, { baseUrl, apiKey, api, models, oauth, streamSimple })` — queued during initial load, immediate afterwards.
 - `exec(command, args, options)`, `setSessionName`, `setLabel`, `getActiveTools`/`setActiveTools`, `setModel`, `setThinkingLevel`.
 
 ## Context and UI

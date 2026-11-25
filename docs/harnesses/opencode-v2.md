@@ -12,7 +12,7 @@ operator-helper install opencode
 
 Restart OpenCode after installation. Until OpenCode reloads the plugin, commands and preamble injection will not work.
 
-The default command no longer installs V1; use `install opencode-v1` for legacy installations. Installing V2 does not remove or migrate existing plugin registrations.
+Use `install opencode-v1` for legacy installations. Installing V2 does not remove or migrate existing plugin registrations.
 
 ### Verify
 

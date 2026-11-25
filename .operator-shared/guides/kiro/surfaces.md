@@ -47,4 +47,4 @@ Binary is `kiro-cli`. Useful commands for verification and scripting:
 
 In-session slash commands: `/agent swap`, `/config` (V3; category summary of agents, MCP, Powers, Steering, Skills, Hooks), `/context show` (loaded context/skills), `/model`, `/settings features`.
 
-Headless mode exists for non-interactive CI use (`docs/cli/headless.md`, not yet researched in detail).
+Headless mode exists for non-interactive CI use (`docs/cli/headless.md`).

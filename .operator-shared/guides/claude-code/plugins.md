@@ -10,7 +10,7 @@ Packaging, distribution, installation, and updates for the Operator plugin.
 operator/
 ├── .claude-plugin/
 │   └── plugin.json
-├── commands/           # slash command markdown
+├── commands/           # optional slash command markdown
 ├── skills/             # SKILL.md folders, invocable as /operator:<skill>
 ├── hooks/
 │   └── hooks.json      # SessionStart/SubagentStart command hooks
@@ -62,11 +62,11 @@ claude plugin install operator@operator-memory
 
 Scopes: user (`~/.claude/settings.json`, all projects), project (`.claude/settings.json`, committed; collaborators still install once with `--scope project`), local (`.claude/settings.local.json`). Scope precedence: local > project > user. Plugins land under `~/.claude/plugins/`.
 
-For Helper's `operator-helper install claude-code`: run the shell `claude plugin` commands (marketplace add + install, default user scope), then verify with `claude plugin list`. `--yes` accepts `command`-source confirmation prompts in scripts.
+`operator-helper install claude-code` uses the shell `claude plugin` commands (marketplace add and install, default user scope) and verifies with `claude plugin list`. `--yes` accepts `command`-source confirmation prompts in scripts.
 
-Live-verified on v2.1.287: a Helper-fabricated marketplace can use `source: "./node_modules/@aerovato/operator-claude-code"` after npm installs the adapter under that marketplace root. `claude plugin marketplace add` is repeatable for the same local path. Follow install with `claude plugin update operator@operator-memory` to refresh an existing installation. `claude plugin list --json` returns an array with `id`, `enabled`, `version`, and `installPath`; verify the matching `id` is enabled. First and repeated installs passed against a packed adapter served by a temporary npm registry in an isolated home/config environment.
+Live-verified on v2.1.287: `claude plugin list --json` returns an array with `id`, `enabled`, `version`, and `installPath`; verify the matching `id` is enabled. `claude plugin update operator@operator-memory` refreshes an existing installation.
 
-Direct npm installation syntax exists (`claude plugin install <package>@npm`, with `--registry` for a custom registry), but availability is account-gated. Both unsigned isolated and signed-in v2.1.287 probes returned `failureCode: "npm_marketplace_disabled"`. No supported user setting to enable it was found in the reviewed public docs. Ordinary marketplace entries with npm plugin sources work independently of this gate; first install, repeated install, and update passed with Claude owning the fetch and cache. Operator uses this ordinary npm-source pathway through the static repository catalog, not Helper's earlier local-marketplace/cache design. See [installation pathways](./installation.md) for the complete verified source/loading distinction.
+Direct npm installation syntax exists (`claude plugin install <package>@npm`, with `--registry` for a custom registry), but availability is account-gated. Both unsigned isolated and signed-in v2.1.287 probes returned `failureCode: "npm_marketplace_disabled"`. No supported user setting to enable it was found in the reviewed public docs. Ordinary marketplace entries with npm plugin sources work independently of this gate; first install, repeated install, and update passed with Claude owning the fetch and cache. Operator uses this ordinary npm-source pathway through the static repository catalog. See [installation pathways](./installation.md) for the complete verified source/loading distinction.
 
 ## Updates
 

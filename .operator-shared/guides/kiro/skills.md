@@ -20,7 +20,7 @@ Frontmatter:
 - Global: `~/.kiro/skills/` — personal workflows across projects
 - Workspace skills take priority on name clashes.
 
-Verified on CLI binary `2.27.1`, V3 engine (`--v3`), KAS `0.66.22`: global skills are discovered and activated from ordinary `$HOME/.kiro/skills/`, even when `KIRO_HOME` is set. Skills placed only under the override are undiscovered. Full-body activation was verified using `disclose_context`; this tool must be allowed in headless experiments. See [injection verification](./injection.md).
+Verified on CLI binary `2.27.1`, V3 engine (`--v3`), KAS `0.66.22`: global skills are discovered and activated from ordinary `$HOME/.kiro/skills/`, even when `KIRO_HOME` is set. Skills placed only under the override are undiscovered. Full-body activation was verified using `disclose_context`. See [injection verification](./injection.md).
 
 Progressive disclosure: at session start only name and description load; full instructions load on activation. New skills are discovered when a session starts.
 

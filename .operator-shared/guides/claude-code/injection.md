@@ -2,7 +2,7 @@
 
 Last Updated: November 22, 2026
 
-Context-injection surfaces relevant to Operator's preamble, ranked by fit. All details from live docs (October 2026) unless noted.
+Context-injection surfaces relevant to Operator's preamble. All details from live docs (October 2026) unless noted.
 
 ## SessionStart (primary hook pathway)
 
@@ -25,13 +25,7 @@ Behavior:
 
 `additionalContext`, `systemMessage`, `initialUserMessage`, and plain stdout are each capped at 10,000 characters. Over the limit, Claude Code replaces the string with a file path plus a 2,000-character preview, and does not ask Claude to read the file. There is no setting to raise it.
 
-This is the central sizing constraint for the Claude Code binding: a full Operator preamble with instructions, catalogs, and indexes can exceed 10k characters. Options, in the order to evaluate:
-
-- Emit the diagnostic preamble or a compact pointer that fits, and have the full Brain loaded through the command surface — measures against "complete preamble" and likely insufficient alone
-- Use the mod `prompt.context`/`prompt.section` events, which have no documented cap (see [`mods.md`](./mods.md))
-- Multiple hooks each contributing up to 10k — each string is measured separately and all values reach Claude; splitting the preamble across a few well-bounded sections is viable but must stay byte-stable per render
-
-Measure the rendered preamble size before choosing; record the decision in the binding spec.
+This is the central sizing constraint for settings hooks: a full Operator preamble with instructions, catalogs, and indexes can exceed 10k characters. The binding therefore injects through the mod prompt events, which have no documented cap (see [`mods.md`](./mods.md)).
 
 ## SubagentStart
 
@@ -59,7 +53,7 @@ Fires when `CLAUDE.md` or `.claude/rules/*.md` loads. Observability only: hooks 
 
 ## Instruction files
 
-`CLAUDE.md` (project and user) is the static instruction channel; the `agents-md` built-in mod can load `AGENTS.md` instead or beside it. Operator must not write its preamble into `CLAUDE.md` — the Brain is dynamic and Operator owns rendering — but should document `CLAUDE.md` interplay (authority ordering with injected preamble) in the binding spec.
+`CLAUDE.md` (project and user) is the static instruction channel; the `agents-md` built-in mod can load `AGENTS.md` instead or beside it. Operator must not write its preamble into `CLAUDE.md` — the Brain is dynamic and Operator owns rendering.
 
 ## Failure semantics
 

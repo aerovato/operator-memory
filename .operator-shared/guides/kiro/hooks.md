@@ -1,6 +1,6 @@
 # Kiro Hooks
 
-Last Updated: October 5, 2026
+Last Updated: November 25, 2026
 
 ## Standalone hook files (IDE 1.x / CLI V3)
 
@@ -71,7 +71,7 @@ Matchers accept canonical internal names (`fs_read`, `fs_write`, `execute_bash`,
 
 ## Notes for adapter design
 
-- Global `SessionStart` command hooks are the documented automatic main-agent preamble mechanism. No documented general hook injects the complete preamble into subagents; see [subagent behavior](subagents.md).
+- Global `SessionStart` command hooks are the documented automatic main-agent preamble mechanism. No documented general hook injects the complete preamble into subagents; see [Subagent Injection Limitation](./injection.md#subagent-injection-limitation).
 - Keep inherited steering for subagent instructions. Steering-based Helper execution is agent-driven loading, not guaranteed automatic injection.
 - Non-zero `SessionStart` warns the user and proceeds; failed command output is not an injected preamble. Steering must not tell an agent to continue after an unexpected Helper execution failure.
 - New/changed hook files are picked up at session start; a running session does not reload them.
