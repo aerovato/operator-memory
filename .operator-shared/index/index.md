@@ -46,7 +46,7 @@ Each owning source subindex below records its upstream URL, local destination, f
 - `docs/getting-started.md` - New-user onboarding and usage guide: mechanisms, setup, daily use, directing the agent, and Brain review.
 - `docs/comparison.md` - Public comparison of Operator against snippet-capture, RAG, CRUD-tool, and compression memory plugins.
 - `docs/harnesses/` - Per-harness guides (OpenCode 2, OpenCode 1, Pi, Codex, Claude Code, DeepSeek Harness, Kiro): install command, verification, commands, updates, and harness-specific troubleshooting.
-- `docs/architecture.md` - User-facing Brain, partition, catalog, Project Index, deterministic loading, failure, and OpenCode architecture.
+- `docs/architecture.md` - User-facing Brain, partition, catalog, Project Index, deterministic loading, and failure architecture.
 - `docs/troubleshooting.md` - User-facing installation, status, lint, memory-check, repair, Git, Shared, harness update, and support guidance.
 - `docs/assets/banner.jpeg` - Operator Memory README banner.
 - `docs/assets/getting-started.jpeg` - Text-only Operator Memory banner for the onboarding guide.
