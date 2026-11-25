@@ -36,7 +36,7 @@ A non-zero `SessionStart` command shows a warning to the user. Kiro proceeds wit
 
 ## Commands
 
-Three explicitly invoked skills expose the Operator workflows:
+Two explicitly invoked skills expose the Operator workflows:
 
 - `/operator-user-init`
 - `/operator-project-init`
