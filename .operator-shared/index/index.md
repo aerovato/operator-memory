@@ -5,14 +5,6 @@ read_if: Working anywhere in the committed Operator Memory project
 
 # Shared Project Index
 
-## Guidelines
-
-- Index all files and directories covered by this index.
-- If a directory is large or low-value, only index the directory; do not list every file.
-- Split packages/modules into dedicated subindex files if large and contains non-core details.
-- For each entry, provide a concise description of contents; do not provide descriptions for generic files like package.json or configs: describe with "Ditto".
-- **Maintain when project files or layout change.**
-
 ## Architecture
 
 - Operator Memory is a Bun and TypeScript monorepo for durable context and agent-driven development on coding-agent harnesses.

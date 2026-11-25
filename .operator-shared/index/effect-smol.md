@@ -5,13 +5,6 @@ read_if: Verifying Effect v4 APIs, examples, testing patterns, or source convent
 
 # Effect-Smol Reference Index
 
-## Guidelines
-
-- Index all files and directories covered by this index.
-- If a directory is large or low-value, only index the directory; do not list every file.
-- For each entry, provide a concise description of contents; do not provide descriptions for generic files like package.json or configs: describe with "Ditto".
-- **Maintain when files or layout in this area change.**
-
 ## Coverage
 
 - `references/effect-smol/`
