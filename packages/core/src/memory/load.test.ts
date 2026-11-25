@@ -14,6 +14,7 @@ vi.mock("node:fs/promises", async () => {
     readdir: memoryFileSystem.promises.readdir,
     readFile: memoryFileSystem.promises.readFile,
     stat: memoryFileSystem.promises.stat,
+    writeFile: memoryFileSystem.promises.writeFile,
   };
 });
 
@@ -40,6 +41,8 @@ test("loads an empty memory snapshot when all optional paths are absent", async 
     shared: { ok: true, value: { exists: false } },
     user: { ok: true, value: { exists: false } },
     private: { ok: true, value: { exists: false } },
+    settings: { preamble: { beta: false } },
+    unparseableSettingsPath: null,
   });
 });
 

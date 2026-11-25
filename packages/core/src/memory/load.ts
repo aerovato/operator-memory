@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 
 import type { Result } from "../utils.ts";
+import { loadSettings, type Settings } from "../settings.ts";
 import type { MemoryLoadError } from "./common.ts";
 import {
   loadProjectPartition,
@@ -19,13 +20,22 @@ export type MemorySnapshot = {
   readonly shared: Result<ProjectPartitionSnapshot, MemoryLoadError>;
   readonly user: Result<UserPartitionSnapshot, MemoryLoadError>;
   readonly private: Result<ProjectPartitionSnapshot, MemoryLoadError>;
+  readonly settings: Settings;
+  readonly unparseableSettingsPath: string | null;
 };
 
 export type MemoryStatusSnapshot = {
-  readonly shared: Result<ProjectPartitionStatusSnapshot, MemoryLoadError>;
-  readonly user: Result<UserPartitionStatusSnapshot, MemoryLoadError>;
-  readonly private: Result<ProjectPartitionStatusSnapshot, MemoryLoadError>;
+  readonly shared: PartitionResult;
+  readonly user: PartitionResult;
+  readonly private: PartitionResult;
+  readonly settings: Settings;
+  readonly unparseableSettingsPath: string | null;
 };
+
+export type PartitionResult = Result<
+  ProjectPartitionStatusSnapshot | UserPartitionStatusSnapshot,
+  MemoryLoadError
+>;
 
 export function loadMemorySnapshot(
   projectDirectory: string,
@@ -48,18 +58,20 @@ export async function loadMemorySnapshot(
   const privateRoot = resolve(projectDirectory, PROJECT_PRIVATE_ROOT);
 
   if (!loadFiles) {
-    const [shared, user, privatePartition] = await Promise.all([
+    const [settings, shared, user, privatePartition] = await Promise.all([
+      loadSettings(homeDirectory),
       loadProjectPartition(sharedRoot, false),
       loadUserPartition(userRoot, false),
       loadProjectPartition(privateRoot, false),
     ]);
-    return { shared, user, private: privatePartition };
+    return { shared, user, private: privatePartition, ...settings };
   }
 
-  const [shared, user, privatePartition] = await Promise.all([
+  const [settings, shared, user, privatePartition] = await Promise.all([
+    loadSettings(homeDirectory),
     loadProjectPartition(sharedRoot, true),
     loadUserPartition(userRoot, true),
     loadProjectPartition(privateRoot, true),
   ]);
-  return { shared, user, private: privatePartition };
+  return { shared, user, private: privatePartition, ...settings };
 }

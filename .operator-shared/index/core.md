@@ -32,19 +32,22 @@ Read-only memory module with no barrel export.
 - `frontmatter.ts` — Project Index frontmatter types and non-throwing parser enforcing non-empty required metadata
 - `project.ts` — Project partition structural status/full loading and recursive index discovery
 - `user.ts` — User partition structural status/full loading
-- `load.ts` — Concurrent overloaded status-only or full per-partition snapshot orchestration
+- `load.ts` — Concurrent overloaded status-only or full per-partition snapshot orchestration, including settings
 - `load.test.ts` — Memfs-backed status, empty, complete, malformed-frontmatter, ordering, and independent obstruction coverage
 
 ### `packages/core/src/`
 
-- `preamble.ts` — Renderer for v2.0 guidance, all-or-nothing memory injection, recovery diagnostics, and setup warnings
-- `preamble.test.ts` — Guidance, memory injection, recovery diagnostic, index formatting, warning, and deterministic rendering coverage
-- `preamble-rollout.ts`, `preamble-rollout.test.ts` — Infrastructure for A/B testing preambles: version selection (currently always v2.0), stable percentage assignment, OS identity reads, and fallback coverage
+- `settings.ts` — Settings schema, `defaultSettings`, and `~/.operator/settings.json` loading with silent repair of unknown or invalid keys
+- `settings.test.ts` — Memfs-backed missing, sparse, valid, repaired, rewritten, and unparseable settings coverage
+- `preamble.ts` — Renderer for v2.0 and v2.1 guidance, all-or-nothing memory injection, recovery diagnostics, and setup and settings warnings
+- `preamble.test.ts` — Guidance, memory injection, recovery diagnostic, index formatting, warning, settings, and deterministic rendering coverage
+- `preamble-rollout.ts`, `preamble-rollout.test.ts` — Infrastructure for A/B testing preambles: version selection (settings override, then a 20 percent v2.1 split), stable percentage assignment, OS identity reads, and fallback coverage
 - `utils.ts` — Generic result, type-guard, and error utilities shared across core modules
 
 #### `packages/core/src/prompts/`
 
 - `preamble-v2.ts` — v2.0 Operator guidance and tenets; embeds core document templates
+- `preamble-v2-1.ts` — v2.1 candidate guidance and tenets for the active rollout; differs from v2.0 only in Project Index wording
 
 #### `packages/core/src/templates/`
 

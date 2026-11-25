@@ -22,6 +22,15 @@ export const memoryCheck = Effect.fn("memoryCheck")(function* (context: CliConte
     );
   }
 
+  if (snapshot.unparseableSettingsPath !== null) {
+    failed = true;
+    lines.push(
+      "✗ Settings: Error",
+      `    Path: ${snapshot.unparseableSettingsPath}`,
+      "    Cause: File is not valid JSON; default settings are in use",
+    );
+  }
+
   if (!failed) {
     lines.push("\nNo memory load failures detected.");
   }

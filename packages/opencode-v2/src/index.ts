@@ -2,7 +2,7 @@ import { homedir } from "node:os";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { loadMemorySnapshot, type MemoryStatusSnapshot } from "@aerovato/operator-core/memory/load";
+import { type PartitionResult, loadMemorySnapshot } from "@aerovato/operator-core/memory/load";
 import { Plugin } from "@opencode/plugin";
 import { pluginId } from "./id.ts";
 
@@ -78,9 +78,7 @@ async function loadStatus(projectDirectory: string): Promise<OperatorStatus> {
   };
 }
 
-function partitionStatus(
-  partition: MemoryStatusSnapshot[keyof MemoryStatusSnapshot],
-): PartitionStatus {
+function partitionStatus(partition: PartitionResult): PartitionStatus {
   if (!partition.ok) return "error";
   return partition.value.exists ? "loaded" : "uninitialized";
 }

@@ -16,7 +16,7 @@ Inside each partition, four kinds of content cooperate:
 
 - Operator Instructions (`operator.md`) carry standing rules for how the agent works in that scope — `AGENTS.md`, but more powerful. When instructions conflict, the hierarchy is: Private > User > Shared.
 - Partition Catalogs (`catalog.md`) map that partition's knowledge: what each document covers and when to open it.
-- Project Indexes (`index/`) map the codebase itself so the agent can navigate source without rediscovering the layout. Catalogs map Brain knowledge; indexes map code.
+- Project Indexes (`index/`) map the project itself — code, documents, and other files — so the agent can navigate it without rediscovering the layout. Catalogs map Brain knowledge; indexes map the project.
 - Freeform documents are everything else — specifications, plans, research, guides — read on demand through catalog guidance.
 
 At the start of every conversation, Operator loads a short preamble: Operator Guidance (fixed framework rules), Operator Instructions merged by authority, Partition Catalogs, and the Main Project Index. Everything deeper stays on disk, read only when the task calls for it.

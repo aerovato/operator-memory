@@ -16,6 +16,7 @@ read_if: …
 - \`package.json\` — Ditto
 - \`README.md\` — Ditto
 - \`irrelevant/\` — Irrelevant directory; do not list files
+- \`assets/\` — Binary files such as images and fonts; one entry per folder, described by filename
 
 ### \`src/\` — Concise description of contents
 

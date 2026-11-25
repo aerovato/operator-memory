@@ -3,13 +3,20 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { platform } from "node:os";
 
-// Infrastructure for A/B testing preambles. No test is active, so every machine receives the
-// same version. To run a test, add the candidate version to the union and assign it with
-// `isRolloutAssigned` and `readMachineIdentity`.
-export type PreambleVersion = "2.0";
+// Infrastructure for A/B testing preambles. The v2.1 candidate is assigned to 20 percent of
+// machines; everyone else, and any machine without a readable identity, receives v2.0.
+// Enabling the beta preamble in the settings file opts a machine in regardless of the split.
+export type PreambleVersion = "2.0" | "2.1";
 
-export function selectPreambleVersion(): PreambleVersion {
-  return "2.0";
+const V21_ROLLOUT_PERCENTAGE = 20;
+
+export function selectPreambleVersion(betaPreamble: boolean): PreambleVersion {
+  if (betaPreamble) {
+    return "2.1";
+  }
+
+  const identity = readMachineIdentity();
+  return identity !== null && isRolloutAssigned(identity, V21_ROLLOUT_PERCENTAGE) ? "2.1" : "2.0";
 }
 
 // Returns whether `identity` belongs to the assigned `percentage` (0-100) of a stable hash

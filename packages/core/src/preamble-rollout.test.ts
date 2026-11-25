@@ -18,11 +18,28 @@ beforeEach(() => {
   vi.mocked(platform).mockReturnValue("linux");
 });
 
-test("selects v2.0 without reading machine identity", () => {
-  expect(selectPreambleVersion()).toBe("2.0");
+test("the beta preamble setting bypasses machine identification", () => {
+  expect(selectPreambleVersion(true)).toBe("2.1");
   expect(platform).not.toHaveBeenCalled();
   expect(readFileSync).not.toHaveBeenCalled();
   expect(execFileSync).not.toHaveBeenCalled();
+});
+
+// Frozen v2.1 bucket boundaries: this identity hashes to bucket 19, the last assigned at 20 percent.
+test("assigns v2.1 to the 20 percent rollout bucket", () => {
+  vi.mocked(readFileSync).mockReturnValue("000000000000000000000000000000b9");
+  expect(selectPreambleVersion(false)).toBe("2.1");
+});
+
+// This identity hashes to bucket 20, the first outside the rollout.
+test("keeps v2.0 outside the rollout bucket", () => {
+  vi.mocked(readFileSync).mockReturnValue("000000000000000000000000000000a7");
+  expect(selectPreambleVersion(false)).toBe("2.0");
+});
+
+test("keeps v2.0 without a readable machine identity", () => {
+  vi.mocked(readFileSync).mockReturnValue("");
+  expect(selectPreambleVersion(false)).toBe("2.0");
 });
 
 test.each([

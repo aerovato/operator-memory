@@ -21,17 +21,17 @@ Before Phase 1, classify the repository once. Do not reclassify later.
 
 Quick scan only:
 
-- Top-level layout and whether there is substantive app or library code versus an empty, scaffolded, or template tree
+- Top-level layout and whether there is substantive project content (code, documents, data, media, or other files) versus an empty, scaffolded, or template tree
 - Whether agent-facing documentation exists (\`AGENTS.md\`, \`CLAUDE.md\`, \`specs/\`, \`memory/\`, \`CONTEXT.md\`, and similar)
 
 Set one label for the rest of this guide:
 
-- **greenfield** — new, empty, scaffolded, or lightly built project; little or no substantive application or library code; nothing worth migrating into the brain
-- **existing** — substantive code and/or agent-facing docs worth considering
+- **greenfield** — new, empty, scaffolded, or lightly built project; little or no substantive project content; nothing worth migrating into the brain
+- **existing** — substantive project content and/or agent-facing docs worth considering
 
 Greenfield defaults (apply for the whole run unless the user overrides):
 
-- If there is no project code, skip indexing.
+- If there is nothing substantive to map, skip indexing.
 
 ## Phase 1: Configure Instructions
 
@@ -64,13 +64,13 @@ After the user chooses:
 
 ## Phase 3: Index the Project
 
-Indexing starts within Project Init after migration without a separate opt-in or final confirmation. Skip if there is no project code. If the harness cannot delegate to subagents, leave the index untouched and report that limitation. The main agent does not write an index as a fallback.
+Indexing starts within Project Init after migration without a separate opt-in or final confirmation. Skip only when the project has nothing substantive to map; any file type counts. If the harness cannot delegate to subagents, leave the index untouched and report that limitation. The main agent does not write an index as a fallback.
 
 ### Plan and Delegate
 
-Use the repository scan already done during setup. Inspect the top-level layout and relevant manifests only as needed to decide the structure. Detailed exploration belongs to the workers.
+Use the repository scan already done during setup. Inspect the top-level layout, READMEs, and relevant manifests only as needed to decide the structure. Detailed exploration belongs to the workers.
 
-- The index covers the main project codebase, not the Brain or unrelated trees. Use the established sharing policy to select the destination. Keep existing private corpora separate from the publishable codebase. Default to Private when there is no policy or established destination; ask only if the available information leaves the destination unclear.
+- The index covers the main project content, not the Brain or unrelated trees. Use the established sharing policy to select the destination. Keep existing private corpora separate from the publishable content. Default to Private when there is no policy or established destination; ask only if the available information leaves the destination unclear.
 - Prefer one main index and no subindexes when it gives the project a clear map. Use subindexes for substantial areas with clear boundaries, not simply because there are many files. Preserve useful existing boundaries.
 - For a large project or a plan with multiple subindexes, present the proposed index files, their partitions, and their coverage in chat. Ask for approval or changes as a free-response prompt and wait for approval before dispatching workers. Straightforward plans proceed automatically.
 - Assign exactly one worker per index file, including the main index. Each worker owns one file and a distinct area of detailed coverage. The main-index worker covers project-wide architecture and navigation plus any paths not covered by a subindex.
@@ -86,7 +86,7 @@ Assignment
 - Kind and partition: {main or subindex; Private or Shared}
 - Coverage: {paths you own, any exclusions, and areas covered by other workers}
 
-Read the assigned index if it exists. Explore the assigned coverage using file and directory listings, manifests, READMEs, and entrypoints. Read source only when needed to understand architecture or describe a path accurately. Stay within the assigned coverage for detailed exploration.
+Read the assigned index if it exists. Explore the assigned coverage using file and directory listings, READMEs, manifests, and entrypoints where present. Open files only when needed to understand the structure or describe a path accurately. Read briefly, such as a snippet or the first page, instead of entire files, and never read large files such as PDFs, documents, or artifacts in full. Stay within the assigned coverage for detailed exploration.
 
 Follow the Project Index guidance and document shape in your fixed preamble. Preserve accurate entries, update stale ones, add missing coverage, and remove dead paths and placeholders. Group similar files, use Ditto for generic files, and use directory-only entries for large or low-value trees.
 
@@ -122,7 +122,7 @@ Give the user a concise report with three sections:
 
 ### Questions
 
-Ask whether the user wants anything changed: share selected content, add project instructions, or correct a finding. When offering sharing, briefly explain that Shared content can be tracked in Git alongside the code, so teammates and their agents can use the same project instructions, index, or docs. Private content stays local. No confirmation is required to finish Project Init.
+Ask whether the user wants anything changed: share selected content, add project instructions, or correct a finding. When offering sharing, briefly explain that Shared content can be tracked in Git alongside the project, so teammates and their agents can use the same project instructions, index, or docs. Private content stays local. No confirmation is required to finish Project Init.
 
 If the user wants to share, clarify which content they want in Shared. Create \`.operator-shared/\` only as needed, seed its contributor README from the embedded template if missing, and record the resulting policy in the applicable Operator Instructions. Update the affected files and maintain their catalogs automatically. If the user chooses to share the main index, follow the indexing rules to delegate moving its publishable coverage to Shared without duplicating it or exposing private-only paths.
 
@@ -131,7 +131,7 @@ If the user wants to share, clarify which content they want in Shared. Create \`
 Offer the next steps that apply once Project Init and any requested configuration changes are complete:
 
 - If indexing was blocked, identify what is needed to finish it, such as running Project Init in a harness that supports subagents.
-- For greenfield projects, offer a concrete step to get the project started, such as initializing a framework or installing dependencies. Do not start that work unless the user asks.
+- For greenfield projects, offer a concrete step to get the project started, such as initializing a framework or outlining the first document. Do not start that work unless the user asks.
 
 ## Canonical Seeds
 
