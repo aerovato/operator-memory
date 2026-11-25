@@ -1,6 +1,6 @@
 # Reference Implementation
 
-Last Updated: November 3, 2026
+Last Updated: November 25, 2026
 
 The complete adapter specification: what every harness adapter must do, and what the reference implementation looks like. Concrete bindings in `implementation.md` documents measure themselves against the Reference Implementation section, not against one another. A binding may deviate only through the accepted pathways defined here or through an explicitly recorded deviation.
 
@@ -87,27 +87,7 @@ Cross-cutting rules under both pathways:
 
 ### Commands
 
-Register `/operator:user-init` and `/operator:project-init` as dedicated commands that submit instructions to the agent in the current conversation. Preserve user-defined commands. Host-compatible slash names are acceptable; if command registration is unavailable, use user-selected skills. **The adapter must never execute Helper on behalf of the agent.**
-
-Each registration supplies this prompt, substituting its command description, operation, and workflow instruction:
-
-```text
-# {command description}
-
-1. Run `operator-helper version`. If an update is available, run `operator-helper upgrade` before continuing.
-2. Run `operator-helper {operation}`. {workflow instruction}
-
-## Recovery
-
-- If Helper cannot start, install or repair the npm package `@aerovato/operator-helper` globally and retry the failed command.
-- If the version check or upgrade fails, diagnose the error and retry.
-- If `operator-helper {operation}` reports a failure, use its output to resolve it and rerun it as needed.
-- If you cannot resolve a problem, report the blocker.
-
-Use Helper output as working context. Do not reproduce it wholesale or reimplement Helper logic.
-```
-
-- `user init`, `project init`: follow the corresponding emitted setup guide, including on operation failure.
+Register `/operator:user-init` and `/operator:project-init` as dedicated commands, or as explicitly invoked skills where command registration is unavailable. Each submits the [instruction prompt](../commands.md#command-prompt) to the agent in the current conversation. Preserve user-defined commands. **The adapter must never execute Helper on behalf of the agent.**
 
 ### Status UI
 

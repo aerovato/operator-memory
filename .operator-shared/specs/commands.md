@@ -1,6 +1,6 @@
 # Commands
 
-Last Updated: November 24, 2026
+Last Updated: November 25, 2026
 
 Agent-assisted configuration of User Instructions, the Project Brain, and the Project Index. Deterministic work lives in `operator-helper`; phased agent work lives in emitted guides; harness commands orchestrate both.
 
@@ -22,6 +22,26 @@ Each command hands the agent instructions in the current conversation without ex
 Helper output is agent working context, not reproduced or specially formatted for the user. Adapters use dedicated commands where supported and explicitly invoked skills otherwise.
 
 Helper setup operations include the applicable guide in their output.
+
+## Command Prompt
+
+Each registration supplies this prompt, substituting its command description, operation, and workflow instruction. For `user init` and `project init`, the workflow instruction is to follow the corresponding emitted setup guide, including on operation failure.
+
+```text
+# {command description}
+
+1. Run `operator-helper version`. If an update is available, run `operator-helper upgrade` before continuing.
+2. Run `operator-helper {operation}`. {workflow instruction}
+
+## Recovery
+
+- If Helper cannot start, install or repair the npm package `@aerovato/operator-helper` globally and retry the failed command.
+- If the version check or upgrade fails, diagnose the error and retry.
+- If `operator-helper {operation}` reports a failure, use its output to resolve it and rerun it as needed.
+- If you cannot resolve a problem, report the blocker.
+
+Use Helper output as working context. Do not reproduce it wholesale or reimplement Helper logic.
+```
 
 ## User Setup
 

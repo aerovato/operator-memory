@@ -1,6 +1,6 @@
 # Pi Adapter Implementation
 
-Last Updated: November 21, 2026
+Last Updated: November 25, 2026
 
 How `@aerovato/operator-pi` binds the general adapter contract with first-class Pi support. Command meaning and setup workflows stay in [`commands.md`](../commands.md) and [`../reference/implementation.md`](../reference/implementation.md). Behavioral deviations are recorded against the reference implementation, not other bindings.
 
@@ -42,7 +42,7 @@ Pi provides the same required Operator surfaces as the reference adapter:
 The extension registers both Operator setup command names directly. Each handler:
 
 1. Waits for the active turn to become idle.
-2. Sends the agent instructions through `pi.sendUserMessage(prompt, { expandPromptTemplates: false })` to check Helper's version, upgrade when outdated, run the requested workflow operation, and handle failures directly.
+2. Sends the [instruction prompt](../commands.md#command-prompt) through `pi.sendUserMessage(prompt, { expandPromptTemplates: false })`.
 
 The agent receives Helper results as tool output rather than framed command output.
 
@@ -66,11 +66,3 @@ Pathway selections: bundled-core resolution (bundled into the package with Pi's 
 - Pi renames colliding extension commands with numeric suffixes such as `:1`. Operator registers its exact command names and leaves collision handling to the harness.
 - Reference subagents are independent Pi child processes. Persistent global package-root or npm registration is inherited; temporary parent `-e` registration is not.
 - Global package extensions load regardless of project trust. Project-local resources remain subject to Pi's trust rules.
-
-## Verification
-
-- Pi unit coverage verifies pending-render coalescing, stable synthetic messages, canonical diagnostics, fatal aborts, session reset, footer lifecycle, both setup commands, and duplicate-name behavior.
-- Helper integration coverage verifies construction of `pi install npm:@aerovato/operator-pi` through a live child process.
-- The built npm package contains only `dist`, package metadata, and its README; `operator-core` is bundled with no runtime package import.
-- Pi 0.84.2 loads both the package root and built entry. The integration mechanism and differences were also verified against Pi 0.85.1 source.
-- Release validation should repeat model-boundary faux-provider coverage for retries, compaction, session replacement, `/reload`, and independently spawned subagents, plus isolated installation after the npm version exists.

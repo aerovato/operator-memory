@@ -1,6 +1,6 @@
 # Kiro Adapter Implementation
 
-Last Updated: November 21, 2026
+Last Updated: November 25, 2026
 
 How Operator binds the [reference adapter implementation](../reference/implementation.md) to Kiro IDE and CLI V3. The adapter is distributed through Helper as hook, steering, and skill files; there is no separate Kiro package. Core owns memory loading and rendering through Helper. Command meaning and setup workflows stay in [Commands](../commands.md).
 
@@ -41,9 +41,7 @@ Two explicitly invoked skills expose the Operator workflows:
 - `/operator-user-init`
 - `/operator-project-init`
 
-Each supplies the reference command instructions: check Helper's version, upgrade when outdated, run the corresponding workflow operation, and handle failures directly. The agent executes Helper in the current conversation. Skill descriptions restrict use to explicit user invocation; hyphenated names are the Kiro-compatible command names.
-
-Helper output remains agent working context. Skills do not duplicate Helper's setup, filesystem, Git, validation, or repair logic.
+Each supplies the [instruction prompt](../commands.md#command-prompt). Skill descriptions restrict use to explicit user invocation; hyphenated names are the Kiro-compatible command names.
 
 ## Installation and Updates
 
