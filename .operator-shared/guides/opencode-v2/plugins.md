@@ -97,8 +97,6 @@ The V1 adapter injected the preamble as an immutable synthetic first user messag
 - `ctx.session.hook("prompt", ...)` mutates admitted user prompts before durable inbox admission; edits become canonical persisted input — wrong tool for immutable preamble.
 - V2 `AGENTS.md` instruction discovery (global `~/.config/opencode/AGENTS.md` plus ambient files from cwd up to home, stopping at the project root outside home) is config-layer, not plugin-controlled.
 
-Any V2 adapter design must decide whether per-model-call system injection satisfies the Operator preamble contract in [`preamble.md`](../../specs/preamble.md).
-
 ## Publishing
 
 Package manifest with a `./rpc` export optional (shared RPC contract):
@@ -113,4 +111,4 @@ Package manifest with a `./rpc` export optional (shared RPC contract):
 }
 ```
 
-Pin a compatible stable V2 plugin API and test the installed package rather than only a workspace-linked copy. Earlier Operator V2 releases imported the pre-release `@opencode-ai/plugin` runtime and failed under OpenCode 2.0.14 with `Cannot find package '@opencode-ai/plugin'`; the source now targets `@opencode/plugin`. For TUI packages, externalize `solid-js` and `@opentui/*` from the build: inlining them creates a second renderer instance and causes `No renderer found` in UI slots.
+Pin a compatible stable V2 plugin API and test the installed package rather than only a workspace-linked copy. For TUI packages, externalize `solid-js` and `@opentui/*` from the build: inlining them creates a second renderer instance and causes `No renderer found` in UI slots.
