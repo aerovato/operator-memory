@@ -12,7 +12,7 @@ read_if: Working in packages/codex or changing Codex plugin packaging, preamble 
 ## Architecture
 
 - `@aerovato/operator-codex` is a dependency-free legacy-format Codex plugin because current Codex clients load lifecycle hooks only from that format.
-- One strictly typed, dependency-free launcher compiles to Node-compatible JavaScript and renders current memory through Helper for new or cleared sessions, post-compaction context, and delegated subagents; resume and fork retain prior injected history.
+- One strictly typed, dependency-free launcher compiles to Node-compatible JavaScript and renders current memory through Helper for new or cleared sessions, post-compaction context, delegated subagents, and verified empty-history recovery.
 - Two explicitly invoked plugin skills bind Codex-native interaction to one Helper operation for each setup workflow.
 - Local preview: `bun run build:codex && bun run preview:codex` generates a separate catalog under `.cache/codex-marketplace`, resets the prior `operator-local` registration through native removal, registers it via `codex plugin marketplace add` and installs or refreshes `aerovato@operator-local` through `codex plugin add`.
 
@@ -23,6 +23,7 @@ read_if: Working in packages/codex or changing Codex plugin packaging, preamble 
 - `assets/aerovato-research.jpg` - Aerovato Research profile image used for listing and composer branding.
 - `hooks/hooks.json` - Stable `SessionStart` and `SubagentStart` command-hook definitions with unlimited context output.
 - `src/hook.ts` - Typed lifecycle input validation, filtering, Helper preamble execution, unchanged successful output, and user-visible blocking failure output.
+- `src/rollout.ts` - Read-only recovery check for empty retained history on resume and fork.
 - `scripts/build.ts` - Clean minified Node ESM launcher build.
 - `skills/operator-user-init/`, `skills/operator-project-init/` - Explicit-only Operator setup skills and Codex invocation policy.
 - `test/commands.test.ts` - Executes the declared hook commands through native shells, checking paths with spaces, stdin/stdout/stderr, and success/failure exit codes.

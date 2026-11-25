@@ -1,19 +1,23 @@
 # Codex Adapter
 
-Last Updated: November 21, 2026
+Last Updated: November 25, 2026
 
 Codex CLI and Codex Desktop use the dependency-free `@aerovato/operator-codex` legacy plugin package. Shared memory rendering remains in Helper; the adapter only binds Codex lifecycle events to `operator-helper preamble`. Behavioral deviations are recorded against [`../reference/implementation.md`](../reference/implementation.md), not other bindings.
 
 ## Preamble Injection
 
 - `SessionStart` injects current memory for `startup`, `clear`, and `compact` sources.
-- `resume` and `fork` skip reinjection because their retained history already contains the prior preamble.
+- `resume` and `fork` restore the preamble when the local paginated transcript shows a new first turn with no retained history or Operator preamble. If prior history survives or the transcript cannot establish absence, the hook skips reinjection to prevent duplicates.
 - `SubagentStart` injects current memory for delegated `ThreadSpawn` subagents. Codex does not expose start hooks for internal workers.
 - Every render runs Helper with the event `cwd` and passes successful stdout to Codex unchanged with no context-output limit.
 - The adapter keeps no cache.
 - Hook definitions display a preamble-loading status and explain the command with a leading shell no-op on Unix (`: "…";`) and a leading Windows comment (`REM … &`).
 
 Codex is an explicit exception to the generic immutable-preamble contract. Codex cannot consistently restore context at the beginning after compaction or place the main thread's exact injected message at the beginning of a delegated thread. Compaction and delegated subagents therefore render current memory again and persist it as lifecycle-hook developer context.
+
+### First-turn revert workaround
+
+Upstream Codex persists the `SessionStart` developer message inside the first turn. Reverting that turn discards the message and reports the reload as an ordinary `resume`. Forking before the first turn also discards it. The hook payload provides no retained-context information, and Codex's conversation APIs omit developer messages. Operator uses the hook's `transcript_path` to check the current rollout and any inherited prefixes up to Codex's recorded cutoffs. This read-only check uses the transcript locally to decide whether to run Helper. It skips unavailable or unsupported histories, including compressed-only prefixes. Revisit the workaround if Codex exposes retained-context metadata or a plugin API for thread-scoped instructions.
 
 ## Failure
 
