@@ -1,7 +1,7 @@
 {
   "name": "operator",
   "displayName": "Operator Memory",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Durable project and user memory for agent-driven development in Claude Code.",
   "author": {
     "name": "Aerovato Research"
