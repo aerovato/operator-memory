@@ -1,6 +1,6 @@
 {
   "name": "@aerovato/operator-pi",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Operator Memory adapter for Pi.",
   "license": "BSD-3-Clause",
   "author": "Aerovato Research",
