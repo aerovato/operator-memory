@@ -1,6 +1,6 @@
 # OpenCode V2 Sessions and Messaging
 
-Last Updated: October 20, 2026
+Last Updated: November 25, 2026
 
 Verified from https://opencode.ai/v2/docs/build/plugins/ and `references/opencode-v2/` source.
 
@@ -40,6 +40,6 @@ One durably admitted input per `prompt` call. `delivery` controls promotion:
 ## Runtime Constraints for Plugins
 
 - Plugins cannot create arbitrary assistant messages. User-side injection uses `session.prompt`, `session.command`, or `session.synthetic`.
-- Persisted edits to admitted prompts become canonical user input via the `prompt` hook; there is no hook to append immutable synthetic first messages as V1's `experimental.chat.messages.transform` allowed.
+- Persisted edits to admitted prompts become canonical user input via the `prompt` hook; there is no hook to append synthetic messages to the model-boundary message list directly.
 - Model-boundary modification (system, messages, tools) is per-call only through the `context` hook and is never persisted.
 - Compaction is triggered via `session.compact` on the client tier; the `context` hook does not run for compaction requests.

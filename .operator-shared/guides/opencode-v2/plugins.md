@@ -50,7 +50,7 @@ await ctx.command.transform((editor) => {
 })
 ```
 
-The executor receives the session, prompt attachments, and requested delivery mode (`"steer" | "queue"`). This replaces V1's config-hook command registration.
+The executor receives the session, prompt attachments, and requested delivery mode (`"steer" | "queue"`).
 
 ## Other Context Methods
 
@@ -61,9 +61,9 @@ The executor receives the session, prompt attachments, and requested delivery mo
 
 ## Preamble Injection Mapping
 
-The V1 adapter injected the preamble as an immutable synthetic first user message via `experimental.chat.messages.transform`. V2 has no message-array transform hook. The V2 surfaces relevant to Operator:
+V2 has no message-array transform hook. The V2 surfaces relevant to Operator:
 
-- `ctx.session.hook("context", ...)` can `event.system.push({ type: "text", text })` immediately before model dispatch. It is not persisted, reruns per agent model call (including tool continuations), and does not run for title, generate, or compaction requests — unlike the V1 immutable-first-message contract. See [`hooks.md`](hooks.md).
+- `ctx.session.hook("context", ...)` can `event.system.push({ type: "text", text })` immediately before model dispatch. It is not persisted, reruns per agent model call (including tool continuations), and does not run for title, generate, or compaction requests. See [`hooks.md`](hooks.md).
 - `ctx.session.hook("prompt", ...)` mutates admitted user prompts before durable inbox admission; edits become canonical persisted input — wrong tool for immutable preamble.
 - V2 `AGENTS.md` instruction discovery (global `~/.config/opencode/AGENTS.md` plus ambient files from cwd up to home, stopping at the project root outside home) is config-layer, not plugin-controlled.
 
