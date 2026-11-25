@@ -1,10 +1,10 @@
-### Antigravity Skills and Operator Commands
+# Antigravity Skills and Operator Commands
 
 Last Updated: November 21, 2026
 
 Skills are the native explicit-command surface for this binding. Namespacing, full-body expansion, and autonomous suppression are verified on CLI `1.3.3`; graphical equivalents and exact canonical-name collisions remain unverified.
 
-#### Format and Discovery
+## Format and Discovery
 
 A skill directory contains `SKILL.md` and optional scripts/resources. Frontmatter requires `description`; `name` is optional, defaults to the directory, and is documented as lowercase/hyphenated. Discovery exposes names/descriptions; activation loads the body.
 
@@ -20,19 +20,19 @@ Skill instructions go here.
 
 Workspace discovery uses `.agents/skills/<name>/`; legacy `.agent/skills` remains supported. Graphical global skills use `~/.gemini/config/skills/`; the reference lists CLI global skills under `~/.gemini/antigravity-cli/skills/`. Plugin-owned `skills/` is the bundle surface; actual cross-application discovery remains unverified.
 
-#### Namespacing and Explicit Invocation
+## Namespacing and Explicit Invocation
 
 CLI exposes discovered skills as slash commands, including in print mode. Antigravity 2.0 documents manual skill invocation. `--disable-slash-commands` disables print-mode expansion.
 
 An `operator` plugin with unprefixed `user-init` and `project-init` skills exposes `/operator:user-init` and `/operator:project-init`. Explicit activation expands the complete skill body into the current conversation. **Do not pre-prefix skill names or directories.**
 
-#### Model-Invocation Controls
+## Model-Invocation Controls
 
 `disable-model-invocation: true` suppresses autonomous model activation while preserving explicit slash invocation on tested CLI. It is recognized natively despite omission from the main web reference. It is not a prohibition on manually reading a skill file.
 
 `disable-slash-command: true` instead hides the explicit command while leaving model invocation available—the opposite control. A restrictive description alone is not harness-enforced suppression.
 
-#### Operator Workflow Handoff
+## Operator Workflow Handoff
 
 Skill bodies follow the [reference command prompt](../../specs/reference/implementation.md#commands) and [workflow contract](../../specs/commands.md), not shell expansion or hook-side setup:
 
@@ -42,17 +42,17 @@ Skill bodies follow the [reference command prompt](../../specs/reference/impleme
 
 Preamble rendering is separate: a hook can run `operator-helper preamble`, but must not execute setup workflows on the agent's behalf. Full sentinel-body expansion is verified; actual production setup-body execution is not.
 
-#### Reload and Workflow Migration
+## Reload and Workflow Migration
 
 `/skills reload` refreshes discovery without restarting; it does not establish hook-code reload or invalidate the session preamble. Legacy IDE workflows stop working on **October 19, 2026**, according to the workflow reference, which directs migration to Agent Skills. Do not build a new adapter on `.agent/workflows`. Its 12,000-character limit is not a skill/hook output limit.
 
-#### Verification Notes
+## Verification Notes
 
 - An earlier `operator` fixture included repair and index skills. All four skills expanded their full sentinel bodies without hook-side setup. A workspace skill and a plugin skill with the same basename were invoked independently.
 - `/skills` reported `model_invocable: false` for all four skills with `disable-model-invocation: true`; explicit commands still expanded. This verifies the CLI gate, not graphical behavior or prevention of ordinary file reads.
 - Release changes: `1.1.9` print-mode expansion; `1.1.12` slash hiding; `1.2.4` reload; `1.2.7` double-prefix and plugin-collision fixes. Historical reference pages omit some supported frontmatter and illustrate bare names.
 
-#### Sources
+## Sources
 
 - [Skills](https://antigravity.google/docs/skills), [Plugins](https://antigravity.google/docs/plugins), [IDE workflows](https://antigravity.google/docs/ide/workflows), [Headless](https://antigravity.google/docs/cli/headless).
 - [Pinned CLI release notes](https://github.com/google-antigravity/antigravity-cli/blob/800852ea61796e9fe53077a2f945e74daacb4be6/CHANGELOG.md).
