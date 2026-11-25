@@ -16,9 +16,29 @@ Fixed guidance and tenets are a paired version; their opening XML tags carry mat
 
 An A/B test is active: v2.1 is assigned to 20 percent of machines and v2.0 to the rest. v2.0 is the control; the candidate lives in `prompts/preamble-v2-1.ts`. v2.1 differs only in index wording: the Project Index is described as a map of project content of any file type instead of a codebase, and the missing-index warning triggers on substantive project content instead of project code. The index template is shared by both versions and includes an `assets/` entry showing that non-text files are indexable.
 
-Core retains `selectPreambleVersion`, `isRolloutAssigned`, and `readMachineIdentity` as permanent infrastructure. `PreambleVersion` is `"2.0" | "2.1"`. Selection reads the machine identity on each render: a machine in the assigned 20 percent receives v2.1; any machine without a readable identity receives v2.0. Selection applies when rendering, without replacing already-injected session content.
+Core retains `selectPreambleVersion`, `isRolloutAssigned`, and `readMachineIdentity` as permanent infrastructure. `PreambleVersion` is `"2.0" | "2.1"`. Selection applies when rendering, without replacing already-injected session content: `preamble.beta` in the settings file returns the candidate without reading machine identity. Otherwise selection reads the machine identity on each render: a machine in the assigned 20 percent receives v2.1; any machine without a readable identity receives v2.0.
 
-The `OPERATOR_PREAMBLE_BETA` environment variable is permanent infrastructure alongside the rollout split and is never retired, even when no test is active. When its value is exactly `1`, selection returns the candidate version without reading machine identity; any other value leaves the split in effect. Each new candidate version replaces the previous one behind the flag.
+The `OPERATOR_PREAMBLE_BETA` environment variable is retired. The settings file `~/.operator/settings.json` is the source of truth for overriding the split and is validated with Zod against the `Settings` shape in `@aerovato/operator-core`. Its path derives from the home directory `loadMemorySnapshot` receives; no location override exists.
+
+```json
+{
+  "preamble": {
+    "beta": true
+  }
+}
+```
+
+`preamble.beta` selects the candidate regardless of the split; each new candidate version replaces the previous one behind it. Any value other than `true` leaves the split in effect.
+
+Loading behavior:
+
+- A missing file is normal and yields `defaultSettings`; nothing is written.
+- The effective settings are `defaultSettings` merged with the user's settings: a sparse file is valid and missing keys take their defaults. Defaults are never written into the file.
+- Unknown keys and invalid values are removed from the file during load, keeping every valid setting. A file that is valid JSON but not an object is rewritten to `{}`.
+- A file that is not valid JSON is left untouched and default settings apply. The memory snapshot records its path, the preamble adds a warning telling the agent to inform the user once and offer a fix without rewriting the file unasked, and `operator-helper memory check` reports it as a failure.
+- A settings problem is never a partition load failure and never triggers the load diagnostic.
+
+Settings are loaded in both snapshot modes and travel with `MemorySnapshot` and `MemoryStatusSnapshot` as `settings` and `unparseableSettingsPath`.
 
 `isRolloutAssigned(identity, percentage)` hashes the identity with SHA-256, interprets the first four digest bytes as an unsigned big-endian integer, takes modulo 100, and returns true below `percentage` (0–100). The same identity and percentage always give the same result; keep the hash input unchanged for the duration of an active rollout.
 
@@ -80,5 +100,6 @@ Inject full catalog bodies when present in Shared then Private order. Catalogs a
 - If neither project partition root exists, tell the agent to ask for `/operator:project-init` before significant project work, but not when the user is merely exploring.
 - If a Project Brain exists but neither partition has a main index, tell the agent to offer to build it directly when there is project code and Project Init is not already running.
 - If a Project Brain exists but neither catalog exists, tell the agent to create and maintain a catalog for non-empty brain partitions.
+- If the settings file is not valid JSON, tell the agent that default settings are in use, to inform the user once, and to offer a fix without rewriting the file unless the user approves.
 
 Warnings are conditional injection, not part of the fixed prompt.

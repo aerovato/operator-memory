@@ -1,10 +1,11 @@
+import type { MemoryLoadError } from "./memory/common.ts";
 import type { MemorySnapshot } from "./memory/load.ts";
 import type { IndexDocument, ProjectPartitionSnapshot } from "./memory/project.ts";
 import type { UserPartitionSnapshot } from "./memory/user.ts";
 import { PREAMBLE_PROMPT, PREAMBLE_TENETS } from "./prompts/preamble-v2.ts";
 import { PREAMBLE_PROMPT_V21, PREAMBLE_TENETS_V21 } from "./prompts/preamble-v2-1.ts";
 import { type PreambleVersion, selectPreambleVersion } from "./preamble-rollout.ts";
-import { getErrorMessage } from "./utils.ts";
+import { getErrorMessage, type Result } from "./utils.ts";
 
 type PreambleText = {
   readonly prompt: string;
@@ -12,7 +13,7 @@ type PreambleText = {
   readonly missingIndexCondition: string;
 };
 
-// v2.0 stays byte-frozen as the control for the v2.1 rollout.
+// v2.0 is the control for the v2.1 rollout.
 const PREAMBLES: Record<PreambleVersion, PreambleText> = {
   "2.0": {
     prompt: PREAMBLE_PROMPT,
@@ -43,7 +44,7 @@ type LoadedMemorySnapshot = {
 };
 
 export function renderPreamble(memory: MemorySnapshot): RenderedPreamble {
-  const preamble = PREAMBLES[selectPreambleVersion()];
+  const preamble = PREAMBLES[selectPreambleVersion(memory.settings.preamble.beta)];
   if (!memory.shared.ok || !memory.user.ok || !memory.private.ok) {
     return {
       content: `${preamble.prompt}\n\n${renderLoadDiagnostic(memory)}`,
@@ -112,6 +113,14 @@ Neither .operator/index/index.md nor .operator-shared/index/index.md exists. If 
     }
   }
 
+  if (memory.unparseableSettingsPath !== null) {
+    warnings.push(
+      `<operator-warning>
+${memory.unparseableSettingsPath} could not be parsed, so Operator is using default settings. Tell the user once and offer to fix the file. Do not rewrite or replace it unless the user approves.
+</operator-warning>`,
+    );
+  }
+
   sections.push(preamble.tenets);
   for (const warning of warnings) {
     sections.push(warning);
@@ -127,7 +136,7 @@ function hasMainIndex(memory: LoadedMemorySnapshot): boolean {
 }
 
 function renderLoadDiagnostic(memory: MemorySnapshot): string {
-  const status = (name: string, result: MemorySnapshot[keyof MemorySnapshot]): string =>
+  const status = (name: string, result: Result<unknown, MemoryLoadError>): string =>
     result.ok
       ? `- ${name}: Loaded Successfully`
       : `- ${name}: Error at ${result.error.path}: ${getErrorMessage(result.error.cause)}`;

@@ -5,13 +5,13 @@ import { platform } from "node:os";
 
 // Infrastructure for A/B testing preambles. The v2.1 candidate is assigned to 20 percent of
 // machines; everyone else, and any machine without a readable identity, receives v2.0.
-// `OPERATOR_PREAMBLE_BETA=1` opts a machine into the candidate regardless of the split.
+// Enabling the beta preamble in the settings file opts a machine in regardless of the split.
 export type PreambleVersion = "2.0" | "2.1";
 
 const V21_ROLLOUT_PERCENTAGE = 20;
 
-export function selectPreambleVersion(): PreambleVersion {
-  if (process.env.OPERATOR_PREAMBLE_BETA === "1") {
+export function selectPreambleVersion(betaPreamble: boolean): PreambleVersion {
+  if (betaPreamble) {
     return "2.1";
   }
 

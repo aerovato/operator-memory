@@ -1,22 +1,16 @@
-import { beforeEach, expect, test, vi } from "vitest";
+import { expect, test } from "vitest";
 
 import type { MemorySnapshot } from "./memory/load.ts";
 import type { ProjectPartitionSnapshot } from "./memory/project.ts";
 import type { UserPartitionSnapshot } from "./memory/user.ts";
 import { renderPreamble as renderMemoryPreamble } from "./preamble.ts";
-import { selectPreambleVersion } from "./preamble-rollout.ts";
 import { PREAMBLE_PROMPT, PREAMBLE_TENETS } from "./prompts/preamble-v2.ts";
 import { PREAMBLE_PROMPT_V21 } from "./prompts/preamble-v2-1.ts";
+import { defaultSettings, type Settings } from "./settings.ts";
 import { CATALOG_TEMPLATE } from "./templates/catalog.ts";
 import { PROJECT_INDEX_TEMPLATE } from "./templates/project-index.ts";
 import { PROJECT_SUBINDEX_TEMPLATE } from "./templates/project-subindex.ts";
 import { failure, success } from "./utils.ts";
-
-vi.mock("./preamble-rollout.ts", () => ({ selectPreambleVersion: vi.fn() }));
-
-beforeEach(() => {
-  vi.mocked(selectPreambleVersion).mockReturnValue("2.0");
-});
 
 test("embeds core document templates in fixed guidance", () => {
   expect(PREAMBLE_PROMPT).toContain(PROJECT_INDEX_TEMPLATE.trimEnd());
@@ -27,15 +21,14 @@ test("embeds core document templates in fixed guidance", () => {
   expect(PREAMBLE_PROMPT_V21).toContain(CATALOG_TEMPLATE.trimEnd());
 });
 
-test("renders the v2.1 candidate for assigned machines", () => {
+test("renders the v2.1 candidate when the beta preamble is enabled", () => {
   const memory: LoadedMemorySnapshot = {
     shared: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
     user: { exists: false, operatorInstructions: null, catalog: null },
     private: { exists: true, operatorInstructions: null, catalog: "catalog", indexes: [] },
   };
-  vi.mocked(selectPreambleVersion).mockReturnValue("2.1");
 
-  const preamble = renderPreamble(memory);
+  const preamble = renderSnapshot(memory, { preamble: { beta: true } }, null);
 
   expect(preamble).toContain('<operator-guidance version="2.1">');
   expect(preamble).toContain('<operator-tenets version="2.1">');
@@ -44,6 +37,22 @@ test("renders the v2.1 candidate for assigned machines", () => {
     "If the project has substantive content and the user is not already running Project Init",
   );
   expect(preamble).toContain("- `assets/` — Binary files such as images and fonts");
+});
+
+test("warns about an unparseable settings file without blocking memory", () => {
+  const memory: LoadedMemorySnapshot = {
+    shared: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
+    user: { exists: true, operatorInstructions: "user instructions", catalog: null },
+    private: { exists: false, operatorInstructions: null, catalog: null, indexes: [] },
+  };
+
+  const preamble = renderSnapshot(memory, defaultSettings, "/home/.operator/settings.json");
+
+  expect(preamble).toContain(
+    "/home/.operator/settings.json could not be parsed, so Operator is using default settings.",
+  );
+  expect(preamble).toContain("user instructions");
+  expect(preamble.indexOf(PREAMBLE_TENETS)).toBeLessThan(preamble.indexOf("<operator-warning>"));
 });
 
 test("renders fixed v2.0 guidance and the missing-catalog warning for empty memory", () => {
@@ -331,6 +340,8 @@ test("renders v2.0 guidance and only recovery diagnostics on load failure", () =
     }),
     user: failure({ path: "/home/.operator/user/operator.md", cause: new Error("denied") }),
     private: failure({ path: "/project/.operator/index", cause: new Error("obstructed") }),
+    settings: defaultSettings,
+    unparseableSettingsPath: null,
   });
 
   expect(rendered.loaded).toBe(false);
@@ -363,10 +374,20 @@ type LoadedMemorySnapshot = {
 };
 
 function renderPreamble(memory: LoadedMemorySnapshot): string {
+  return renderSnapshot(memory, defaultSettings, null);
+}
+
+function renderSnapshot(
+  memory: LoadedMemorySnapshot,
+  settings: Settings,
+  unparseableSettingsPath: string | null,
+): string {
   const snapshot: MemorySnapshot = {
     shared: success(memory.shared),
     user: success(memory.user),
     private: success(memory.private),
+    settings,
+    unparseableSettingsPath,
   };
   return renderMemoryPreamble(snapshot).content;
 }

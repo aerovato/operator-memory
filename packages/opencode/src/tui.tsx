@@ -1,6 +1,6 @@
 import { homedir } from "node:os";
 
-import type { MemoryStatusSnapshot } from "@aerovato/operator-core/memory/load";
+import type { MemoryStatusSnapshot, PartitionResult } from "@aerovato/operator-core/memory/load";
 import { loadMemorySnapshot } from "@aerovato/operator-core/memory/load";
 import type {
   TuiPlugin,
@@ -11,7 +11,7 @@ import type {
 import { createEffect, Show } from "solid-js";
 import { createStore } from "solid-js/store";
 
-type PartitionStatus = MemoryStatusSnapshot[keyof MemoryStatusSnapshot];
+type PartitionStatus = PartitionResult;
 
 const PACKAGE_NAME = "@aerovato/operator-opencode";
 
@@ -76,7 +76,10 @@ const tui: TuiPlugin = async (api, _options, meta) => {
           api.state.session.get(props.session_id)?.directory ?? api.state.path.directory;
         const hasError = () => {
           const snapshot = snapshots[directory()];
-          return snapshot !== undefined && Object.values(snapshot).some(status => !status.ok);
+          return (
+            snapshot !== undefined
+            && [snapshot.shared, snapshot.user, snapshot.private].some(status => !status.ok)
+          );
         };
         createEffect(() => {
           const current = directory();
