@@ -1,6 +1,6 @@
 # Codex Commands and Skills
 
-Last Updated: November 3, 2026
+Last Updated: November 25, 2026
 
 Verified command, skill, invocation, and script-execution facilities.
 
@@ -55,19 +55,6 @@ Relevant built-in commands include:
 
 Codex Desktop has its own documented slash-command set. Skills can appear in its command discovery, but no official plugin field assigns a custom namespaced slash command.
 
-## Deprecated Custom Prompts
-
-Custom prompts turn top-level Markdown files under `~/.codex/prompts/` into `/prompts:<name>` commands. They:
-
-- Require explicit invocation.
-- Are documented for Codex CLI and IDE.
-- Are local to the user's Codex home.
-- Are not shared through a repository.
-- Require a restart or new session after changes.
-- Are deprecated in favor of skills.
-
-Custom prompts support frontmatter descriptions, argument hints, positional arguments, named arguments, and `$ARGUMENTS` expansion.
-
 ## Skill Scripts and Approval
 
 Skills can include scripts for deterministic behavior. In the current source revision the separate skill-script approval path has been removed; skill scripts run under the turn's normal sandbox and command-approval policy, the same as any agent shell command. Writes outside the active workspace, including user-global files, therefore use the normal sandbox and approval flow.
@@ -80,4 +67,3 @@ Skills can include scripts for deterministic behavior. In the current source rev
 - [Skills and plugins](https://learn.chatgpt.com/docs/skills-and-plugins)
 - [Developer commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli)
 - [Desktop slash commands](https://learn.chatgpt.com/docs/reference/slash-commands)
-- [Custom prompts](https://learn.chatgpt.com/docs/custom-prompts)

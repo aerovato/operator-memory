@@ -68,13 +68,13 @@ Repository-wide Operator product knowledge published with the project.
   - Description: Claude Code guides: injection surfaces, settings hooks, commands, plugins, the mod API, and installation pathways.
   - Read If: Implementing the Operator Claude Code adapter or researching its plugin or mod API.
 - `codex/`
-  - Description: Codex guides: hooks, plugins, file formats, skills, context facilities, and surfaces.
+  - Description: Codex guides: surfaces, hooks, plugins, file formats, and skills.
   - Read If: Implementing the Operator Codex adapter or researching Codex hooks, plugins, or skills.
 - `deepseek/`
   - Description: DeepSeek Harness guides: runtime and prompt seams, plugins and commands, and profile installation.
   - Read If: Implementing the Operator DeepSeek Harness adapter.
 - `kiro/`
-  - Description: Kiro guides: surfaces, hooks, steering, skills, powers, subagents, and verified V3 injection behavior (`injection.md`).
+  - Description: Kiro guides: surfaces, hooks, steering, skills, powers, and verified V3 injection behavior (`injection.md`).
   - Read If: Implementing the Operator Kiro adapter or checking verified Kiro V3 behavior.
 - `opencode-v2/`
   - Description: OpenCode V2 guides: plugins, hooks, sessions, TUI, and installation.

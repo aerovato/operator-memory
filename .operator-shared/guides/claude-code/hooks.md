@@ -1,8 +1,8 @@
 # Claude Code Hooks
 
-Last Updated: November 3, 2026
+Last Updated: November 25, 2026
 
-Settings-hook system reference.
+Settings-hook system reference. Operator injects through mods (see [`mods.md`](./mods.md)); this covers the host behavior behind `classic.<Event>` and the `SubagentStart` fallback.
 
 ## Configuration formats
 
@@ -10,19 +10,12 @@ Plugin hooks live in `hooks/hooks.json` (path overridable via the manifest `hook
 
 ```json
 {
-  "description": "Operator preamble injection",
+  "description": "Session context hook",
   "hooks": {
     "SessionStart": [
       {
         "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "operator-helper",
-            "args": ["preamble"],
-            "timeout": 30
-          }
-        ]
+        "hooks": [{ "type": "command", "command": "operator-helper", "args": ["preamble"], "timeout": 30 }]
       }
     ]
   }
@@ -31,13 +24,11 @@ Plugin hooks live in `hooks/hooks.json` (path overridable via the manifest `hook
 
 Settings files (`~/.claude/settings.json`, `.claude/settings.json`, `.claude/settings.local.json`, managed policy) use the direct format without the wrapper. Plugin hooks merge with settings hooks and run in parallel; there is no ordering guarantee between hooks.
 
-Hooks are loaded at session start; configuration changes require a restart or `/reload-plugins`. `/hooks` lists loaded hooks; `claude --debug` logs registration and execution.
+Hooks are loaded at session start; configuration changes require a restart or `/reload-plugins`. `/hooks` lists loaded hooks.
 
-## Handler types
+## Command handlers
 
-Five types: `command` (shell), `http` (POST JSON, same output schema), `mcp_tool`, `prompt` (single-turn LLM evaluation), `agent` (experimental subagent). Operator needs only `command`.
-
-### Command handlers: exec form vs shell form
+Five handler types exist (`command`, `http`, `mcp_tool`, `prompt`, `agent`); Operator needs only `command`.
 
 - Exec form (`args` present): `command` resolves as an executable, spawned directly; each `args` element is one argument, no shell. Preferred whenever referencing path placeholders — no quoting hazards
 - Shell form (`args` absent): string passed to `sh -c` (or PowerShell on Windows). Needed only for pipes and `&&`
@@ -71,16 +62,3 @@ Stdout must contain only the JSON object. `additionalContext`/`systemMessage`/pl
 - `disableAllHooks: true` disables all non-managed hooks; `--bare` and `--safe-mode` skip them for a run
 - Workspace trust gates project-scope hooks and frontmatter hooks in untrusted folders
 - Built-in `sec-default` mod guards org-managed configuration from installed plugins
-
-An Operator install can be silently hook-less under managed policy.
-
-## Testing
-
-Feed sample stdin JSON directly to the handler script and check exit code and stdout JSON:
-
-```bash
-echo '{"session_id":"t","cwd":"/proj","hook_event_name":"SessionStart","source":"startup"}' \
-  | operator-helper preamble
-```
-
-`claude plugin validate <dir>` statically validates the plugin including its hook configuration, and `claude --debug` shows live hook execution.

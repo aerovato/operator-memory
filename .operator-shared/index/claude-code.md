@@ -11,7 +11,7 @@ read_if: Working in packages/claude-code
 
 ## Architecture
 
-- Runtime injection uses Helper subprocess output; explicitly invoked skills hand setup and indexing workflows to the agent.
+- Runtime injection uses Helper subprocess output; explicitly invoked skills hand the two setup workflows to the agent.
 - Bun builds the mod entrypoint into a self-contained ESM `hooks/register.js`.
 
 ## `packages/claude-code` Index

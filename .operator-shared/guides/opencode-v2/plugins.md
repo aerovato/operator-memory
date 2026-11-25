@@ -1,6 +1,6 @@
 # OpenCode Plugin Development
 
-Last Updated: November 3, 2026
+Last Updated: November 25, 2026
 
 Verified from https://opencode.ai/v2/docs/build/plugins/ and `references/opencode-v2/` source. Hooks detail in [`hooks.md`](hooks.md), sessions and messaging in [`sessions.md`](sessions.md), TUI plugins in [`tui.md`](tui.md), installation and local development in [`installation.md`](installation.md).
 
@@ -34,35 +34,7 @@ Two parallel variants share the same interfaces: `@opencode/plugin` (Promise) an
 - Entries process in order; `-` prefix disables, `*` matches all, `.*` matches an ID prefix, a later ID re-enables.
 - A `plugins/` directory beside a project-root `opencode.json(c)` is not auto-discovered; only `.opencode/plugins/` is.
 
-## Transforms
-
-Transforms are the central mutation pattern. Register on a domain; each transform builds on changes made by earlier plugins. Call `reload()` on the domain after external state captured by the transform changes; reload replays every active transform in registration order without rerunning plugin `setup`.
-
-Domains with transforms: `agent` (list/get/default/update/remove), `provider` (source and settings), `model` (active models and default), `command` (`editor.add`), `integration` (+ auth methods), `mcp` (`editor.set/update/remove`, `disabled` reconciles lifecycle), `reference` (local and Git reference sources), `skill` (`editor.add` with inline `content` and `location`), `tool` (see below), `vcs` (custom VCS providers), `websearch` (providers, `default.set(false)` disables).
-
-Tool registration specifics:
-
-```ts
-const registration = await ctx.tool.transform((draft) => {
-  draft.namespace({ name: "acme", description: "..." })
-  draft.add({
-    name: "greeting",
-    description: "...",
-    input: { type: "object", properties: { /* ... */ }, required: [], additionalProperties: false },
-    options: { namespace: "acme" },
-    execute: async (input, tool) => {
-      await tool.progress({ status: "..." })
-      return { content: "result" }
-    },
-  })
-})
-```
-
-- Transform callbacks are synchronous even in Promise plugins; load external data before registering or reloading.
-- Effective names namespace as `acme_greeting` (dots and unsupported characters become `_`). Later valid registrations for the same effective name override earlier ones.
-- `update`/`remove` use the effective name; updates preserve name/namespace and replace schemas/options wholesale.
-- Disposing a registration removes its transform and rebuilds from the rest; plugin unload disposes its registrations.
-- Each model request captures a tool snapshot; reload/disposal affect future snapshots only.
+Commands register through the `command` transform's `editor.add`. Transform callbacks are synchronous even in Promise plugins, so load external data before registering. Disposing a registration rebuilds from the rest; plugin unload disposes its registrations.
 
 ## Commands
 
@@ -83,11 +55,9 @@ The executor receives the session, prompt attachments, and requested delivery mo
 ## Other Context Methods
 
 - `ctx.session` — create/get/context/prompt/generate/command/synthetic/switchAgent/switchModel/interrupt/rename/wait. See [`sessions.md`](sessions.md).
-- `ctx.permission` — `list`/`get`/`reply` on pending permission requests.
 - `ctx.generate.text({ model, prompt })` — one-off model text without a session, tools, or history.
 - `ctx.storage` — durable plugin-scoped JSON (`get`/`set`/`remove`/`scan` with prefix and cursor pagination).
 - `ctx.event.subscribe({ signal })` — async iterable of public server events (`V2EventEncoded`). Abort the stream during cleanup.
-- `ctx.integration`, `ctx.vcs`, `ctx.websearch` — see docs reference.
 
 ## Preamble Injection Mapping
 

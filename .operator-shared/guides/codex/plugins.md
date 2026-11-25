@@ -1,6 +1,6 @@
 # OpenAI Plugins
 
-Last Updated: November 4, 2026
+Last Updated: November 25, 2026
 
 Verified plugin packaging, distribution, installation, and update behavior.
 
@@ -100,7 +100,7 @@ Changed hook definitions require renewed trust because trust is tied to the defi
 
 ## Web Limits
 
-Publishing a plugin makes its listing discoverable on Web surfaces, but installing a plugin there does not deploy hook scripts into an execution environment. See [`web-research.md`](./web-research.md).
+Publishing a plugin makes its listing discoverable on Web surfaces, but installing a plugin there does not deploy hook scripts into an execution environment. Hosted Work does not read local Codex configuration.
 
 ## Sources
 
