@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 
 import type { MemorySnapshot } from "./memory/load.ts";
 import type { ProjectPartitionSnapshot } from "./memory/project.ts";
@@ -11,6 +11,10 @@ import { CATALOG_TEMPLATE } from "./templates/catalog.ts";
 import { PROJECT_INDEX_TEMPLATE } from "./templates/project-index.ts";
 import { PROJECT_SUBINDEX_TEMPLATE } from "./templates/project-subindex.ts";
 import { failure, success } from "./utils.ts";
+
+vi.mock("./preamble-rollout.ts", () => ({
+  selectPreambleVersion: (beta: boolean) => (beta ? "2.1" : "2.0"),
+}));
 
 test("embeds core document templates in fixed guidance", () => {
   expect(PREAMBLE_PROMPT).toContain(PROJECT_INDEX_TEMPLATE.trimEnd());
