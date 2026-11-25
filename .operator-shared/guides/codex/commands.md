@@ -57,7 +57,7 @@ Codex Desktop has its own documented slash-command set. Skills can appear in its
 
 ## Skill Scripts and Approval
 
-Skills can include scripts for deterministic behavior. In the current source revision the separate skill-script approval path has been removed; skill scripts run under the turn's normal sandbox and command-approval policy, the same as any agent shell command. Writes outside the active workspace, including user-global files, therefore use the normal sandbox and approval flow.
+Skills can include scripts for deterministic behavior. Skill scripts run under the turn's normal sandbox and command-approval policy, the same as any agent shell command. Writes outside the active workspace, including user-global files, therefore use the normal sandbox and approval flow.
 
 ## Sources
 
