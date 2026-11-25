@@ -2,9 +2,9 @@
 
 Last Updated: November 24, 2026
 
-The preamble gives the agent fixed Operator guidance and available durable Memory. Prefer a synthetic model-call contribution rendered once and held immutable for the session so its prefix remains cacheable. Persisted lifecycle injection and re-rendering are also fully acceptable, even when a non-persisted route exists; choose what fits the harness. A load failure produces the diagnostic instead of partial memory. Do not refresh on every turn merely to track Brain edits. See [`reference/implementation.md`](./reference/implementation.md) for adapter pathways.
+The preamble gives the agent fixed Operator guidance and available durable Memory. A load failure produces the diagnostic instead of partial memory. Do not refresh on every turn merely to track Brain edits.
 
-Preferred preamble immutability is a bootstrap and cache contract, not a live-memory limitation. The working agent continuously documents the Brain and retains awareness of its own changes through the conversation. Ordinary agent-authored changes to instructions, catalogs, indexes, or freeform documents do not require a new session. Future sessions load the maintained snapshot from disk.
+Render the preamble once per session and hold it immutable so its prefix stays cacheable. This immutability is a bootstrap and cache contract, not a live-memory limitation: the working agent documents the Brain and retains awareness of its own changes through the conversation. Ordinary agent-authored changes to instructions, catalogs, indexes, or freeform documents do not require a new session; future sessions load the maintained snapshot from disk.
 
 How a harness injects and caches the preamble is adapter-specific; see [`reference/implementation.md`](./reference/implementation.md).
 
@@ -18,7 +18,7 @@ An A/B test is active: v2.1 is assigned to 20 percent of machines and v2.0 to th
 
 Core retains `selectPreambleVersion`, `isRolloutAssigned`, and `readMachineIdentity` as permanent infrastructure. `PreambleVersion` is `"2.0" | "2.1"`. Selection applies when rendering, without replacing already-injected session content: `preamble.beta` in the settings file returns the candidate without reading machine identity. Otherwise selection reads the machine identity on each render: a machine in the assigned 20 percent receives v2.1; any machine without a readable identity receives v2.0.
 
-The `OPERATOR_PREAMBLE_BETA` environment variable is retired. The settings file `~/.operator/settings.json` is the source of truth for overriding the split and is validated with Zod against the `Settings` shape in `@aerovato/operator-core`. Its path derives from the home directory `loadMemorySnapshot` receives; no location override exists.
+The settings file `~/.operator/settings.json` is the source of truth for overriding the split and is validated with Zod against the `Settings` shape in `@aerovato/operator-core`. Its path derives from the home directory `loadMemorySnapshot` receives; no location override exists.
 
 ```json
 {
@@ -28,7 +28,7 @@ The `OPERATOR_PREAMBLE_BETA` environment variable is retired. The settings file 
 }
 ```
 
-`preamble.beta` selects the candidate regardless of the split; each new candidate version replaces the previous one behind it. Any value other than `true` leaves the split in effect.
+`preamble.beta` selects the candidate regardless of the split; any value other than `true` leaves the split in effect.
 
 Loading behavior:
 
@@ -40,9 +40,7 @@ Loading behavior:
 
 Settings are loaded in both snapshot modes and travel with `MemorySnapshot` and `MemoryStatusSnapshot` as `settings` and `unparseableSettingsPath`.
 
-`isRolloutAssigned(identity, percentage)` hashes the identity with SHA-256, interprets the first four digest bytes as an unsigned big-endian integer, takes modulo 100, and returns true below `percentage` (0–100). The same identity and percentage always give the same result; keep the hash input unchanged for the duration of an active rollout.
-
-`readMachineIdentity` reads Linux `/etc/machine-id`, macOS `IOPlatformUUID`, or Windows `HKLM\SOFTWARE\Microsoft\Cryptography` `MachineGuid` in the 64-bit registry view and returns it trimmed and lowercase. OS reinstallations or cloned identities can change or duplicate assignment.
+Machine identity comes from Linux `/etc/machine-id`, macOS `IOPlatformUUID`, or the Windows `MachineGuid` registry value. OS reinstallations or cloned identities can change or duplicate assignment.
 
 Missing, invalid, unreadable, or unsupported machine identity yields no bucket. Machine identity is never persisted, transmitted, or injected into model context. Selection does not write to the filesystem.
 
