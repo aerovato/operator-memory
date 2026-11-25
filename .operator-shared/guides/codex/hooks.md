@@ -79,7 +79,7 @@ Handlers are matched on the source string. Resume keeps the thread's original id
 
 Plain text on stdout is added as extra developer context. JSON output can provide `hookSpecificOutput.additionalContext`, also added as developer context, and a `systemMessage` surfaced as a warning. Source-verified: the context is appended to conversation history as a `developer` message, persisted to the rollout, and re-appended (not deduplicated) when `SessionStart` fires again on resume or compaction. Initial world-state and `AGENTS.md` context precede this developer message; the submitted user input follows it. `continue: false` is honored only for `SessionStart`, not `SubagentStart`.
 
-Compaction removes prior developer messages from active context, adds a user-role summary, and then re-fires `SessionStart` with `source: "compact"`. Fork copies persisted rollout history and truncates only at user-message boundaries, so developer context inserted before the first user message remains in the fork.
+Compaction removes prior developer messages from active context, adds a user-role summary, and then re-fires `SessionStart` with `source: "compact"`.
 
 A failed or invalid hook never aborts the session; only `continue: false` stops the turn.
 

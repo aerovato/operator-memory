@@ -43,6 +43,7 @@ Then start a fresh Codex session.
 
 ### Troubleshooting
 
+- Codex removes the Operator preamble when you revert the first turn. Operator checks the local transcript to restore the preamble automatically when it can verify that Codex discarded it.
 - No preamble injection: hooks were not approved. Codex reviews untrusted or modified hooks at startup; approve Operator's hooks when prompted. Helper never writes hook trust itself.
 - The `codex` CLI is unavailable: Helper instead writes the `operator-memory` Git marketplace entry to `config.toml` (in `CODEX_HOME`, default `~/.codex`) and you install the plugin manually from Codex's plugins browser.
 - Installation fails with an invalid `config.toml` error: Helper refuses to edit a `config.toml` whose `marketplaces` value is not expressed as tables. Convert it to table form and rerun the install command.

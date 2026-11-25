@@ -45,7 +45,7 @@ git -C references/codex switch --detach 5b1d6560181680f95cde95c14ed042acc02248ed
 - `src/session/session.rs` — `InitialHistory` → `SessionStartSource` mapping; SessionStart is queued and runs at the start of the next turn, before the first model request.
 - `src/state/session.rs` — pending session-start queue.
 - `src/thread_manager.rs` — thread lifecycle: new/resume keep ThreadId; fork creates a new ThreadId with lineage; `/new` and `/clear` start fresh threads.
-- `src/thread_rollout_truncation.rs` — fork/resume rollout truncation at user-turn boundaries; items before the first user message (including hook developer messages) are always retained.
+- `src/thread_rollout_truncation.rs` — rollout truncation at user-message and turn boundaries.
 - `src/skills.rs` — core glue for skill loading/invocation telemetry.
 
 ## `codex-rs/core-plugins/` and `codex-rs/plugin/` Index — packaging
