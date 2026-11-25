@@ -108,7 +108,7 @@ OpenAI warns that large context from multiple hooks and plugins can degrade mode
 
 ## Failures and Visibility
 
-Exit `0` with no output is success. Hook output can include `systemMessage` for a warning in the UI or event stream. Spawn errors, non-zero exits, invalid JSON, and timeouts leave a persistent hook-history entry; a returned `systemMessagep` is shown as a warning entry.
+Exit `0` with no output is success. Hook output can include `systemMessage` for a warning in the UI or event stream. Spawn errors, non-zero exits, invalid JSON, and timeouts leave a persistent hook-history entry; a returned `systemMessage` is shown as a warning entry.
 
 The hook documentation defines event-specific block and continuation behavior, but does not state that a failed `SessionStart` or `SubagentStart` command prevents the model from continuing. MCP-tool hooks also fail open when their server or tool is unavailable.
 

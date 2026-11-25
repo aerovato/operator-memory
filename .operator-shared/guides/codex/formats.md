@@ -121,7 +121,7 @@ policy:
   allow_implicit_invocation: false
 ```
 
-## Source Map
+## Sources
 
 - Legacy manifest parsing: `core-plugins/src/manifest.rs`
 - Portable manifest and extension overlay: `core-plugins/src/agent_plugin_manifest.rs`

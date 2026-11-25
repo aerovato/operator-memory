@@ -2,9 +2,9 @@
 
 Last Updated: September 15, 2026
 
-Verified from `references/pi/packages/coding-agent/docs/packages.md`. Distribution model for extensions, skills, prompt templates, and themes.
+Verified from `references/pi/packages/coding-agent/docs/packages.md`. for extensions, skills, prompt templates, and themes.
 
-## Sources
+## Package source types
 
 - `npm:@scope/pkg@1.2.3` — versioned specs are pinned and skipped by updates. Installs run `npm install` (prod only by default), landing in `~/.pi/agent/npm/` (global) or `.pi/npm/` (project).
 - `git:github.com/user/repo@ref` (plus raw `https://`/`ssh://` URLs) — refs are pinned tags/commits; updates reconcile the clone to the configured ref (reset, clean, reinstall) but never move to newer refs. Cloned to `~/.pi/agent/git/<host>/<path>` or `.pi/git/<host>/<path>`.
@@ -31,3 +31,8 @@ Verified from `references/pi/packages/coding-agent/docs/packages.md`. Distributi
 
 - Object form in `packages` filters a package's resources: globs, `!pattern` excludes, `+path`/`-path` exact force-include/exclude, `[]` loads none. Filters narrow the manifest.
 - Same package in both global and project settings: project wins unless it sets `autoload: false` (applied as delta). Identity: npm name, git URL without ref, resolved absolute path.
+
+
+## Sources
+
+- `references/pi/packages/coding-agent/docs/packages.md`
