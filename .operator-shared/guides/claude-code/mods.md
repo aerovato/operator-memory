@@ -43,8 +43,6 @@ Consequence for Operator: the mod cannot import `@aerovato/operator-core` in-pro
 
 `$.ui.log` (transcript line Claude does not read), `$.ui.ask`, `$.ui.invalidate`, `$.process.run`, `$.tool.register`, `$.session.version()`, model calls, timers, file access. A hook can only act outside its own code through `$`, which is what makes mods auditable (`claude plugin validate` lists events and calls).
 
-For Operator: a mod renders the preamble by running `operator-helper preamble` through `$.process.run` (helper subprocess pathway — the loader forbids npm deps and Node builtins, so bundled core in-process is not available) and injects via `prompt.context`/`prompt.section` — uncapped, in-process registration, no stdin/stdout parsing beyond the subprocess itself.
-
 ## Failure, ordering, policy
 
 - A failed hook (throw/timeout/bad shape) is skipped and the next handler runs; `.catch` on a registration answers in its place — the fail-closed pattern for guards, and for Operator the place to degrade to the diagnostic preamble
@@ -61,8 +59,6 @@ For Operator: a mod renders the preamble by running `operator-helper preamble` t
 ## Testing
 
 `claude plugin test mods/<name>` runs a mod's `tests/` against the real engine `$` and the mod's `on` chain; see `mods/diff/tests` and the mods README for the harness shape. Sample mods live in `anthropics/claude-code-playground` under `claude-code/mods`.
-
-Live PTY verification notes (v2.1.287): the TUI swallows multi-character pty writes (paste detection) — type character-by-character and send `\r` separately; the folder-trust dialog needs a down-arrow before Enter; `claude plugin validate` and `-p` mode need no PTY.
 
 ## Binding direction (resolved)
 

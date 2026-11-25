@@ -32,7 +32,7 @@ Commands are agent-driven: the markdown instructs Claude to run `operator-helper
 - Reference plugin-bundled resources with `${CLAUDE_PLUGIN_ROOT}` and `@${CLAUDE_PLUGIN_ROOT}/path` file includes
 - `$1`, `$2`, ... substitute command arguments; `!`command`` inline execution and `$ARGUMENTS` are available
 
-Shared execution contract from the reference implementation applies: check Helper availability first, skip normal operations on failure with a rerun instruction, frame command and output with the canonical boundaries, and follow the emitted guide agent-driven in the current conversation. Never reimplement Helper logic in command markdown.
+The [reference command contract](../../specs/reference/implementation.md#commands) applies: follow the emitted guide agent-driven in the current conversation. Never reimplement Helper logic in command markdown.
 
 ## Skills
 
@@ -40,7 +40,7 @@ The current official skills reference documents `name` as the command segment fo
 
 Plugin skills live in `skills/<name>/SKILL.md` with `name` and `description` frontmatter; `references/`, `examples/`, and `scripts/` subfolders hold supporting material. Skill names and descriptions occupy context every turn (the "context cost" of a plugin); full text loads only on invocation. Keep the Operator skill descriptions short.
 
-SessionStart can return `reloadSkills: true` so skills installed during a session are usable immediately — relevant only if Operator ever installs skills at runtime; Helper setup writes Brain files, not skills, so this is likely unnecessary.
+SessionStart can return `reloadSkills: true` so skills installed during a session are usable immediately; Operator installs no skills at runtime.
 
 ## Discovery and verification
 

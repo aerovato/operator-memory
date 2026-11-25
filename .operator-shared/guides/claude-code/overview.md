@@ -20,20 +20,20 @@ Implementation reference for porting Operator Memory to Claude Code. Primary sou
 
 ## Guide Map
 
-- [`injection.md`](./injection.md) - Preamble injection surfaces: SessionStart, SubagentStart, UserPromptSubmit, instruction files, and the mod prompt events; the 10k context cap and pathway recommendation.
+- [`injection.md`](./injection.md) - Preamble injection surfaces: SessionStart, SubagentStart, UserPromptSubmit, instruction files, and the mod prompt events; the 10k context cap.
 - [`hooks.md`](./hooks.md) - Settings-hook system: configuration formats, handler types, matchers, input/output contract, exit codes, environment, and policy restrictions.
 - [`commands.md`](./commands.md) - Slash commands and skills for Operator setup.
 - [`plugins.md`](./plugins.md) - Packaging, manifest, marketplaces, installation scopes, CLI, updates, and development workflow.
 - [`mods.md`](./mods.md) - The in-process mod API: event middleware, prompt and command events, API surface, and its fit as Operator's transform pathway.
+- [`installation.md`](./installation.md) - Plugin installation pathways: the direct npm gate, persistent distribution, and session-only loading.
 
 ## Facility Summary
 
-Claude Code exposes everything the adapter contract requires:
+Claude Code exposes the facilities the adapter uses:
 
-- `SessionStart` hooks (command type) inject context per session, re-firing on resume, clear, compact, and fork via matcher — a persisted-context pathway
-- `SubagentStart` hooks inject the same context per subagent with copy-once dedupe
-- Plugin commands surface as `/<plugin>:<command>`, matching `/operator:*` naming directly
-- Plugins distribute through GitHub/git/npm/local marketplaces with a `claude plugin` CLI for scripted installation
-- Mods offer an in-process alternative: `prompt.context`, `prompt.section`, and `turn.step` events are a model-boundary transform pathway
+- Mod `prompt.compose` appends an uncapped, session-scoped system-prompt section on every model call
+- Mod `agent.spawn` carries the preamble to non-forked subagents
+- Plugin skills surface as `/operator:<skill>`, matching `/operator:*` naming directly
+- A repository marketplace with an npm plugin source installs and updates the plugin
 
-Key constraints to design around: the 10,000-character cap on hook-injected context, `SessionStart`'s inability to block on unexpected failure, and hook configuration being loaded only at session start.
+`SessionStart` and `SubagentStart` settings hooks are a capped fallback (10,000 characters per string). Mods require Claude Code v2.1.287+; `disableAllHooks`, `--bare`, and `--safe-mode` suppress mod injection, and managed policy can restrict mods.
