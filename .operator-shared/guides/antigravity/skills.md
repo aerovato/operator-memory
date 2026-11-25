@@ -1,6 +1,6 @@
 # Antigravity Skills and Operator Commands
 
-Last Updated: November 21, 2026
+Last Updated: November 25, 2026
 
 Skills are the native explicit-command surface for this binding. Namespacing, full-body expansion, and autonomous suppression are verified on CLI `1.3.3`; graphical equivalents and exact canonical-name collisions remain unverified.
 
@@ -48,8 +48,8 @@ Preamble rendering is separate: a hook can run `operator-helper preamble`, but m
 
 ## Verification Notes
 
-- An earlier `operator` fixture included repair and index skills. All four skills expanded their full sentinel bodies without hook-side setup. A workspace skill and a plugin skill with the same basename were invoked independently.
-- `/skills` reported `model_invocable: false` for all four skills with `disable-model-invocation: true`; explicit commands still expanded. This verifies the CLI gate, not graphical behavior or prevention of ordinary file reads.
+- An `operator` fixture with unprefixed setup skills: each expanded its full sentinel body without hook-side setup. A workspace skill and a plugin skill with the same basename were invoked independently.
+- `/skills` reported `model_invocable: false` for each setup skill with `disable-model-invocation: true`; explicit commands still expanded. This verifies the CLI gate, not graphical behavior or prevention of ordinary file reads.
 - Release changes: `1.1.9` print-mode expansion; `1.1.12` slash hiding; `1.2.4` reload; `1.2.7` double-prefix and plugin-collision fixes. Historical reference pages omit some supported frontmatter and illustrate bare names.
 
 ## Sources

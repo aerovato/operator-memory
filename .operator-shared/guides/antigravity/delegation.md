@@ -1,6 +1,6 @@
 # Antigravity Agents and Delegation
 
-Last Updated: October 11, 2026
+Last Updated: November 25, 2026
 
 Native `invoke_subagent` starts concurrent child conversations with dedicated prompts and roles. Coverage observations below apply to workspace-plugin hooks on Linux CLI `1.3.1`/`1.3.3`; they do not prove all global-plugin or internal-worker paths.
 
@@ -40,7 +40,7 @@ Keep coverage claims bounded rather than requiring exhaustive internal-worker ex
 
 - Main/child/nested/wakeup checks correlated native hook metadata with UUIDs, injected markers, and transcripts. A wakeup preserved UUID but reset invocation numbering.
 - Markdown tests separately checked `inheritCustomizations: false` for main/delegated agents and `excludeDefaultComponents: true` for a main agent; the former suppressed the hook, the latter retained it.
-- Dynamic follow-up used Gemini 3.8 Flash, complete `system_prompt`, explicit tool-group flags, inherited model/workspace, and successful parent reporting. There were zero child hook records and no injected marker. A model-reported schema agreed with official parameters, but the raw tool-schema object was not captured. This supersedes the earlier name/description-only experiment.
+- Dynamic follow-up used Gemini 3.8 Flash, complete `system_prompt`, explicit tool-group flags, inherited model/workspace, and successful parent reporting. There were zero child hook records and no injected marker. A model-reported schema agreed with official parameters, but the raw tool-schema object was not captured.
 - An interactive `/btw` test returned its side answer without another hook record. No complete-context claim follows from that result.
 - Relevant release changes: `1.1.14` unified inheritance switch; `1.1.25` ambient inheritance defaults; `1.2.1` default-component exclusion; `1.3.1` agent-relative paths; `1.3.3` branch/share isolation and `/btw` hook suppression.
 
