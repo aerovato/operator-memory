@@ -1,6 +1,6 @@
 # OpenAI Plugins
 
-Last Updated: November 25, 2026
+Last Updated: November 26, 2026
 
 Verified plugin packaging, distribution, installation, and update behavior.
 
@@ -73,7 +73,7 @@ Codex CLI supports:
 
 Installed plugin capabilities become available in a new chat or CLI session.
 
-Operator release installation registers the public `aerovato/operator-memory` Git repository at `main`. Its `operator-memory` catalog pins an exact `@aerovato/operator-codex` npm version. Helper adds and upgrades the marketplace, installs `aerovato@operator-memory`, and verifies installed/enabled state through `codex plugin list --json`. Hook trust remains a native Codex decision. Adding the Git source records the new source over the old local registration; the old local catalog is not deleted. `core-plugins/src/marketplace_add.rs` stages and validates the Git catalog before recording its configuration.
+Operator release installation registers the public `aerovato/operator-memory` Git repository at `main`. Its `operator-memory` catalog pins an exact `@aerovato/operator-codex` npm version. Helper adds and upgrades the marketplace, installs `aerovato@operator-memory`, and verifies installed/enabled state through `codex plugin list --json`. If Codex rejects an add because the marketplace name belongs to a different source, Helper removes that registration through Codex and retries once. Users review and approve Operator's hooks in Codex.
 
 ## Enablement
 
@@ -96,7 +96,7 @@ Source-verified in the checked-out Codex reference on November 4, 2026: `core-pl
 
 The separate non-curated cache refresh materializes plugin sources, including npm, and normally replaces the installed copy only when the plugin manifest version changes (`core-plugins/src/loader.rs`). The cache version comes from the plugin manifest, not npm `package.json` (`core-plugins/src/store.rs`). Keep both versions synchronized on every release; a frozen manifest version can suppress replacement despite a newer npm package.
 
-Changed hook definitions require renewed trust because trust is tied to the definition hash.
+Changes to the installed bundle can invalidate approval even when the hook definitions remain unchanged. See [hook trust](hooks.md#trust).
 
 ## Web Limits
 

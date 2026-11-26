@@ -1,6 +1,6 @@
 # Codex Hooks
 
-Last Updated: November 4, 2026
+Last Updated: November 26, 2026
 
 Verified lifecycle-hook discovery, execution, context injection, and trust behavior.
 
@@ -21,9 +21,9 @@ Project-local hooks load only for trusted projects. User, system, managed, and e
 
 Non-managed hooks must be reviewed and trusted before they run. Source-verified: Codex records trust against a `sha256` hash of the normalized handler definition — event, matcher, statusMessage, and the single normalized handler config (command with platform selection, clamped timeout, configured async, effective `additionalContextLimit`). Any change to that normalized definition marks the hook `Modified` and disables it pending re-trust. Cosmetic source-format differences that normalize identically keep trust.
 
-Trust state is stored as `[hooks.state]` in user config, keyed by `<key_source>:<event_label>:<group_index>:<handler_index>`. For plugin hooks the key source is `<plugin_id>:<relative hooks path>`, not the versioned install path, and the hash covers only the literal handler definition. Updating a plugin therefore keeps trust as long as the hook definition in `hooks.json` is unchanged; behavior may evolve freely in the referenced script, and commands should use `"$PLUGIN_ROOT/..."` so the command string stays version-independent.
+Trust state is stored as `[hooks.state]` in user config, keyed by `<key_source>:<event_label>:<group_index>:<handler_index>`. For plugin hooks the key source is `<plugin_id>:<relative hooks path>`. Codex CLI `0.172.0` checks both `trusted_hash` for the normalized declaration and `trusted_content_hash` for the installed bundle. A skill edit or version-file change can therefore require approval even when the declaration is unchanged. Older declaration-only approvals can migrate by recording a bundle baseline. [Trust migration](https://github.com/openai/codex/blob/rust-v0.172.0/codex-rs/hooks/src/engine/plugin_trust.rs#L51) · [Bundle fingerprint](https://github.com/openai/codex/blob/rust-v0.172.0/codex-rs/hooks/src/engine/plugin_fingerprint.rs#L30)
 
-The TUI automatically shows a startup trust-review modal whenever any enabled hook is untrusted or modified, offering "Trust all and continue" or "Continue without trusting"; no separate user reminder is needed for initial trust. CLI users inspect and manage hooks with `/hooks`. Managed hooks supplied through system, MDM, cloud, or `requirements.toml` policy are trusted by policy and cannot be disabled through the user hook browser. A `--dangerously-bypass-hook-trust` CLI flag exists but is per-invocation and unsafe for distribution.
+The TUI's startup review offers "Trust all and continue" or "Continue without trusting" when startup discovery finds hooks needing review. Users can also open `/hooks` in the TUI or Settings > Hooks on Desktop. Managed hooks supplied through system, MDM, cloud, or `requirements.toml` policy are trusted by policy and cannot be disabled through the user hook browser.
 
 Installing or enabling a plugin does not trust its bundled hooks.
 

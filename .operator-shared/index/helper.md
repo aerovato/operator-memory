@@ -63,7 +63,7 @@ read_if: Working in packages/helper or changing setup, status, guides, Git, or i
 - `common.ts` — Shared command-layer filesystem failure rendering, subprocess execution, and safe optional-file inspection
 ##### `commands/install/`
 
-- `codex.ts` — Repository Git marketplace registration/upgrade, migration from the local source, Codex installation, and installed/enabled verification
+- `codex.ts` — Repository Git marketplace registration/upgrade, source-conflict recovery, Codex installation, and installed/enabled verification
 - `claude-code.ts` — Registers the repository marketplace, delegates npm installation/refresh/verification to Claude, and enables marketplace auto-update in user settings
 - `opencode.ts` — Explicit legacy `install opencode-v1` CLI installation and stable-cache recovery
 - `opencode-v2.ts` — Default `install opencode` CLI package installation and explicit `opencode-v2` alias

@@ -14,6 +14,8 @@ import { detectInstallationChannel, upgradeHelper } from "../src/update.ts";
 import type { CliContext, CliResult } from "../src/utils.ts";
 
 const marketplaceSource = "https://github.com/aerovato/operator-memory.git";
+const codexHookReview =
+  "Desktop: Review hooks in Settings > Hooks\nTUI: Review hooks with /hooks\n\nHooks may have to be reapproved when the plugin updates.";
 const originalPath = process.env.PATH;
 const originalCodexHome = process.env.CODEX_HOME;
 const originalClaudeConfig = process.env.CLAUDE_CONFIG_DIR;
@@ -55,7 +57,7 @@ afterEach(() => {
 });
 
 test.runIf(process.platform !== "win32")(
-  "registers and upgrades the Git marketplace before installing and verifying Codex",
+  "registers the marketplace, verifies installation, and prints the hook review notice",
   async () => {
     executable(
       "codex",
@@ -68,9 +70,7 @@ printf '{"installed":[{"pluginId":"aerovato@operator-memory","installed":true,"e
     const result = await execute(["install", "codex"], "4.5.6");
     expect(result).toEqual({
       exitCode: 0,
-      output:
-        "✓ Codex plugin installed and enabled\n"
-        + "Start a new Codex session and approve the Operator hooks if prompted.",
+      output: `Operator Memory successfully installed. You may need to approve Operator's context injection hooks.\n\n${codexHookReview}`,
     });
     expect(fs.readFileSync(record, "utf8")).toBe(
       `0|plugin marketplace add ${marketplaceSource} --ref main --json\n`
@@ -78,6 +78,37 @@ printf '{"installed":[{"pluginId":"aerovato@operator-memory","installed":true,"e
         + "0|plugin add aerovato@operator-memory --json\n"
         + "0|plugin list --marketplace operator-memory --json\n",
     );
+  },
+);
+
+test.runIf(process.platform !== "win32")(
+  "retries a conflicting Codex marketplace once",
+  async () => {
+    executable(
+      "codex",
+      `printf '%s\n' "$*" >> "$OPERATOR_TEST_RECORD"
+if [ "$1 $2 $3" = "plugin marketplace add" ]; then
+  if [ ! -f "$OPERATOR_TEST_RECORD.removed" ]; then
+    printf "%s\n" "Error: marketplace 'operator-memory' is already added from a different source; remove it before adding this source" >&2
+    exit 1
+  fi
+elif [ "$1 $2 $3" = "plugin marketplace remove" ]; then
+  : > "$OPERATOR_TEST_RECORD.removed"
+elif [ "$1 $2" = "plugin list" ]; then
+  printf '{"installed":[{"pluginId":"aerovato@operator-memory","installed":true,"enabled":true}]}'
+fi`,
+    );
+
+    expect((await execute(["install", "codex"], "4.5.6")).exitCode).toBe(0);
+    const add = `plugin marketplace add ${marketplaceSource} --ref main --json`;
+    expect(fs.readFileSync(record, "utf8").trim().split("\n")).toEqual([
+      add,
+      "plugin marketplace remove operator-memory --json",
+      add,
+      "plugin marketplace upgrade operator-memory --json",
+      "plugin add aerovato@operator-memory --json",
+      "plugin list --marketplace operator-memory --json",
+    ]);
   },
 );
 
@@ -370,7 +401,8 @@ test("registers the marketplace in config.toml when the Codex CLI is unavailable
     exitCode: 0,
     output:
       "✓ Registered the Operator Codex marketplace\n"
-      + "Codex CLI unavailable: install aerovato@operator-memory from the Codex plugins browser, then start a new session and approve the Operator hooks.",
+      + "Codex CLI unavailable. Install aerovato@operator-memory from the Codex plugins browser.\n\n"
+      + codexHookReview,
   });
   expect(fs.readFileSync(join(codexHome, "config.toml"), "utf8")).toBe(
     `[marketplaces.operator-memory]\nsource_type = "git"\nsource = ${JSON.stringify(marketplaceSource)}\nref = "main"\n`,

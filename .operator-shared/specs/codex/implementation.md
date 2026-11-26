@@ -1,6 +1,6 @@
 # Codex Adapter
 
-Last Updated: November 25, 2026
+Last Updated: November 26, 2026
 
 Codex CLI and Codex Desktop use the dependency-free `@aerovato/operator-codex` legacy plugin package. Shared memory rendering remains in Helper; the adapter only binds Codex lifecycle events to `operator-helper preamble`. Behavioral deviations are recorded against [`../reference/implementation.md`](../reference/implementation.md), not other bindings.
 
@@ -33,12 +33,12 @@ Each skill directs the agent to check Helper's version, upgrade when outdated, t
 
 ## Installation
 
-`operator-helper install codex` registers `https://github.com/aerovato/operator-memory.git` at `main` as the `operator-memory` Git marketplace, upgrades its snapshot, installs or refreshes the plugin as `aerovato@operator-memory`, and verifies that it is installed and enabled. Existing Helper-managed local registrations migrate under the same marketplace and plugin identifiers. When the Codex CLI is unavailable, Helper writes only its own `[marketplaces.operator-memory]` table in `config.toml` (`CODEX_HOME`, default `~/.codex`) and the user installs the plugin from Codex's plugins browser. Helper never writes Codex hook trust. Installation requires a fresh session before plugin capabilities become active.
+`operator-helper install codex` registers `https://github.com/aerovato/operator-memory.git` at `main` as the `operator-memory` Git marketplace, upgrades its snapshot, installs or refreshes the plugin as `aerovato@operator-memory`, and verifies that it is installed and enabled. On Codex's same-name source conflict, Helper uses native marketplace removal and retries registration once. When the CLI is unavailable, Helper writes its own `[marketplaces.operator-memory]` table in `config.toml` (`CODEX_HOME`, default `~/.codex`) and the user completes installation in Codex. Installation requires a fresh session before plugin capabilities become active.
 
 ## Differences From Reference
 
 Pathway selections: Helper-subprocess resolution, persisted-context injection, skills for commands, no status UI. All are accepted reference pathways except:
 
-1. Hook trust: Codex skips plugin hooks until the user approves them through native startup review. Until trust is granted, preamble injection silently does not run; Helper never writes trust state. No other binding has an equivalent gate.
+1. Hook trust: Users approve Operator's hooks in Codex. Helper displays the native review locations. An update through Codex can invalidate approval when it changes the bundle.
 2. Failure blocking: `continue: false` blocks a failed `SessionStart`, but Codex cannot block `SubagentStart`, so a failed subagent render proceeds without Operator memory and surfaces a `systemMessage`. The reference requires blocking wherever the harness allows it.
 Updates use native Git marketplace refresh, including the source-verified background path in the [plugin guide](../../guides/codex/plugins.md#updates). Helper installation also explicitly upgrades the marketplace before installing. The repository catalog pins the npm release; release preparation synchronizes its version with the plugin manifest and npm package. Local previews use a separate generated `operator-local` catalog.
