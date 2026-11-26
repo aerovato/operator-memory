@@ -9,32 +9,59 @@ import { type ProcessResult, readOptionalFile, runProcess } from "../common.ts";
 const MARKETPLACE_SOURCE = "https://github.com/aerovato/operator-memory.git";
 const MARKETPLACE_NAME = "operator-memory";
 const PLUGIN_ID = `aerovato@${MARKETPLACE_NAME}`;
+const MARKETPLACE_CONFLICT = `marketplace '${MARKETPLACE_NAME}' is already added from a different source; remove it before adding this source`;
+const CODEX_ENV = { NPM_CONFIG_MIN_RELEASE_AGE: "0" };
+const HOOK_REVIEW = [
+  "Desktop: Review hooks in Settings > Hooks",
+  "TUI: Review hooks with /hooks",
+  "",
+  "Hooks may have to be reapproved when the plugin updates.",
+].join("\n");
 
 export const installCodex = Effect.fn("installCodex")(function* (context: CliContext) {
-  const addMarketplace = yield* runProcess(
+  const add = runProcess(
     "codex",
     ["plugin", "marketplace", "add", MARKETPLACE_SOURCE, "--ref", "main", "--json"],
     context.cwd,
-    { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
+    CODEX_ENV,
   );
+  const addMarketplace = yield* add;
   if (!addMarketplace.ok && isMissingBinary(addMarketplace.error)) {
     return yield* registerDesktopMarketplace(context);
   }
-  const addFailure = commandFailure(addMarketplace, "Codex marketplace installation failed");
+  const conflict =
+    addMarketplace.ok
+    && addMarketplace.exitCode !== 0
+    && addMarketplace.output.includes(MARKETPLACE_CONFLICT);
+  if (conflict) {
+    const removal = yield* runProcess(
+      "codex",
+      ["plugin", "marketplace", "remove", MARKETPLACE_NAME, "--json"],
+      context.cwd,
+      CODEX_ENV,
+    );
+    const removalFailure = commandFailure(removal, "Codex marketplace removal failed");
+    if (removalFailure !== null) return removalFailure;
+  }
+  const registered = conflict ? yield* add : addMarketplace;
+  const addFailure = commandFailure(registered, "Codex marketplace installation failed");
   if (addFailure !== null) return addFailure;
 
   const upgrade = yield* runProcess(
     "codex",
     ["plugin", "marketplace", "upgrade", MARKETPLACE_NAME, "--json"],
     context.cwd,
-    { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
+    CODEX_ENV,
   );
   const upgradeFailure = commandFailure(upgrade, "Codex marketplace upgrade failed");
   if (upgradeFailure !== null) return upgradeFailure;
 
-  const install = yield* runProcess("codex", ["plugin", "add", PLUGIN_ID, "--json"], context.cwd, {
-    NPM_CONFIG_MIN_RELEASE_AGE: "0",
-  });
+  const install = yield* runProcess(
+    "codex",
+    ["plugin", "add", PLUGIN_ID, "--json"],
+    context.cwd,
+    CODEX_ENV,
+  );
   const installFailure = commandFailure(install, "Codex plugin installation failed");
   if (installFailure !== null) return installFailure;
 
@@ -42,7 +69,7 @@ export const installCodex = Effect.fn("installCodex")(function* (context: CliCon
     "codex",
     ["plugin", "list", "--marketplace", MARKETPLACE_NAME, "--json"],
     context.cwd,
-    { NPM_CONFIG_MIN_RELEASE_AGE: "0" },
+    CODEX_ENV,
   );
   const statusFailure = commandFailure(status, "Could not verify Codex plugin installation");
   if (statusFailure !== null) return statusFailure;
@@ -55,10 +82,7 @@ export const installCodex = Effect.fn("installCodex")(function* (context: CliCon
 
   return {
     exitCode: 0,
-    output: [
-      "✓ Codex plugin installed and enabled",
-      "Start a new Codex session and approve the Operator hooks if prompted.",
-    ].join("\n"),
+    output: `Operator Memory successfully installed. You may need to approve Operator's context injection hooks.\n\n${HOOK_REVIEW}`,
   };
 });
 
@@ -87,7 +111,9 @@ function registerDesktopMarketplace(
       exitCode: 0,
       output: [
         "✓ Registered the Operator Codex marketplace",
-        "Codex CLI unavailable: install aerovato@operator-memory from the Codex plugins browser, then start a new session and approve the Operator hooks.",
+        "Codex CLI unavailable. Install aerovato@operator-memory from the Codex plugins browser.",
+        "",
+        HOOK_REVIEW,
       ].join("\n"),
     };
   });
